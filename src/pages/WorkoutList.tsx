@@ -75,7 +75,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                                     secondary={<>{valueItem.trackingValues.map(trackingItem => TRACKING_VALUES_ICON[trackingItem]())}</>}
                                 />
                             </ListItem>
-                            <Divider variant="middle" />
+                            <Divider />
                         </>
                     ))}
                 </List>
