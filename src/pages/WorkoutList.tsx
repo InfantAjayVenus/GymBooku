@@ -80,7 +80,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                     ))}
                 </List>
             </Stack>
-            <Box sx={{ position: "fixed", bottom: '1rem', right: '1rem' }}>
+            <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
                 <Fab size="medium" color="primary" aria-label="add workout"
                     onClick={() => {
                         bottomDrawer.open();
