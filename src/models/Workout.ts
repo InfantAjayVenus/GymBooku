@@ -17,8 +17,8 @@ interface TrackingMixin {
 
 export const TRACKING_VALUES_ICON: TrackingMixin = {
     [TrackingValues.TIME]: () => React.createElement(AccessTimeOutlined),
-    [TrackingValues.COUNT]: () => React.createElement(FitnessCenterOutlined),
-    [TrackingValues.WEIGHT]: () => React.createElement(PinOutlined),
+    [TrackingValues.COUNT]: () => React.createElement(PinOutlined),
+    [TrackingValues.WEIGHT]: () => React.createElement(FitnessCenterOutlined),
 };
 
 
