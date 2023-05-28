@@ -55,4 +55,8 @@ export class Plan {
     set workoutsList (updatedWorkoutsList: Workout[]) {
         this._workoutsList = updatedWorkoutsList;
     }
+
+    hasDay(day: DAYS_OF_WEEK) {
+        return this._daysList.includes(day);
+    }
 }
