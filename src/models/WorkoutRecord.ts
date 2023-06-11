@@ -15,9 +15,9 @@ export class WorkoutTrackRecord {
     private _weight?: Number;
     private _timestamp: Date;
 
-    constructor({ time, count, weight }: { time?: Number, count?: Number, weight?: Number } = {}, id: ID = getRandomId(), timestamp: Date = new Date()) {
-        this._id = id;
-        this._timestamp = timestamp;
+    constructor({ time, count, weight }: { time?: Number, count?: Number, weight?: Number } = {},) {
+        this._id = getRandomId();
+        this._timestamp = new Date();
         this._time = time;
         this._count = count;
         this._weight = weight;
