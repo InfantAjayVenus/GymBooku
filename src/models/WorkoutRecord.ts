@@ -59,11 +59,19 @@ export class WorkoutTrackRecord {
         return `${this._timestamp.getDate()}/${this._timestamp.getMonth() + 1}/${this._timestamp.getFullYear()}`;
     }
 
-    getHasAllMandatoryValues = (trackingValues: TrackingValues[]) => {
-        const shouldHaveTime = trackingValues.includes(TrackingValues.TIME);
-        const shouldHaveWeight = trackingValues.includes(TrackingValues.WEIGHT);
-        const shouldHaveCount = trackingValues.includes(TrackingValues.COUNT);
+    hasAllRequiredValues = (trackingValues: TrackingValues[]) => {
 
-        return (shouldHaveCount && !!this.count) || (shouldHaveWeight && !!this.weight) || (shouldHaveTime && !!this.time);
+        return trackingValues.reduce((flag, value) => {
+            if(value === TrackingValues.COUNT)  {
+                return (flag && !!this._count);
+            }
+            if(value === TrackingValues.WEIGHT)  {
+                return (flag && !!this._weight);
+            }
+            if(value === TrackingValues.TIME)  {
+                return (flag && !!this._time);
+            }
+            return flag;
+        }, true);
     }
 }
