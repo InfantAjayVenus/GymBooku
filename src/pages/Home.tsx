@@ -78,8 +78,8 @@ function Home({ allWorkoutsList, workoutsForDay, trackedWorkoutData, onUpdate, o
                     <Typography variant="body1" fontWeight={'bold'}>Add Workout for Tracking</Typography>
                     <List>
                         {allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id)).map(workoutItem => (
-                            <ListItem>
-                                <ListItemButton key={workoutItem.id as Key} sx={{
+                            <ListItem key={workoutItem.id as Key}>
+                                <ListItemButton sx={{
                                     padding: 0,
                                     marginY: '1rem',
                                 }}
