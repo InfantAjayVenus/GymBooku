@@ -1,11 +1,45 @@
 import getRandomId, { ID } from "src/utils/getRandomId";
-import { TrackingValues } from "./Workout";
+import { TrackingValues, Workout } from "./Workout";
 
 export interface TrackedValuesData {
     id: ID,
     [TrackingValues.COUNT]: undefined | number,
     [TrackingValues.WEIGHT]: undefined | number,
     [TrackingValues.TIME]: undefined | number,
+}
+
+export class WorkoutTrackCollection {
+    private _id: ID;
+    private _timestamp: Date;
+    private _workout: Workout;
+    private _trackedData: WorkoutTrackRecord[];
+
+    constructor(workout: Workout, trackedData: WorkoutTrackRecord[] = [new WorkoutTrackRecord()], id: ID = getRandomId()) {
+        this._id = id;
+        this._timestamp = new Date();
+        this._workout = workout;
+        this._trackedData = trackedData;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    get timestamp() {
+        return this._timestamp;
+    }
+
+    get workout() {
+        return this._workout;
+    }
+
+    get trackedData() {
+        return this._trackedData;
+    }
+
+    set trackedData(updatedTrackedData: WorkoutTrackRecord[]) {
+        this._trackedData = updatedTrackedData;
+    }
 }
 
 export class WorkoutTrackRecord {
