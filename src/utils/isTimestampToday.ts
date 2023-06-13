@@ -1,6 +1,5 @@
-export default (timeStamp: number): boolean => {
-    const date = new Date(timeStamp);
+export default (timeStamp: Date): boolean => {
     const today = new Date();
 
-    return today.toDateString() === date.toDateString();
+    return today.toDateString() === timeStamp.toDateString();
 }
