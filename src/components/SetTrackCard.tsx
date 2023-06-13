@@ -10,14 +10,15 @@ import { TrackingValues } from "src/models/Workout";
 import { WorkoutTrackRecord } from "src/models/WorkoutRecord";
 
 interface SetTrackCardProps {
+    index?: number;
     initialValues: WorkoutTrackRecord,
     trackingValues: TrackingValues[],
-    onUpdate: (updatedTrackingData: WorkoutTrackRecord) => void,
+    onUpdate: (updatedTrackingData: WorkoutTrackRecord, index: number) => void,
 }
 
 
 
-function SetTrackCard({ initialValues, trackingValues, onUpdate }: SetTrackCardProps) {
+function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetTrackCardProps) {
     const [trackedValues, setTrackedValues] = useState<WorkoutTrackRecord | null>();
     const [weight, setWeight] = useState('');
     const [count, setCount] = useState('');
@@ -40,18 +41,18 @@ function SetTrackCard({ initialValues, trackingValues, onUpdate }: SetTrackCardP
         const parsedWeight = parseFloat(parseFloat(weightValue).toFixed(2));
         const parsedCount = parseFloat(parseFloat(countValue).toFixed(2));
         const parsedTime = parseFloat(parseFloat(timeValue).toFixed(2));
-        setTrackedValues(new WorkoutTrackRecord(trackedValues?.workout, {
+        setTrackedValues(new WorkoutTrackRecord({
             time: !isNaN(parsedTime) ? parsedTime : undefined,
             weight: !isNaN(parsedWeight) ? parsedWeight : undefined,
             count: !isNaN(parsedCount) ? parsedCount : undefined
-        }, trackedValues.id, trackedValues.timestamp));
+        }, ));
 
     }, [weightValue, countValue, timeValue])
 
     useEffect(() => {
         if (!trackedValues) return;
 
-        onUpdate(trackedValues);
+        onUpdate(trackedValues, index);
     }, [trackedValues])
 
     return (
@@ -60,13 +61,13 @@ function SetTrackCard({ initialValues, trackingValues, onUpdate }: SetTrackCardP
                 <Typography
                     width={'100%'}
                     textAlign={'center'}
-                >Set 1</Typography>
+                >Set {index + 1}</Typography>
                 <Stack alignSelf={'end'}>
                     {trackingValues.includes(TrackingValues.COUNT) && (
                         <OutlinedInput
                             endAdornment="reps"
                             inputProps={{
-                                shrink: true,
+                                shrink: "true",
                             }}
                             value={count}
                             onChange={(event) => {
@@ -83,7 +84,7 @@ function SetTrackCard({ initialValues, trackingValues, onUpdate }: SetTrackCardP
                         <OutlinedInput
                             endAdornment="Kg"
                             inputProps={{
-                                shrink: true,
+                                shrink: "true",
                             }}
                             value={weight}
                             onChange={(event) => {
@@ -100,7 +101,7 @@ function SetTrackCard({ initialValues, trackingValues, onUpdate }: SetTrackCardP
                         <OutlinedInput
                             endAdornment="S"
                             inputProps={{
-                                shrink: true,
+                                shrink: "true",
                             }}
                             value={time}
                             onChange={(event) => {
