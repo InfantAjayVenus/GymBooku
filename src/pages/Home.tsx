@@ -1,6 +1,7 @@
 import { Add } from "@mui/icons-material";
 import {
     Box,
+    Container,
     Fab,
     List,
     ListItem,
@@ -31,6 +32,7 @@ interface HomeProps {
 
 function Home({ allWorkoutsList, workoutsForDay, trackedWorkoutData, onUpdate, onAddTrackedWorkout }: HomeProps) {
     const workoutListDrawer = useDrawer();
+    const allWorkoutDifferedFromWorkoutsForDay = allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id));
     return (
         <>
             <Stack padding={4} spacing={2}>
@@ -76,24 +78,37 @@ function Home({ allWorkoutsList, workoutsForDay, trackedWorkoutData, onUpdate, o
                 <Puller />
                 <Stack padding={'1rem'} mt={'1rem'}>
                     <Typography variant="body1" fontWeight={'bold'}>Add Workout for Tracking</Typography>
-                    <List>
-                        {allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id)).map(workoutItem => (
-                            <ListItem key={workoutItem.id as Key}>
-                                <ListItemButton sx={{
-                                    padding: 0,
-                                    marginY: '1rem',
-                                }}
-                                onClick={() => {
-                                    onAddTrackedWorkout(workoutItem);
-                                    workoutListDrawer.close();
-                                }}
-                                >
-                                    <ListItemText primary={workoutItem.name} />
 
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
+                    {allWorkoutDifferedFromWorkoutsForDay.length > 0 && (
+                        <List>
+                            {allWorkoutDifferedFromWorkoutsForDay.map(workoutItem => (
+                                <ListItem key={workoutItem.id as Key}>
+                                    <ListItemButton sx={{
+                                        padding: 0,
+                                        marginY: '1rem',
+                                    }}
+                                        onClick={() => {
+                                            onAddTrackedWorkout(workoutItem);
+                                            workoutListDrawer.close();
+                                        }}
+                                    >
+                                        <ListItemText primary={workoutItem.name} />
+
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
+                    {allWorkoutDifferedFromWorkoutsForDay.length === 0 && (
+                        <Container sx={{
+                            textAlign: 'center',
+                            padding: '2rem 0'
+                        }}>
+                            <Typography variant="h3">😎</Typography>
+                            <Typography variant="body1">Cool! You've managed to do all the workouts</Typography>
+                            <Typography variant="body2" color={'ActiveCaption'}>Add More Workouts to burn more calories</Typography>
+                        </Container>
+                    )}
                 </Stack>
             </SwipeableDrawer>
             {/* Todo:
