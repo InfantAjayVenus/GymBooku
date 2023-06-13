@@ -109,7 +109,7 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                     ))}
                 </List>
             </Stack>
-            <Box sx={{ position: "absolute", bottom: '4rem', right: '1rem' }}>
+            <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
                 <Fab size="medium" color="primary" aria-label="add workout"
                     onClick={() => {
                         formDrawer.open();
