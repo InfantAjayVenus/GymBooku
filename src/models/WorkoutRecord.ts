@@ -93,6 +93,10 @@ export class WorkoutTrackRecord {
         return `${this._timestamp.getDate()}/${this._timestamp.getMonth() + 1}/${this._timestamp.getFullYear()}`;
     }
 
+    toString() {
+        return `${this._count ? `${this._count} Reps `: ''}${this._time ? `for ${this._time}Sec `: ''}${this._weight ? `@${this._weight}Kg ` : ''}`;
+    }
+
     hasAllRequiredValues = (trackingValues: TrackingValues[]) => {
 
         return trackingValues.reduce((flag, value) => {
