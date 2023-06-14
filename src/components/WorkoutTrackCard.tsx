@@ -1,13 +1,17 @@
-import { Add, RemoveCircleOutline } from '@mui/icons-material';
+import { Add, EditOutlined, History, RemoveCircleOutline } from '@mui/icons-material';
 import {
+    Box,
     Button,
     ButtonGroup,
     Card,
     CardContent,
     ClickAwayListener,
     Collapse,
+    Container,
     Paper,
     Stack,
+    Tab,
+    Tabs,
     Typography
 } from "@mui/material";
 import { useEffect, useState } from 'react';
@@ -15,16 +19,19 @@ import useDrawer from "src/hooks/useDrawer";
 import { Workout } from "src/models/Workout";
 import { WorkoutTrackCollection, WorkoutTrackRecord } from 'src/models/WorkoutRecord';
 import SetTrackCard from './SetTrackCard';
+import TabPanel from './TabPanel';
 
 export interface WorkoutTrackCardProps {
     workout: Workout;
-    trackedData?: WorkoutTrackCollection,
+    previousTrackedData?: WorkoutTrackCollection;
+    trackedData?: WorkoutTrackCollection;
     onSave: (savedWorkoutTrackCollection: WorkoutTrackCollection) => void;
 }
 
-function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProps) {
+function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }: WorkoutTrackCardProps) {
     const trackingFormCollapse = useDrawer();
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection>();
+    const [tabValue, setTabValue] = useState(2);
 
     useEffect(() => {
         setWorkoutTrackCollection(trackedData || new WorkoutTrackCollection(workout, [new WorkoutTrackRecord()]));
@@ -53,43 +60,76 @@ function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProp
                             padding: '1rem',
                         }}
                     >
-                        {/* 
-                            TODO:
-                            - Move the tracking data upwards
-                        */}
-                        {workoutTrackCollection?.trackedData.map((value, index) => (
-                            <SetTrackCard
-                                key={index}
-                                index={index}
-                                trackingValues={workout.trackingValues}
-                                onUpdate={(updatedTrackData, index) => {
-                                    workoutTrackCollection.trackedData[index] = updatedTrackData;
-                                    setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection.workout, workoutTrackCollection.trackedData, workoutTrackCollection.id));
-                                }}
-                                initialValues={value}
-                            />
-                        ))}
-                        <Stack direction={'column'} padding={'1rem 0'} alignItems={'center'} spacing={'0.5rem'}>
-                            <ButtonGroup variant="outlined" aria-label="outlined button group">
-                                <Button startIcon={<Add />} size='small'
-                                    onClick={() => {
-                                        setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()], workoutTrackCollection?.id));
-                                    }}
-                                    disabled={workoutTrackCollection?.trackedData.some((trackedItem) => !trackedItem.hasAllRequiredValues(workout.trackingValues))}
-                                >
-                                    Add Set
-                                </Button>
-                                <Button startIcon={<RemoveCircleOutline />} size='small'
-                                    onClick={() => {
-                                        workoutTrackCollection?.trackedData.pop();
-                                        setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || [])], workoutTrackCollection?.id));
-                                    }}
-                                    disabled={workoutTrackCollection?.trackedData && (workoutTrackCollection?.trackedData.length < 2)}>
-                                    Remove Set
-                                </Button >
-                            </ButtonGroup>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                            <Tabs value={tabValue} onChange={(_, value) => {
+                                setTabValue(value);
+                            }}>
+                                <Tab value={1} label="Previously Tracked" icon={<History />} iconPosition='end' />
+                                <Tab value={2} label="Today's Track" icon={<EditOutlined />} iconPosition='end' />
+                            </Tabs>
+                        </Box>
+                        <Box>
+                            <TabPanel
+                                index={1}
+                                value={tabValue}
+                            >
+                                {(previousTrackedData?.trackedData && previousTrackedData?.trackedData.length > 0) && (
+                                    <>
+                                        {previousTrackedData.trackedData.map((trackedValue, index) => (
+                                            <Stack py={'0.5rem'}>
+                                                <Typography variant='body1' fontWeight={'bold'}>Set {index + 1}</Typography>
+                                                <Typography variant='body2'>{trackedValue.toString()}</Typography>
+                                            </Stack>
+                                        ))}
+                                    </>
+                                )}
+                                {(!previousTrackedData || previousTrackedData.trackedData.length === 0) && (
+                                    <Container sx={{ textAlign: 'center' }}>
+                                        <Typography variant='h3'>🤔</Typography>
+                                        <Typography variant='body1'>I Don't think we've done this workout before</Typography>
+                                        <Typography variant='body2' color='ActiveCaption'>Track today and I'll keep note of it for the next time</Typography>
+                                    </Container>
+                                )}
+                            </TabPanel>
+                            <TabPanel
+                                index={2}
+                                value={tabValue}
+                            >
+                                {workoutTrackCollection?.trackedData.map((value, index) => (
+                                    <SetTrackCard
+                                        key={index}
+                                        index={index}
+                                        trackingValues={workout.trackingValues}
+                                        onUpdate={(updatedTrackData, index) => {
+                                            workoutTrackCollection.trackedData[index] = updatedTrackData;
+                                            setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection.workout, workoutTrackCollection.trackedData, workoutTrackCollection.id));
+                                        }}
+                                        initialValues={value}
+                                    />
+                                ))}
+                                <Stack direction={'column'} padding={'1rem 0'} alignItems={'center'} spacing={'0.5rem'}>
+                                    <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                        <Button startIcon={<Add />} size='small'
+                                            onClick={() => {
+                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()], workoutTrackCollection?.id));
+                                            }}
+                                            disabled={workoutTrackCollection?.trackedData.some((trackedItem) => !trackedItem.hasAllRequiredValues(workout.trackingValues))}
+                                        >
+                                            Add Set
+                                        </Button>
+                                        <Button startIcon={<RemoveCircleOutline />} size='small'
+                                            onClick={() => {
+                                                workoutTrackCollection?.trackedData.pop();
+                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || [])], workoutTrackCollection?.id));
+                                            }}
+                                            disabled={workoutTrackCollection?.trackedData && (workoutTrackCollection?.trackedData.length < 2)}>
+                                            Remove Set
+                                        </Button >
+                                    </ButtonGroup>
 
-                        </Stack>
+                                </Stack>
+                            </TabPanel>
+                        </Box>
                     </Paper>
                 </Collapse>
             </Card>
