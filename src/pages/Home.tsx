@@ -47,7 +47,7 @@ function Home({ allWorkoutsList, workoutsForDay, trackedWorkoutData, onUpdate, o
                         }}>
                             <WorkoutTrackCard
                                 workout={workoutItem}
-                                trackedData={trackedWorkoutData?.find(item => item.workout.id === workoutItem.id)}
+                                trackedData={trackedWorkoutData?.find(item => item.workout === workoutItem.id)}
                                 onSave={(savedWorkout) => {
                                     onUpdate(savedWorkout);
                                 }}

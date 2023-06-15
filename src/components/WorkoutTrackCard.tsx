@@ -34,7 +34,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
     const [tabValue, setTabValue] = useState(2);
 
     useEffect(() => {
-        setWorkoutTrackCollection(trackedData || new WorkoutTrackCollection(workout, [new WorkoutTrackRecord()]));
+        setWorkoutTrackCollection(trackedData || new WorkoutTrackCollection(workout.id, [new WorkoutTrackRecord()]));
     }, [trackedData]);
 
     useEffect(() => {
@@ -111,7 +111,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                     <ButtonGroup variant="outlined" aria-label="outlined button group">
                                         <Button startIcon={<Add />} size='small'
                                             onClick={() => {
-                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()], workoutTrackCollection?.id));
+                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout.id, [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()], workoutTrackCollection?.id));
                                             }}
                                             disabled={workoutTrackCollection?.trackedData.some((trackedItem) => !trackedItem.hasAllRequiredValues(workout.trackingValues))}
                                         >
@@ -120,7 +120,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                         <Button startIcon={<RemoveCircleOutline />} size='small'
                                             onClick={() => {
                                                 workoutTrackCollection?.trackedData.pop();
-                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout, [...(workoutTrackCollection?.trackedData || [])], workoutTrackCollection?.id));
+                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout.id, [...(workoutTrackCollection?.trackedData || [])], workoutTrackCollection?.id));
                                             }}
                                             disabled={workoutTrackCollection?.trackedData && (workoutTrackCollection?.trackedData.length < 2)}>
                                             Remove Set

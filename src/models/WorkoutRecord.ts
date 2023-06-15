@@ -1,5 +1,5 @@
 import getRandomId, { ID } from "src/utils/getRandomId";
-import { TrackingValues, Workout } from "./Workout";
+import { TrackingValues } from "./Workout";
 
 export interface TrackedValuesData {
     id: ID,
@@ -11,10 +11,10 @@ export interface TrackedValuesData {
 export class WorkoutTrackCollection {
     private _id: ID;
     private _timestamp: Date;
-    private _workout: Workout;
+    private _workout: ID;
     private _trackedData: WorkoutTrackRecord[];
 
-    constructor(workout: Workout, trackedData: WorkoutTrackRecord[] = [new WorkoutTrackRecord()], id: ID = getRandomId()) {
+    constructor(workout: ID, trackedData: WorkoutTrackRecord[] = [new WorkoutTrackRecord()], id: ID = getRandomId()) {
         this._id = id;
         this._timestamp = new Date();
         this._workout = workout;
