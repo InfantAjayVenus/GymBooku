@@ -14,7 +14,7 @@ import {
     SwipeableDrawer,
     Typography
 } from "@mui/material";
-import { Key, useState } from "react";
+import { Fragment, Key, useState } from "react";
 import Puller from "src/components/Puller";
 import WorkoutForm, { WorkoutFormProps } from "src/components/WorkoutForm";
 import useDrawer from "src/hooks/useDrawer";
@@ -49,7 +49,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout List</Typography>
                 <List>
                     {values.map((valueItem) => (
-                        <>
+                        <Fragment key={valueItem.id as Key}>
                             <ListItem
                                 key={valueItem.id as Key}
                                 sx={{ padding: '0' }}
@@ -76,7 +76,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                                 />
                             </ListItem>
                             <Divider />
-                        </>
+                        </Fragment>
                     ))}
                 </List>
             </Stack>
