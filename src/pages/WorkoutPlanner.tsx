@@ -83,7 +83,7 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                                     secondary={(
                                         <Stack>
                                             <Typography variant="body1">
-                                                {planItem.workoutsList.map((workoutItem) => workoutItem.name).join(' / ')}
+                                                {planItem.workoutsList.map((workoutItem) => (workoutsList.find(({id}) => workoutItem === id))?.name || false).filter(name => !!name).join(' / ')}
                                             </Typography>
                                             <Container component={'div'} sx={{
                                                 flexDirection: 'row',

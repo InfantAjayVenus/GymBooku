@@ -36,13 +36,13 @@ const INITIAL_SELECTED_DAYS = [] as DAYS_OF_WEEK[];
 
 function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
     const [planName, setPlanName] = useState<String>(planData ? planData?.name : INITIAL_PLAN_NAME);
-    const [selectedWorkoutsList, setSelectedWorkoutsList] = useState<ID[]>(planData?.workoutsList.map(({ id }) => id) || INITIAL_SELECTED_WORKOUTS);
+    const [selectedWorkoutsList, setSelectedWorkoutsList] = useState<ID[]>(planData?.workoutsList || INITIAL_SELECTED_WORKOUTS);
     const [selectedDays, setSelectedDays] = useState<DAYS_OF_WEEK[]>(planData?.daysList || INITIAL_SELECTED_DAYS)
 
     useEffect(() => {
         setPlanName(planData?.name || INITIAL_PLAN_NAME);
         setSelectedDays(planData?.daysList || INITIAL_SELECTED_DAYS);
-        setSelectedWorkoutsList(planData?.workoutsList.map(({id}) => id) || INITIAL_SELECTED_WORKOUTS);
+        setSelectedWorkoutsList(planData?.workoutsList || INITIAL_SELECTED_WORKOUTS);
         
     }, [planData])
 
@@ -57,11 +57,11 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
 
                     if (planData) {
                         planData.name = planName;
-                        planData.workoutsList = workoutsList.filter(({ id }) => selectedWorkoutsList.includes(id));
+                        planData.workoutsList = selectedWorkoutsList;
                         planData.daysList = selectedDays;
                         onSave(planData);
                     } else {
-                        const savePlan = new Plan(planName, workoutsList.filter(({ id }) => selectedWorkoutsList.includes(id)), selectedDays);
+                        const savePlan = new Plan(planName, selectedWorkoutsList, selectedDays);
                         onSave(savePlan);
                     }
 

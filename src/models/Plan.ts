@@ -1,5 +1,4 @@
 import getRandomId, { ID } from "src/utils/getRandomId";
-import { Workout } from "./Workout";
 
 export enum DAYS_OF_WEEK {
     SUNDAY="SUNDAY",
@@ -14,10 +13,10 @@ export enum DAYS_OF_WEEK {
 export class Plan {
     private _id: ID;
     private _name: String;
-    private _workoutsList: Workout[];
+    private _workoutsList: ID[];
     private _daysList: DAYS_OF_WEEK[];
 
-    constructor(name:String, workoutsList: Workout[], daysList: DAYS_OF_WEEK[], id: ID = getRandomId()) {
+    constructor(name:String, workoutsList: ID[], daysList: DAYS_OF_WEEK[], id: ID = getRandomId()) {
         this._id = id;
         this._name = name;
         this._workoutsList = workoutsList;
@@ -52,7 +51,7 @@ export class Plan {
         this._daysList = updatedDaysList;
     }
 
-    set workoutsList (updatedWorkoutsList: Workout[]) {
+    set workoutsList (updatedWorkoutsList: ID[]) {
         this._workoutsList = updatedWorkoutsList;
     }
 
