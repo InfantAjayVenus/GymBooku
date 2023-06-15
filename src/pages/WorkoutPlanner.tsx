@@ -16,7 +16,7 @@ import {
     SwipeableDrawer,
     Typography
 } from "@mui/material";
-import { Key, useState } from "react";
+import { Fragment, Key, useState } from "react";
 import PlanForm, { PlanFormProps } from "src/components/PlanForm";
 import Puller from "src/components/Puller";
 import useDrawer from "src/hooks/useDrawer";
@@ -53,7 +53,7 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Plans</Typography>
                 <List>
                     {values.map((planItem) => (
-                        <>
+                        <Fragment key={planItem.id as Key}>
                             <ListItem
                                 key={planItem.id as Key}
                                 sx={{
@@ -106,7 +106,7 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                                 />
                             </ListItem>
                             <Divider />
-                        </>
+                        </Fragment>
                     ))}
                 </List>
             </Stack>
