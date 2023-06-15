@@ -14,9 +14,9 @@ export class WorkoutTrackCollection {
     private _workout: ID;
     private _trackedData: WorkoutTrackRecord[];
 
-    constructor(workout: ID, trackedData: WorkoutTrackRecord[] = [new WorkoutTrackRecord()], id: ID = getRandomId()) {
+    constructor(workout: ID, trackedData: WorkoutTrackRecord[] = [new WorkoutTrackRecord()], id: ID = getRandomId(), timestamp = new Date()) {
         this._id = id;
-        this._timestamp = new Date();
+        this._timestamp = timestamp;
         this._workout = workout;
         this._trackedData = trackedData;
     }
@@ -49,9 +49,9 @@ export class WorkoutTrackRecord {
     private _weight?: Number;
     private _timestamp: Date;
 
-    constructor({ time, count, weight }: { time?: Number, count?: Number, weight?: Number } = {},) {
-        this._id = getRandomId();
-        this._timestamp = new Date();
+    constructor({ time, count, weight }: { time?: Number, count?: Number, weight?: Number } = {},id=getRandomId(), timestamp=new Date()) {
+        this._id = id;
+        this._timestamp = timestamp;
         this._time = time;
         this._count = count;
         this._weight = weight;
