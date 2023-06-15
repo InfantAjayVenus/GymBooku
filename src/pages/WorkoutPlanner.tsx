@@ -83,15 +83,16 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                                     secondary={(
                                         <Stack>
                                             <Typography variant="body1">
-                                                {planItem.workoutsList.map((workoutItem) => workoutItem.name).join(',')}
+                                                {planItem.workoutsList.map((workoutItem) => workoutItem.name).join(' / ')}
                                             </Typography>
-                                            <Container sx={{
+                                            <Container component={'div'} sx={{
                                                 flexDirection: 'row',
                                                 alignContent: 'space-around',
-                                                padding: '0.3rem 0',
+                                                padding: '0.3rem 0 !important',
                                             }}>
-                                                {planItem.daysList.map(day => (
+                                                {planItem.daysList.map((day, index) => (
                                                     <Chip
+                                                        key={index}
                                                         label={day.slice(0, 3)}
                                                         sx={{
                                                             marginRight: '0.3rem',
