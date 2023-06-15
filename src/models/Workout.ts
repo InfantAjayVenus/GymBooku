@@ -1,5 +1,5 @@
 import { AccessTimeOutlined, FitnessCenterOutlined, PinOutlined } from "@mui/icons-material";
-import React from "react";
+import React, { Key } from "react";
 import getRandomId, { ID } from "src/utils/getRandomId";
 
 export enum TrackingValues {
@@ -10,15 +10,15 @@ export enum TrackingValues {
 };
 
 interface TrackingMixin {
-    [TrackingValues.TIME]: () => React.ReactElement;
-    [TrackingValues.COUNT]: () => React.ReactElement;
-    [TrackingValues.WEIGHT]: () => React.ReactElement;
+    [TrackingValues.TIME]: (key: Key) => React.ReactElement;
+    [TrackingValues.COUNT]: (key: Key) => React.ReactElement;
+    [TrackingValues.WEIGHT]: (key: Key) => React.ReactElement;
 };
 
 export const TRACKING_VALUES_ICON: TrackingMixin = {
-    [TrackingValues.TIME]: () => React.createElement(AccessTimeOutlined),
-    [TrackingValues.COUNT]: () => React.createElement(PinOutlined),
-    [TrackingValues.WEIGHT]: () => React.createElement(FitnessCenterOutlined),
+    [TrackingValues.TIME]: (key) => React.createElement(AccessTimeOutlined, {key}),
+    [TrackingValues.COUNT]: (key) => React.createElement(PinOutlined, {key}),
+    [TrackingValues.WEIGHT]: (key) => React.createElement(FitnessCenterOutlined, {key}),
 };
 
 
