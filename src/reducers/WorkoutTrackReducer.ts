@@ -1,6 +1,7 @@
 import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
 
 export enum WorkoutRecordActionType {
+    INIT_WORKOUT_RECORD = "INIT_WORKOUT_RECORD",
     ADD_WORKOUT_RECORD = "ADD_WORKOUT_RECORD",
     UPDATE_WORKOUT_RECORD = "UPDATE_WORKOUT_RECORD",
     UPSERT_WORKOUT_RECORD = "UPSERT_WORKOUT_RECORD",
@@ -9,28 +10,34 @@ export enum WorkoutRecordActionType {
 
 export interface WorkoutRecordAction {
     type: WorkoutRecordActionType,
-    payload: WorkoutTrackCollection
+    payload: WorkoutTrackCollection[],
 };
 
 export default function workoutRecordReducer(state: WorkoutTrackCollection[], action: WorkoutRecordAction) {
     switch (action.type) {
         case WorkoutRecordActionType.ADD_WORKOUT_RECORD: {
-            state = [...state, action.payload];
+            state = [...state, ...action.payload];
             return state;
         }
         case WorkoutRecordActionType.UPDATE_WORKOUT_RECORD: {
-            const updatedWorkoutTrackIndex = state.findIndex(({id}) => action.payload.id === id);
-            updatedWorkoutTrackIndex && (state[updatedWorkoutTrackIndex] = action.payload);
+            action.payload.forEach(recordItem => {
+                const updatedWorkoutTrackIndex = state.findIndex(({id}) => recordItem.id === id);
+                updatedWorkoutTrackIndex && (state[updatedWorkoutTrackIndex] = recordItem);
+            })
+            
             return [...state];
         }
         case WorkoutRecordActionType.UPSERT_WORKOUT_RECORD: {
-            const updatedWorkoutTrackIndex = state.findIndex(({id}) => action.payload.id === id);
+            action.payload.forEach(recordItem => {
+                const updatedWorkoutTrackIndex = state.findIndex(({id}) => recordItem.id === id);
 
-            state[updatedWorkoutTrackIndex >= 0 ? updatedWorkoutTrackIndex : state.length] = action.payload;
+                state[updatedWorkoutTrackIndex >= 0 ? updatedWorkoutTrackIndex : state.length] = recordItem;
+            })
+            
             return [...state];
         }
         case WorkoutRecordActionType.DELETE_WORKOUT_RECORD: {
-            state = state.filter(({id}) => id !== action.payload.id);
+            state = state.filter(({id}) => !action.payload.some((deleteItem) => deleteItem.id === id));
             return state;
         }
         default:

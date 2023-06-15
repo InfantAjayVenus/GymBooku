@@ -20,7 +20,6 @@ export default function useStoredReducer<S, A>(
             if (!storedData) {
                 set(storeKey, initialState);
             }else {
-                console.log("DEBUG:STORE_DATA_RESTORED")
                 dispatch(initializeActionGenerator(storedData));
             }
         })();
