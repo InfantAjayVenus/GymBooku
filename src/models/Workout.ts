@@ -27,9 +27,9 @@ export class Workout {
     private _workoutName: String;
     private _trackingValues: TrackingValues[];
 
-    constructor(name: String, trackingValues: TrackingValues[]) {
+    constructor(name: String, trackingValues: TrackingValues[], id: ID = getRandomId()) {
 
-        this._id = getRandomId();
+        this._id = id;
         this._workoutName = name;
         this._trackingValues = trackingValues;
     }
