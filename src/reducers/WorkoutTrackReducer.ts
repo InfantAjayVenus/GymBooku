@@ -19,7 +19,6 @@ export default function workoutRecordReducer(state: WorkoutTrackCollection[], ac
             const restoredState = action.payload.map(stateItem => {
                 if('id' in stateItem) return stateItem;
                 const rawJson = JSON.parse(JSON.stringify(stateItem));
-                console.log('DEBUG:RECORD_TIMESTAMP:', rawJson._timestamp, typeof rawJson._timestamp);
                 return new WorkoutTrackCollection(rawJson._workout,rawJson._trackedData.map((data:any) => new WorkoutTrackRecord({time: data._time, count: data._count, weight: data._weight}, data._id, new Date(data._timestamp))), rawJson._id, new Date(rawJson._timestamp));
             })
 

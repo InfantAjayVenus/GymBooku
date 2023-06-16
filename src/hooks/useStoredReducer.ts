@@ -11,7 +11,6 @@ export default function useStoredReducer<S, A>(
         const reducedState = reducer(state, action);
 
         const updatedState = getDeepCleanedObject(reducedState as Object);
-        console.log(`DEBUG:${storeKey}`, updatedState);
 
         update(storeKey, () => updatedState)
             .catch(err => console.log(storeKey, updatedState, err));
@@ -33,8 +32,7 @@ export default function useStoredReducer<S, A>(
     return [state as S, dispatch as Dispatch<A>];
 }
 
-function getDeepCleanedObject(object: any, debug = false): any {
-    debug && console.log('DEBUG:OBJECT:', typeof object, object instanceof Array);
+function getDeepCleanedObject(object: any): any {
 
     if (object instanceof Array) return object.map(value => getDeepCleanedObject(value));
     if (typeof object !== 'object') return object;
