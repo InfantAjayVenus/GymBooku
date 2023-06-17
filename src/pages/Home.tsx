@@ -16,6 +16,7 @@ import Puller from "src/components/Puller";
 import StreakCard from "src/components/StreakCard";
 import WorkoutTrackCard, { WorkoutTrackCardProps } from "src/components/WorkoutTrackCard";
 import useDrawer from "src/hooks/useDrawer";
+import { StreakData } from "src/models/StreakData";
 import { Workout } from "src/models/Workout";
 import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
 
@@ -24,20 +25,21 @@ type onAddType = WorkoutTrackCardProps['onSave'];
 interface HomeProps {
     allWorkoutsList: Workout[];
     workoutsForDay: Workout[];
+    streakData: StreakData;
     trackedWorkoutData?: WorkoutTrackCollection[];
     onAdd?: onAddType;
     onUpdate: onAddType;
     onAddTrackedWorkout: (workout: Workout) => void
 }
 
-function Home({ allWorkoutsList, workoutsForDay, trackedWorkoutData, onUpdate, onAddTrackedWorkout }: HomeProps) {
+function Home({ allWorkoutsList, workoutsForDay, streakData, trackedWorkoutData, onUpdate, onAddTrackedWorkout }: HomeProps) {
     const workoutListDrawer = useDrawer();
     const allWorkoutDifferedFromWorkoutsForDay = allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id));
     return (
         <>
             <Stack padding={4} spacing={2}>
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Tracker</Typography>
-                <StreakCard />
+                <StreakCard {...streakData}/>
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
                 <List>
                     {workoutsForDay.map(workoutItem => (
