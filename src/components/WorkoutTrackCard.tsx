@@ -24,7 +24,7 @@ import TabPanel from './TabPanel';
 export interface WorkoutTrackCardProps {
     workout: Workout;
     previousTrackedData?: WorkoutTrackCollection;
-    trackedData?: WorkoutTrackCollection;
+    trackedData: WorkoutTrackCollection;
     onSave: (savedWorkoutTrackCollection: WorkoutTrackCollection) => void;
 }
 
@@ -34,7 +34,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
     const [tabValue, setTabValue] = useState(2);
 
     useEffect(() => {
-        setWorkoutTrackCollection(trackedData || new WorkoutTrackCollection(workout.id, [new WorkoutTrackRecord()]));
+        setWorkoutTrackCollection(trackedData);
     }, [trackedData]);
 
     useEffect(() => {
@@ -76,7 +76,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                 {(previousTrackedData?.trackedData && previousTrackedData?.trackedData.length > 0) && (
                                     <>
                                         {previousTrackedData.trackedData.map((trackedValue, index) => (
-                                            <Stack py={'0.5rem'}>
+                                            <Stack py={'0.5rem'} textAlign={'center'}>
                                                 <Typography variant='body1' fontWeight={'bold'}>Set {index + 1}</Typography>
                                                 <Typography variant='body2'>{trackedValue.toString()}</Typography>
                                             </Stack>
