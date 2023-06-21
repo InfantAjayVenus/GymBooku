@@ -8,6 +8,11 @@ export interface TrackedValuesData {
     [TrackingValues.TIME]: undefined | number,
 }
 
+export interface PairedTrackRecord {
+    today: WorkoutTrackCollection;
+    previous: WorkoutTrackCollection;
+}
+
 export class WorkoutTrackCollection {
     private _id: ID;
     private _timestamp: Date;

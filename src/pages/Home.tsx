@@ -18,7 +18,7 @@ import WorkoutTrackCard, { WorkoutTrackCardProps } from "src/components/WorkoutT
 import useDrawer from "src/hooks/useDrawer";
 import { StreakData } from "src/models/StreakData";
 import { Workout } from "src/models/Workout";
-import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
+import { PairedTrackRecord } from "src/models/WorkoutRecord";
 
 type onAddType = WorkoutTrackCardProps['onSave'];
 
@@ -26,7 +26,7 @@ interface HomeProps {
     allWorkoutsList: Workout[];
     workoutsForDay: Workout[];
     streakData: StreakData;
-    trackedWorkoutData?: WorkoutTrackCollection[];
+    trackedWorkoutData?: PairedTrackRecord[];
     onAdd?: onAddType;
     onUpdate: onAddType;
     onAddTrackedWorkout: (workout: Workout) => void
@@ -42,20 +42,24 @@ function Home({ allWorkoutsList, workoutsForDay, streakData, trackedWorkoutData,
                 <StreakCard {...streakData}/>
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
                 <List>
-                    {workoutsForDay.map(workoutItem => (
-                        <ListItem key={workoutItem.id as Key} sx={{
-                            padding: 0,
-                            marginY: '1rem'
-                        }}>
-                            <WorkoutTrackCard
-                                workout={workoutItem}
-                                trackedData={trackedWorkoutData?.find(item => item.workout === workoutItem.id)}
-                                onSave={(savedWorkout) => {
-                                    onUpdate(savedWorkout);
-                                }}
-                            />
-                        </ListItem>
-                    ))}
+                    {workoutsForDay.map(workoutItem => {
+                        const trackedItem = trackedWorkoutData?.find(item => item.today.workout === workoutItem.id)
+                        return (
+                            <ListItem key={workoutItem.id as Key} sx={{
+                                padding: 0,
+                                marginY: '1rem'
+                            }}>
+                                <WorkoutTrackCard
+                                    workout={workoutItem}
+                                    previousTrackedData={trackedItem?.previous}
+                                    trackedData={trackedItem?.today}
+                                    onSave={(savedWorkout) => {
+                                        onUpdate(savedWorkout);
+                                    }}
+                                />
+                            </ListItem>
+                        )
+                    })}
                 </List>
             </Stack>
             <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
