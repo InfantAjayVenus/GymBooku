@@ -34,12 +34,12 @@ interface HomeProps {
 
 function Home({ allWorkoutsList, workoutsForDay, streakData, trackedWorkoutData, onUpdate, onAddTrackedWorkout }: HomeProps) {
     const workoutListDrawer = useDrawer();
-    const allWorkoutDifferedFromWorkoutsForDay = allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id));
+    const workoutsNotTrackedToday = allWorkoutsList.filter(item => !workoutsForDay.some(dayItem => dayItem.id === item.id));
     return (
         <>
             <Stack padding={4} spacing={2}>
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Tracker</Typography>
-                <StreakCard {...streakData}/>
+                <StreakCard {...streakData} />
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
                 <List>
                     {workoutsForDay.map(workoutItem => {
@@ -85,9 +85,9 @@ function Home({ allWorkoutsList, workoutsForDay, streakData, trackedWorkoutData,
                 <Stack padding={'1rem'} mt={'1rem'}>
                     <Typography variant="body1" fontWeight={'bold'}>Add Workout for Tracking</Typography>
 
-                    {allWorkoutDifferedFromWorkoutsForDay.length > 0 && (
+                    {workoutsNotTrackedToday.length > 0 && (
                         <List>
-                            {allWorkoutDifferedFromWorkoutsForDay.map(workoutItem => (
+                            {workoutsNotTrackedToday.map(workoutItem => (
                                 <ListItem key={workoutItem.id as Key}>
                                     <ListItemButton sx={{
                                         padding: 0,
@@ -105,7 +105,7 @@ function Home({ allWorkoutsList, workoutsForDay, streakData, trackedWorkoutData,
                             ))}
                         </List>
                     )}
-                    {allWorkoutDifferedFromWorkoutsForDay.length === 0 && (
+                    {workoutsNotTrackedToday.length === 0 && (
                         <Container sx={{
                             textAlign: 'center',
                             padding: '2rem 0'
