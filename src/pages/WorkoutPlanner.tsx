@@ -58,6 +58,9 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                                 key={planItem.id as Key}
                                 sx={{
                                     paddingLeft: '0',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-start',
+                                    textAlign: 'left'
                                 }}
                                 secondaryAction={
                                     <IconButton
@@ -80,30 +83,28 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                                     primary={(
                                         <Typography variant="h6">{planItem.name}</Typography>
                                     )}
-                                    secondary={(
-                                        <Stack>
-                                            <Typography variant="body1">
-                                                {planItem.workoutsList.map((workoutItem) => (workoutsList.find(({id}) => workoutItem === id))?.name || false).filter(name => !!name).join(' / ')}
-                                            </Typography>
-                                            <Container component={'div'} sx={{
-                                                flexDirection: 'row',
-                                                alignContent: 'space-around',
-                                                padding: '0.3rem 0 !important',
-                                            }}>
-                                                {planItem.daysList.map((day, index) => (
-                                                    <Chip
-                                                        key={index}
-                                                        label={day.slice(0, 3)}
-                                                        sx={{
-                                                            marginRight: '0.3rem',
-                                                            marginBottom: '0.3rem',
-                                                        }}
-                                                    />
-                                                ))}
-                                            </Container>
-                                        </Stack>
-                                    )}
                                 />
+                                <Stack>
+                                    <Typography variant="body1">
+                                        {planItem.workoutsList.map((workoutItem) => (workoutsList.find(({ id }) => workoutItem === id))?.name || false).filter(name => !!name).join(' / ')}
+                                    </Typography>
+                                    <Container component={'div'} sx={{
+                                        flexDirection: 'row',
+                                        alignContent: 'space-around',
+                                        padding: '0.3rem 0 !important',
+                                    }}>
+                                        {planItem.daysList.map((day, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={day.slice(0, 3)}
+                                                sx={{
+                                                    marginRight: '0.3rem',
+                                                    marginBottom: '0.3rem',
+                                                }}
+                                            />
+                                        ))}
+                                    </Container>
+                                </Stack>
                             </ListItem>
                             <Divider />
                         </Fragment>
