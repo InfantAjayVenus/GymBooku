@@ -98,7 +98,7 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
                             >
                                 <Checkbox checked={selectedTrackingValues.indexOf(TrackingValues.TIME) > -1} />
                                 <ListItemText primary={TrackingValues.TIME} />
-                                {TRACKING_VALUES_ICON[TrackingValues.TIME]()}
+                                {TRACKING_VALUES_ICON[TrackingValues.TIME](TrackingValues.TIME)}
                             </MenuItem>
                             <MenuItem
                                 key={TrackingValues.COUNT}
@@ -106,7 +106,7 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
                             >
                                 <Checkbox checked={selectedTrackingValues.indexOf(TrackingValues.COUNT) > -1} />
                                 <ListItemText primary={TrackingValues.COUNT} />
-                                {TRACKING_VALUES_ICON[TrackingValues.COUNT]()}
+                                {TRACKING_VALUES_ICON[TrackingValues.COUNT](TrackingValues.COUNT)}
                             </MenuItem>
                             <MenuItem
                                 key={TrackingValues.WEIGHT}
@@ -114,7 +114,7 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
                             >
                                 <Checkbox checked={selectedTrackingValues.indexOf(TrackingValues.WEIGHT) > -1} />
                                 <ListItemText primary={TrackingValues.WEIGHT} />
-                                {TRACKING_VALUES_ICON[TrackingValues.WEIGHT]()}
+                                {TRACKING_VALUES_ICON[TrackingValues.WEIGHT](TrackingValues.WEIGHT)}
                             </MenuItem>
                         </Select>
                     </FormControl>
