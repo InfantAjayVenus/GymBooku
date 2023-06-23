@@ -15,7 +15,7 @@ export default function useStreakData(trackedData: WorkoutTrackCollection[]): St
     }, [trackedData])
 
     useEffect(() => {
-        const {currentStreak, longestStreak} = summary({dates: trackedDatesList});
+        const {currentStreak=0, longestStreak=0} = summary({dates: trackedDatesList});
         const lastWeekTrack = trackRecord({dates: trackedDatesList, length: new Date().getDay() + 1});
         
         const weeklyStreakData = Object.entries(lastWeekTrack).map(([date, value]) => ({day: date.split(' ').at(0), isInStreak: value})).reverse();
