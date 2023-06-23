@@ -76,7 +76,7 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                 {(previousTrackedData?.trackedData && previousTrackedData?.trackedData.length > 0) && (
                                     <>
                                         {previousTrackedData.trackedData.map((trackedValue, index) => (
-                                            <Stack py={'0.5rem'} textAlign={'center'}>
+                                            <Stack py={'0.5rem'} textAlign={'center'} key={index}>
                                                 <Typography variant='body1' fontWeight={'bold'}>Set {index + 1}</Typography>
                                                 <Typography variant='body2'>{trackedValue.toString()}</Typography>
                                             </Stack>
