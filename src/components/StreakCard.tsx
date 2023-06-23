@@ -49,7 +49,16 @@ function StreakCard({ currentStreak, longestStreak, nextMileStone, weeklyStreak 
                                     {
                                         streakItem.isInStreak ?
                                             <Typography fontSize={'1.35rem'}>🔥</Typography> :
-                                            <Chip sx={{ borderRadius: '1rem', height: '1.9rem', width: '1.9rem', fontSize: '1rem', padding: 0, marginBottom: '0.1rem' }} />
+                                            <Chip sx={{ 
+                                                borderRadius: '1rem', 
+                                                height: '1.9rem', 
+                                                width: '1.9rem', 
+                                                fontSize: '1rem', 
+                                                padding: 0, 
+                                                marginBottom: '0.1rem',
+                                                outline: streakItem.isToday ? '3px solid gray' : '',
+                                                outlineOffset: '0.15rem'
+                                             }} />
                                     }
                                 </>
                                 : <Skeleton variant="circular" sx={{height: '1.9rem', width: '1.9rem'}}/>
