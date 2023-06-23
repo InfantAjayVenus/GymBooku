@@ -16,6 +16,8 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.1",
     "@types/node": "^20.2.1",
+    "date-streaks": "^1.2.1",
+    "idb-keyval": "^6.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
