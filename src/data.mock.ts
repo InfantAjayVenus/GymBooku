@@ -7,14 +7,14 @@ const workout2 = new Workout("Squats", [TrackingValues.COUNT, TrackingValues.WEI
 const workout3 = new Workout("Running", [TrackingValues.TIME]);
 const workout4 = new Workout("Bench Press", [TrackingValues.COUNT, TrackingValues.WEIGHT, TrackingValues.TIME]);
 
-export const sampleWorkouts = [workout1, workout2, workout3, workout4];
+export const TEST_WORKOUTS = [workout1, workout2, workout3, workout4];
 
 const plan1 = new Plan("Full Body Workout", [workout1.id, workout2.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY]);
 const plan2 = new Plan("Leg Day", [workout2.id], [DAYS_OF_WEEK.TUESDAY, DAYS_OF_WEEK.THURSDAY]);
 const plan3 = new Plan("Cardio", [workout3.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY, DAYS_OF_WEEK.SATURDAY]);
 const plan4 = new Plan("Upper Body Workout", [workout1.id, workout4.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY]);
 
-export const samplePlans = [plan1, plan2, plan3, plan4];
+export const TEST_PLANS = [plan1, plan2, plan3, plan4];
 
 // Create a helper function to generate random numbers within a range
 function getRandomNumber(min: number, max: number) {
@@ -71,13 +71,13 @@ const workoutTrackCollection3 = new WorkoutTrackCollection(
     getRandomTimestamp()
 );
 
-export const sampleTrackedCollection = [workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3];
+export const TEST_TRACKED_COLLECTION = [workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3];
 // Generate additional WorkoutTrackCollection instances
 const additionalDataEntries = 12; // Adjust the number of additional data entries as needed
 
 for (let i = 0; i < additionalDataEntries; i++) {
-    const randomWorkoutId = sampleTrackedCollection[Math.floor(Math.random() * sampleTrackedCollection.length)].workout;
-    const randomWorkout = sampleTrackedCollection.find((workout) => workout.id === randomWorkoutId);
+    const randomWorkoutId = TEST_TRACKED_COLLECTION[Math.floor(Math.random() * TEST_TRACKED_COLLECTION.length)].workout;
+    const randomWorkout = TEST_TRACKED_COLLECTION.find((workout) => workout.id === randomWorkoutId);
 
     const randomWorkoutTrackRecord = new WorkoutTrackRecord(
         {
@@ -91,16 +91,16 @@ for (let i = 0; i < additionalDataEntries; i++) {
 
     const workoutTrackCollection = new WorkoutTrackCollection(randomWorkoutId, [randomWorkoutTrackRecord], generateUniqueId(), getRandomTimestamp());
     randomWorkout?.trackedData.push(randomWorkoutTrackRecord);
-    sampleTrackedCollection.push(workoutTrackCollection);
+    TEST_TRACKED_COLLECTION.push(workoutTrackCollection);
 }
 
 // Add the initial WorkoutTrackCollection instances to the sampleData array
-sampleTrackedCollection.push(workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3);
+TEST_TRACKED_COLLECTION.push(workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3);
 
 // Ensure at least 15 data entries
-while (sampleTrackedCollection.length < 15) {
-    const randomWorkoutId = sampleTrackedCollection[Math.floor(Math.random() * sampleTrackedCollection.length)].workout;
-    const randomWorkout = sampleTrackedCollection.find((workout) => workout.id === randomWorkoutId);
+while (TEST_TRACKED_COLLECTION.length < 15) {
+    const randomWorkoutId = TEST_TRACKED_COLLECTION[Math.floor(Math.random() * TEST_TRACKED_COLLECTION.length)].workout;
+    const randomWorkout = TEST_TRACKED_COLLECTION.find((workout) => workout.id === randomWorkoutId);
 
     const randomWorkoutTrackRecord = new WorkoutTrackRecord(
         {
@@ -113,5 +113,5 @@ while (sampleTrackedCollection.length < 15) {
     );
 
     randomWorkout?.trackedData.push(randomWorkoutTrackRecord);
-    sampleTrackedCollection.push(new WorkoutTrackCollection(randomWorkoutId, [randomWorkoutTrackRecord], generateUniqueId(), getRandomTimestamp()));
+    TEST_TRACKED_COLLECTION.push(new WorkoutTrackCollection(randomWorkoutId, [randomWorkoutTrackRecord], generateUniqueId(), getRandomTimestamp()));
 }
