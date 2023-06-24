@@ -15,10 +15,11 @@ import workoutRecordReducer, { WorkoutRecordActionType } from './reducers/Workou
 import getCurrentDay from './utils/getCurrentDay';
 import { ID } from './utils/getRandomId';
 import isTimestampToday from './utils/isTimestampToday';
-import { samplePlans, sampleTrackedCollection, sampleWorkouts } from './data.mock';
+import { TEST_PLANS, TEST_TRACKED_COLLECTION, TEST_WORKOUTS } from './data.mock';
 import useStreakData from './hooks/useStreakData';
 import useLatestTrackData from './hooks/useLatestTrackData';
 import { WorkoutTrackCollection } from './models/WorkoutRecord';
+import { DEFAULT_PLANS } from './data.default';
 
 const darkTheme = createTheme({
   palette: {
@@ -32,9 +33,9 @@ enum Pages {
   Workouts,
 }
 
-const INITIAL_WORKOUTS = import.meta.env.DEV ? sampleWorkouts : [];
-const INITIAL_PLANS = import.meta.env.DEV ? samplePlans : [];
-const INITIAL_TRACK_COLLECTIONS = import.meta.env.DEV ? sampleTrackedCollection : [];
+const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
+const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
+const INITIAL_TRACK_COLLECTIONS = import.meta.env.DEV ? TEST_TRACKED_COLLECTION : [];
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
