@@ -40,28 +40,37 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Tracker</Typography>
                 <StreakCard {...streakData} />
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
-                <List>
-                    {trackedWorkoutData.map(trackedItem => {
-                        const workoutItem = allWorkoutsList.find(({ id }) => id === trackedItem.today.workout);
-                        return (
-                            <>
-                                {workoutItem && <ListItem key={trackedItem.today.id as Key} sx={{
-                                    padding: 0,
-                                    marginY: '1rem'
-                                }}>
-                                    <WorkoutTrackCard
-                                        workout={workoutItem}
-                                        previousTrackedData={trackedItem.previous}
-                                        trackedData={trackedItem.today}
-                                        onSave={(savedWorkout) => {
-                                            onUpdate(savedWorkout);
-                                        }}
-                                    />
-                                </ListItem>}
-                            </>
-                        )
-                    })}
-                </List>
+                {trackedWorkoutData.length > 0 && (
+                    <List>
+                        {trackedWorkoutData.map(trackedItem => {
+                            const workoutItem = allWorkoutsList.find(({ id }) => id === trackedItem.today.workout);
+                            return (
+                                <>
+                                    {workoutItem && <ListItem key={trackedItem.today.id as Key} sx={{
+                                        padding: 0,
+                                        marginY: '1rem'
+                                    }}>
+                                        <WorkoutTrackCard
+                                            workout={workoutItem}
+                                            previousTrackedData={trackedItem.previous}
+                                            trackedData={trackedItem.today}
+                                            onSave={(savedWorkout) => {
+                                                onUpdate(savedWorkout);
+                                            }}
+                                        />
+                                    </ListItem>}
+                                </>
+                            )
+                        })}
+                    </List>
+                )}
+                {trackedWorkoutData.length === 0 && (
+                    <Container sx={{textAlign: 'center'}}>
+                        <Typography variant="h4">🤷</Typography>
+                        <Typography variant="body1">There's no workout planned for today</Typography>
+                        <Typography variant="body2" color={'GrayText'}>Add a workout to keep the streak alive</Typography>
+                    </Container>
+                )}
             </Stack>
             <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
                 <Fab size="medium" color="primary" aria-label="add workout"
