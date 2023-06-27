@@ -41,7 +41,7 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
             <form action='#' onSubmit={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                if(workoutData) {
+                if (workoutData) {
                     workoutData.name = workoutName;
                     workoutData.trackingValues = selectedTrackingValues;
                     onSave(workoutData);
@@ -118,7 +118,14 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
                             </MenuItem>
                         </Select>
                     </FormControl>
-                    <Button type='submit' sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }} variant='contained' disableElevation >Save</Button>
+                    <Button
+                        type='submit'
+                        sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }}
+                        variant='contained'
+                        disableElevation
+                    >
+                        Save
+                    </Button>
                 </Stack>
             </form>
         </Stack>

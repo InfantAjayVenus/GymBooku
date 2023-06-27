@@ -43,7 +43,7 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
         setPlanName(planData?.name || INITIAL_PLAN_NAME);
         setSelectedDays(planData?.daysList || INITIAL_SELECTED_DAYS);
         setSelectedWorkoutsList(planData?.workoutsList || INITIAL_SELECTED_WORKOUTS);
-        
+
     }, [planData])
 
 
@@ -155,7 +155,14 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                             ))}
                         </Select>
                     </FormControl>
-                    <Button type='submit' sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }} variant='contained' disableElevation >Save</Button>
+                    <Button
+                        type='submit' 
+                        sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }} 
+                        variant='contained' 
+                        disableElevation
+                    >
+                        Save
+                    </Button>
                 </Stack>
             </form>
         </Stack>

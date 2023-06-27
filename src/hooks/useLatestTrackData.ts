@@ -11,7 +11,13 @@ export default function useLatestTrackData(allCollectedData: WorkoutTrackCollect
         const latestData = Object.entries(
             allCollectedData.filter(trackRecord => !isTimestampToday(trackRecord.timestamp))
                 .reduce((workoutCollection, trackRecord) => {
-                    if(!workoutCollection[trackRecord.workout as string] || (workoutCollection[trackRecord.workout as string] && trackRecord.timestamp.valueOf() > workoutCollection[trackRecord.workout as string].timestamp.valueOf())) {
+                    if(
+                        !workoutCollection[trackRecord.workout as string] || 
+                        (
+                            workoutCollection[trackRecord.workout as string] && 
+                            (trackRecord.timestamp.valueOf() > workoutCollection[trackRecord.workout as string].timestamp.valueOf())
+                        )
+                    ) {
                         workoutCollection[trackRecord.workout as string] = trackRecord;
                     }
                     return workoutCollection;

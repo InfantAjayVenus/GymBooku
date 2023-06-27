@@ -1,9 +1,12 @@
 export type ID = String;
 
 export default (): ID =>
-    `${toBase64(new Date().getUTCMonth())}${new Date().getUTCDate()}${toBase64(new Date().getUTCDay())}${toBase64(new Date().getUTCHours())}${toBase64(new Date().getUTCMinutes())}${toBase64(
-        new Date().getUTCSeconds()
-    )}${toBase64(new Date().getUTCMilliseconds())}${toBase64(parseInt(Math.random().toString().split('.').pop() || Date.now().toString()))}`;
+    `${toBase64(new Date().getUTCMonth())
+    }${new Date().getUTCDate()}${toBase64(new Date().getUTCDay())}${toBase64(new Date().getUTCHours())}${toBase64(new Date().getUTCMinutes())
+    }${toBase64(new Date().getUTCSeconds())
+    }${toBase64(new Date().getUTCMilliseconds())
+    }${toBase64(parseInt(Math.random().toString().split('.').pop() || Date.now().toString()))
+    }`;
 
 
 /**
@@ -11,7 +14,7 @@ export default (): ID =>
 * @param {number} input A numerical value to be encoded
 * @returns encoded string
 */
-function toBase64(input:number) {
+function toBase64(input: number) {
     let hash = '',
         alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#',
         alphabetLength = alphabet.length;

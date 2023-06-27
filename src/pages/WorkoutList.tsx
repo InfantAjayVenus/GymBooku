@@ -72,7 +72,13 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                             >
                                 <ListItemText
                                     primary={valueItem.name}
-                                    secondary={<>{valueItem.trackingValues.map((trackingItem, index) => TRACKING_VALUES_ICON[trackingItem](index))}</>}
+                                    secondary={
+                                        <>
+                                        {
+                                            valueItem.trackingValues.map((trackingItem, index) => TRACKING_VALUES_ICON[trackingItem](index))
+                                        }
+                                        </>
+                                    }
                                 />
                             </ListItem>
                             <Divider />

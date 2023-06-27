@@ -87,7 +87,9 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                     <Container sx={{ textAlign: 'center' }}>
                                         <Typography variant='h3'>🤔</Typography>
                                         <Typography variant='body1'>I Don't think we've done this workout before</Typography>
-                                        <Typography variant='body2' color='ActiveCaption'>Track today and I'll keep note of it for the next time</Typography>
+                                        <Typography variant='body2' color='ActiveCaption'>
+                                            Track today and I'll keep note of it for the next time
+                                        </Typography>
                                     </Container>
                                 )}
                             </TabPanel>
@@ -102,7 +104,13 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                         trackingValues={workout.trackingValues}
                                         onUpdate={(updatedTrackData, index) => {
                                             workoutTrackCollection.trackedData[index] = updatedTrackData;
-                                            setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection.workout, workoutTrackCollection.trackedData, workoutTrackCollection.id));
+                                            setWorkoutTrackCollection(
+                                                new WorkoutTrackCollection(
+                                                    workoutTrackCollection.workout,
+                                                    workoutTrackCollection.trackedData,
+                                                    workoutTrackCollection.id
+                                                )
+                                            );
                                         }}
                                         initialValues={value}
                                     />
@@ -111,18 +119,37 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                                     <ButtonGroup variant="outlined" aria-label="outlined button group">
                                         <Button startIcon={<Add />} size='small'
                                             onClick={() => {
-                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout.id, [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()], workoutTrackCollection?.id));
+                                                setWorkoutTrackCollection(
+                                                    new WorkoutTrackCollection(
+                                                        workoutTrackCollection?.workout || workout.id,
+                                                        [...(workoutTrackCollection?.trackedData || []), new WorkoutTrackRecord()],
+                                                        workoutTrackCollection?.id
+                                                    )
+                                                );
                                             }}
-                                            disabled={workoutTrackCollection?.trackedData.some((trackedItem) => !trackedItem.hasAllRequiredValues(workout.trackingValues))}
+                                            disabled={
+                                                workoutTrackCollection?.trackedData.some(
+                                                    (trackedItem) => !trackedItem.hasAllRequiredValues(workout.trackingValues)
+                                                )
+                                            }
                                         >
                                             Add Set
                                         </Button>
                                         <Button startIcon={<RemoveCircleOutline />} size='small'
                                             onClick={() => {
                                                 workoutTrackCollection?.trackedData.pop();
-                                                setWorkoutTrackCollection(new WorkoutTrackCollection(workoutTrackCollection?.workout || workout.id, [...(workoutTrackCollection?.trackedData || [])], workoutTrackCollection?.id));
+                                                setWorkoutTrackCollection(
+                                                    new WorkoutTrackCollection(
+                                                        workoutTrackCollection?.workout || workout.id,
+                                                        [...(workoutTrackCollection?.trackedData || [])],
+                                                        workoutTrackCollection?.id
+                                                    )
+                                                );
                                             }}
-                                            disabled={workoutTrackCollection?.trackedData && (workoutTrackCollection?.trackedData.length < 2)}>
+                                            disabled={
+                                                workoutTrackCollection?.trackedData && (workoutTrackCollection?.trackedData.length < 2)
+                                            }
+                                        >
                                             Remove Set
                                         </Button >
                                     </ButtonGroup>

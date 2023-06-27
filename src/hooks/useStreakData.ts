@@ -21,7 +21,9 @@ export default function useStreakData(trackedData: WorkoutTrackCollection[]): St
         const weeklyStreakData = Object.entries(lastWeekTrack).map(([date, value]) => ({day: date.split(' ').at(0), isInStreak: value})).reverse();
         const weeklyStreak = Object.keys(DAYS_OF_WEEK).map(day => {
             const formattedDay = toTitleCase(day.slice(0, 3));
-            return weeklyStreakData.find(({day: dayItem}) => dayItem?.toLowerCase() === formattedDay.toLowerCase()) || {day: formattedDay, isInStreak: false};
+            return weeklyStreakData.find(
+                ({day: dayItem}) => dayItem?.toLowerCase() === formattedDay.toLowerCase()
+            ) || {day: formattedDay, isInStreak: false};
         }).map(item => ({
             ...item,
             isToday: item.day?.toLowerCase() === (new Date()).toString().split(' ')[0].toLowerCase()
