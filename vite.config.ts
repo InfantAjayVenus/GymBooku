@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import {resolve} from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: 'https://infantajayvenus.github.io/workout-tracker/',
   plugins: [
     VitePWA({registerType: 'autoUpdate'}),
     react(),
