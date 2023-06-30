@@ -12,6 +12,7 @@ import {
     Typography
 } from "@mui/material";
 import { Key } from "react";
+import GymBookuIcon from "src/components/GymBookuIcon";
 import Puller from "src/components/Puller";
 import StreakCard from "src/components/StreakCard";
 import WorkoutTrackCard, { WorkoutTrackCardProps } from "src/components/WorkoutTrackCard";
@@ -37,7 +38,10 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
     return (
         <>
             <Stack padding={4} spacing={2}>
-                <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Tracker</Typography>
+                <Stack direction={'row'}>
+                    <GymBookuIcon />
+                    <Typography variant="h5" fontWeight={'bold'} component={'h3'}>GymBooku</Typography>
+                </Stack>
                 <StreakCard {...streakData} />
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
                 {trackedWorkoutData.length > 0 && (
@@ -65,7 +69,7 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
                     </List>
                 )}
                 {trackedWorkoutData.length === 0 && (
-                    <Container sx={{textAlign: 'center'}}>
+                    <Container sx={{ textAlign: 'center' }}>
                         <Typography variant="h4">🤷</Typography>
                         <Typography variant="body1">There's no workout planned for today</Typography>
                         <Typography variant="body2" color={'GrayText'}>Add a workout to keep the streak alive</Typography>
