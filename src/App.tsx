@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet';
 import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -43,22 +44,22 @@ function App() {
   const [workoutRecordedToday, setWorkoutRecordedToday] = useState<WorkoutTrackCollection[]>([])
 
   const [workoutsList, workoutDispatch] = useStoredReducer(
-    "WORKOUT", 
-    workoutReducer, 
-    INITIAL_WORKOUTS, 
+    "WORKOUT",
+    workoutReducer,
+    INITIAL_WORKOUTS,
     (state) => ({ type: WorkoutActionType.INIT_WORKOUT, payload: state })
   );
   const [plansList, planDispatch] = useStoredReducer(
-    "WORKOUT_PLAN", 
-    planReducer, 
-    INITIAL_PLANS, 
-    (state) => ({type: PlanActionType.INIT_PLAN, payload: state})
+    "WORKOUT_PLAN",
+    planReducer,
+    INITIAL_PLANS,
+    (state) => ({ type: PlanActionType.INIT_PLAN, payload: state })
   )
   const [workoutRecordList, workoutRecordDispatch] = useStoredReducer(
-    "WORKOUT_TRACKING_DATA", 
-    workoutRecordReducer, 
-    INITIAL_TRACK_COLLECTIONS, 
-    (state) => ({type: WorkoutRecordActionType.INIT_WORKOUT_RECORD, payload: state})
+    "WORKOUT_TRACKING_DATA",
+    workoutRecordReducer,
+    INITIAL_TRACK_COLLECTIONS,
+    (state) => ({ type: WorkoutRecordActionType.INIT_WORKOUT_RECORD, payload: state })
   );
 
   const streakData = useStreakData(workoutRecordList);
@@ -73,8 +74,8 @@ function App() {
         [] as ID[]
       )),
       ...workoutRecordList.filter(item => isTimestampToday(item.timestamp)).map(item => item.workout)
-      ])).reduce((workoutList, workoutId) => {
-      const workout = workoutsList.find(({id}) => id === workoutId);
+    ])).reduce((workoutList, workoutId) => {
+      const workout = workoutsList.find(({ id }) => id === workoutId);
       workout && (workoutList.push(workout));
 
       return workoutList;
@@ -84,10 +85,10 @@ function App() {
   }, [plansList]);
 
   useEffect(() => {
-    const workoutsRecordedToday = workoutRecordList.filter(({workout}) => currentDayWorkoutsList.some(({id}) => id === workout));
+    const workoutsRecordedToday = workoutRecordList.filter(({ workout }) => currentDayWorkoutsList.some(({ id }) => id === workout));
     const workoutsNotRecordedYet = currentDayWorkoutsList
-        .filter(({id}) => !workoutsRecordedToday.some(({workout}) => workout === id))
-        .map(workoutItem => new WorkoutTrackCollection(workoutItem.id));
+      .filter(({ id }) => !workoutsRecordedToday.some(({ workout }) => workout === id))
+      .map(workoutItem => new WorkoutTrackCollection(workoutItem.id));
     setWorkoutRecordedToday([...workoutsRecordedToday, ...workoutsNotRecordedYet]);
   }, [currentDayWorkoutsList])
 
@@ -95,6 +96,16 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      <Helmet>
+        <base href={import.meta.env.DEV ? '/' : 'https://infantajayvenus.github.io/workout-tracker/'} />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>GymBooku</title>
+        <meta name="description" content="A web app that helps keep track of our work out progress and helps us through a transformation journey." />
+        <link rel="icon" href="/calendar.ico" />
+        <link rel="apple-touch-icon" href="/calendar.png" sizes="180x180" />
+        <link rel="mask-icon" href="/calendar.svg" color="#FFFFFF" />
+        <meta name="theme-color" content="#ffffff" />
+      </Helmet>
 
       <main>
         {currentPage === Pages.Home &&
@@ -103,15 +114,15 @@ function App() {
             streakData={streakData}
             trackedWorkoutData={pairedRecordList}
             onAdd={(savedWorkoutRecordCollection) => {
-              const currentWorkout = workoutsList.find(({id}) => id === savedWorkoutRecordCollection.workout);
-              if(!currentWorkout || !savedWorkoutRecordCollection.trackedData.every(data => data.hasAllRequiredValues(currentWorkout.trackingValues))) return;
+              const currentWorkout = workoutsList.find(({ id }) => id === savedWorkoutRecordCollection.workout);
+              if (!currentWorkout || !savedWorkoutRecordCollection.trackedData.every(data => data.hasAllRequiredValues(currentWorkout.trackingValues))) return;
 
               workoutRecordDispatch({ type: WorkoutRecordActionType.ADD_WORKOUT_RECORD, payload: [savedWorkoutRecordCollection] })
             }}
             onUpdate={(savedWorkoutRecordCollection) => {
-              const currentWorkout = workoutsList.find(({id}) => id === savedWorkoutRecordCollection.workout);
-              if(!currentWorkout || !savedWorkoutRecordCollection.trackedData.every(data => data.hasAllRequiredValues(currentWorkout.trackingValues))) return;
-              
+              const currentWorkout = workoutsList.find(({ id }) => id === savedWorkoutRecordCollection.workout);
+              if (!currentWorkout || !savedWorkoutRecordCollection.trackedData.every(data => data.hasAllRequiredValues(currentWorkout.trackingValues))) return;
+
               workoutRecordDispatch({ type: WorkoutRecordActionType.UPSERT_WORKOUT_RECORD, payload: [savedWorkoutRecordCollection] })
             }}
             onAddTrackedWorkout={(workout) => {
