@@ -10,7 +10,7 @@ export interface TrackedValuesData {
 
 export interface PairedTrackRecord {
     today: WorkoutTrackCollection;
-    previous: WorkoutTrackCollection;
+    previous?: WorkoutTrackCollection;
 }
 
 export class WorkoutTrackCollection {
