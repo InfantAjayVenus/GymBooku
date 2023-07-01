@@ -84,7 +84,11 @@ function App() {
   }, [plansList]);
 
   useEffect(() => {
-    setWorkoutRecordedToday(workoutRecordList.filter(({workout}) => currentDayWorkoutsList.some(({id}) => id === workout)))
+    const workoutsRecordedToday = workoutRecordList.filter(({workout}) => currentDayWorkoutsList.some(({id}) => id === workout));
+    const workoutsNotRecordedYet = currentDayWorkoutsList
+        .filter(({id}) => !workoutsRecordedToday.some(({workout}) => workout === id))
+        .map(workoutItem => new WorkoutTrackCollection(workoutItem.id));
+    setWorkoutRecordedToday([...workoutsRecordedToday, ...workoutsNotRecordedYet]);
   }, [currentDayWorkoutsList])
 
 
