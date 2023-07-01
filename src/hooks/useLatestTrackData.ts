@@ -6,12 +6,10 @@ export default function useLatestTrackData(allCollectedData: WorkoutTrackCollect
     const [pairedRecords, setPairedRecords] = useState([] as PairedTrackRecord[]);
 
     useEffect(() => {
-        console.log('DEBUG:allCollectedData:', allCollectedData)
         const todayData = allCollectedData.filter(trackedRecord => isTimestampToday(trackedRecord.timestamp));
 
         const latestData = todayData.map(dataItem => {
             const workoutSpecificData = allCollectedData.filter(({ workout, id }) => dataItem.workout === workout && dataItem.id !== id);
-            console.log('DEBUG:workoutSpecificData:', workoutSpecificData);
 
             try {
                 const latestRecord = workoutSpecificData.reduce((latest, item) => {
