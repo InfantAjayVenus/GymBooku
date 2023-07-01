@@ -6,26 +6,33 @@ export default function useLatestTrackData(allCollectedData: WorkoutTrackCollect
     const [pairedRecords, setPairedRecords] = useState([] as PairedTrackRecord[]);
 
     useEffect(() => {
+        console.log('DEBUG:allCollectedData:', allCollectedData)
         const todayData = allCollectedData.filter(trackedRecord => isTimestampToday(trackedRecord.timestamp));
 
-        const latestData = Object.entries(
-            allCollectedData.filter(trackRecord => !isTimestampToday(trackRecord.timestamp))
-                .reduce((workoutCollection, trackRecord) => {
-                    if(
-                        !workoutCollection[trackRecord.workout as string] || 
-                        (
-                            workoutCollection[trackRecord.workout as string] && 
-                            (trackRecord.timestamp.valueOf() > workoutCollection[trackRecord.workout as string].timestamp.valueOf())
-                        )
-                    ) {
-                        workoutCollection[trackRecord.workout as string] = trackRecord;
-                    }
-                    return workoutCollection;
-                }, {} as Record<string, WorkoutTrackCollection>)
-        ).map(([workout, trackRecord]) => {
-            const today = todayData.find(trackRecord => trackRecord.workout === workout) || new WorkoutTrackCollection(workout);
+        const latestData = todayData.map(dataItem => {
+            const workoutSpecificData = allCollectedData.filter(({ workout, id }) => dataItem.workout === workout && dataItem.id !== id);
+            console.log('DEBUG:workoutSpecificData:', workoutSpecificData);
 
-            return {today, previous: trackRecord};
+            try {
+                const latestRecord = workoutSpecificData.reduce((latest, item) => {
+                    if (!latest) return item;
+
+                    if (latest && latest?.timestamp.valueOf() < item.timestamp.valueOf()) {
+                        return item;
+                    }
+
+                    return latest;
+                })
+
+                return {
+                    today: dataItem,
+                    previous: latestRecord
+                } as PairedTrackRecord;
+            } catch (error) {
+                return {
+                    today: dataItem
+                }
+            }
         })
 
         setPairedRecords(latestData);
