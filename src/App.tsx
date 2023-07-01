@@ -97,7 +97,7 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Helmet>
-        <base href={import.meta.env.DEV ? '/' : 'https://infantajayvenus.github.io/workout-tracker/'} />
+        <base href={import.meta.env.DEV ? '/' : 'https://infantajayvenus.github.io/GymBooku/'} />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>GymBooku</title>
         <meta name="description" content="A web app that helps keep track of our work out progress and helps us through a transformation journey." />
