@@ -49,8 +49,8 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
                         {trackedWorkoutData.map(trackedItem => {
                             const workoutItem = allWorkoutsList.find(({ id }) => id === trackedItem.today.workout);
                             return (
-                                <>
-                                    {workoutItem && <ListItem key={trackedItem.today.id as Key} sx={{
+                                    workoutItem && 
+                                    <ListItem key={trackedItem.today.id as Key} sx={{
                                         padding: 0,
                                         marginY: '1rem'
                                     }}>
@@ -62,8 +62,7 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
                                                 onUpdate(savedWorkout);
                                             }}
                                         />
-                                    </ListItem>}
-                                </>
+                                    </ListItem>
                             )
                         })}
                     </List>
