@@ -10,7 +10,7 @@ export default function useStoredReducer<S, A>(
     const [state, dispatch] = useReducer((state: S, action: A) => {
         const reducedState = reducer(state, action);
 
-        const updatedState = getDeepCleanedObject(reducedState as Object);
+        const updatedState = getDeepCleanedObject(reducedState);
 
         update(storeKey, () => updatedState)
             .catch(err => console.log(storeKey, updatedState, err));
@@ -22,7 +22,7 @@ export default function useStoredReducer<S, A>(
         (async () => {
             const storedData = await get(storeKey);
             if (!storedData) {
-                set(storeKey, initialState);
+                set(storeKey, getDeepCleanedObject(initialState));
             } else {
                 dispatch(initializeActionGenerator(storedData));
             }
