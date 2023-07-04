@@ -1,4 +1,4 @@
-import { Add, ExpandMoreOutlined, RemoveCircleOutline } from '@mui/icons-material';
+import { Add, DeleteOutline, ExpandMoreOutlined, RemoveCircleOutline } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -9,6 +9,7 @@ import {
     CardHeader,
     ClickAwayListener,
     Collapse,
+    IconButton,
     Paper,
     Stack,
     Typography
@@ -25,9 +26,10 @@ export interface WorkoutTrackCardProps {
     previousTrackedData?: WorkoutTrackCollection;
     trackedData: WorkoutTrackCollection;
     onSave: (savedWorkoutTrackCollection: WorkoutTrackCollection) => void;
+    onDelete: (deletedWorkoutTrackCollection: WorkoutTrackCollection) => void;
 }
 
-function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }: WorkoutTrackCardProps) {
+function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave, onDelete }: WorkoutTrackCardProps) {
     const trackingFormCollapse = useDrawer();
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection>();
 
@@ -63,6 +65,11 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave }:
                     )}
                 </CardContent>
                 <CardActions disableSpacing>
+                    <IconButton onClick={() => {
+                        onDelete(trackedData || workoutTrackCollection);
+                    }}>
+                        <DeleteOutline />
+                    </IconButton>
                     <ExpandMore expand={trackingFormCollapse.isOpen as boolean} onClick={trackingFormCollapse.toggle}>
                         <ExpandMoreOutlined/>
                     </ExpandMore>
