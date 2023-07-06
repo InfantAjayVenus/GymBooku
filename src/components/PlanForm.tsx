@@ -55,15 +55,8 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    if (planData) {
-                        planData.name = planName;
-                        planData.workoutsList = selectedWorkoutsList;
-                        planData.daysList = selectedDays;
-                        onSave(planData);
-                    } else {
-                        const savePlan = new Plan(planName, selectedWorkoutsList, selectedDays);
-                        onSave(savePlan);
-                    }
+                    const savePlan = new Plan(planName, selectedWorkoutsList, selectedDays, planData?.id);
+                    onSave(savePlan);
 
                     setPlanName(INITIAL_PLAN_NAME);
                     setSelectedWorkoutsList(INITIAL_SELECTED_WORKOUTS);
@@ -132,7 +125,7 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                                 } = event;
                                 setSelectedDays(
                                     // On autofill we get a stringified value.
-                                    (typeof value === 'string' ? value.split(',') : value) as DAYS_OF_WEEK[],
+                                    (typeof value === 'string' ? value.split(',') : [...value]) as DAYS_OF_WEEK[],
                                 );
                             }}
                             input={<OutlinedInput id="select-multiple-chip" label="Select Days" />}
@@ -156,9 +149,9 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                         </Select>
                     </FormControl>
                     <Button
-                        type='submit' 
-                        sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }} 
-                        variant='contained' 
+                        type='submit'
+                        sx={{ alignSelf: 'end', borderRadius: '3rem', width: 'fit-content' }}
+                        variant='contained'
                         disableElevation
                     >
                         Save
