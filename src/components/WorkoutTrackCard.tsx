@@ -1,15 +1,12 @@
-import { Add, DeleteOutline, ExpandMoreOutlined, RemoveCircleOutline } from '@mui/icons-material';
+import { Add, RemoveCircleOutline } from '@mui/icons-material';
 import {
     Box,
     Button,
     ButtonGroup,
     Card,
-    CardActions,
-    CardContent,
     CardHeader,
     ClickAwayListener,
     Collapse,
-    IconButton,
     Paper,
     Stack,
     Typography
@@ -18,18 +15,15 @@ import { useEffect, useState } from 'react';
 import useDrawer from "src/hooks/useDrawer";
 import { Workout } from "src/models/Workout";
 import { WorkoutTrackCollection, WorkoutTrackRecord } from 'src/models/WorkoutRecord';
-import ExpandMore from './ExpandMore';
 import SetTrackCard from './SetTrackCard';
 
 export interface WorkoutTrackCardProps {
     workout: Workout;
-    previousTrackedData?: WorkoutTrackCollection;
     trackedData: WorkoutTrackCollection;
     onSave: (savedWorkoutTrackCollection: WorkoutTrackCollection) => void;
-    onDelete: (deletedWorkoutTrackCollection: WorkoutTrackCollection) => void;
 }
 
-function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave, onDelete }: WorkoutTrackCardProps) {
+function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProps) {
     const trackingFormCollapse = useDrawer();
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection>();
 
@@ -50,30 +44,6 @@ function WorkoutTrackCard({ workout, trackedData, previousTrackedData, onSave, o
             }}
             >
                 <CardHeader title={<Typography variant='h6'>{workout.name}</Typography>} onClick={trackingFormCollapse.toggle}/>
-                <CardContent>
-                    {(previousTrackedData?.trackedData && previousTrackedData?.trackedData.length > 0) && (
-                        <>
-                            {previousTrackedData.trackedData.map((trackedValue, index) => (
-                                <Stack key={index}>
-                                    <Typography variant='body2'>Set {index + 1}: {trackedValue.toString()}</Typography>
-                                </Stack>
-                            ))}
-                        </>
-                    )}
-                    {(!previousTrackedData || previousTrackedData.trackedData.length === 0) && (
-                        <Typography variant='body2' color={'GrayText'}>No Previous Data available 🤷</Typography>
-                    )}
-                </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton onClick={() => {
-                        onDelete(trackedData || workoutTrackCollection);
-                    }}>
-                        <DeleteOutline />
-                    </IconButton>
-                    <ExpandMore expand={trackingFormCollapse.isOpen as boolean} onClick={trackingFormCollapse.toggle}>
-                        <ExpandMoreOutlined/>
-                    </ExpandMore>
-                </CardActions>
                 <Collapse in={trackingFormCollapse.isOpen as boolean} unmountOnExit>
                     <Paper
                         sx={{
