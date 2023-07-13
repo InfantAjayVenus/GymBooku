@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
+import { ID } from "src/utils/getRandomId";
 import isTimestampToday from "src/utils/isTimestampToday";
 
 interface WorkoutTrackDataTimeStamped {
@@ -8,15 +9,17 @@ interface WorkoutTrackDataTimeStamped {
     todayTrackedData: WorkoutTrackCollection | null
 }
 
-export default function useLabeledworkoutData(workoutTrackData: WorkoutTrackCollection[]) {
+export default function useLabeledWorkoutData(workoutTrackData: WorkoutTrackCollection[], workoutId: ID | null) {
     const [sortedTrackData, setSortedTrackData] = useState<WorkoutTrackDataTimeStamped>();
 
     useEffect(() => {
-        const sortedByTimeDesc = workoutTrackData.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf());
+        const sortedByTimeDesc = workoutTrackData
+            .filter(({workout}) => workout === workoutId)
+            .sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf());
         const previouslyTrackedData = sortedByTimeDesc.find(item => !isTimestampToday(item.timestamp)) || null;
         const todayTrackedData = sortedByTimeDesc.find(item => isTimestampToday(item.timestamp)) || null;
 
-        setSortedTrackData({
+        workoutId && setSortedTrackData({
             sortedByTimeDesc,
             previouslyTrackedData,
             todayTrackedData,
