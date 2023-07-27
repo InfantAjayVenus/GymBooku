@@ -1,6 +1,7 @@
 import { AccessTimeOutlined, FitnessCenterOutlined, PinOutlined } from "@mui/icons-material";
 import React, { Key } from "react";
 import getRandomId, { ID } from "src/utils/getRandomId";
+import { WorkoutTrackCollection } from "./WorkoutRecord";
 
 export enum TrackingValues {
     TIME = 'TIME',
@@ -26,12 +27,14 @@ export class Workout {
     private _id: ID;
     private _workoutName: String;
     private _trackingValues: TrackingValues[];
+    private _workoutTrackData: WorkoutTrackCollection[];
 
-    constructor(name: String, trackingValues: TrackingValues[], id: ID = getRandomId()) {
+    constructor(name: String, trackingValues: TrackingValues[], workoutTrackData: WorkoutTrackCollection[]=[], id: ID = getRandomId()) {
 
         this._id = id;
         this._workoutName = name;
         this._trackingValues = trackingValues;
+        this._workoutTrackData = workoutTrackData;
     }
 
     get id() {
@@ -46,6 +49,10 @@ export class Workout {
         return this._trackingValues;
     }
 
+    get workoutTrackData() {
+        return this._workoutTrackData;
+    }
+
     set name(updatedName: String) {
         this._workoutName = updatedName;
     }
@@ -54,4 +61,7 @@ export class Workout {
         this._trackingValues = updatedValues;
     }
 
+    set workoutTrackData(updatedData: WorkoutTrackCollection[]) {
+        this._workoutTrackData = updatedData;
+    }
 }
