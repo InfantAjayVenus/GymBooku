@@ -3,12 +3,20 @@ import { useEffect, useState } from "react";
 import { streakMileStones } from "src/constants/streakMileStones";
 import { DAYS_OF_WEEK } from "src/models/Plan";
 import { StreakData } from "src/models/StreakData";
+import { Workout } from "src/models/Workout";
 import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
 import { toTitleCase } from "src/utils/toTitleCase";
 
-export default function useStreakData(trackedData: WorkoutTrackCollection[]): StreakData {
+export default function useStreakData(workoutsList: Workout[]): StreakData {
+    const [trackedData, setTrackedData] = useState<WorkoutTrackCollection[]>([]);
     const [trackedDatesList, setTrackedDatesList] = useState<Date[]>([]);
     const [streakData, setStreakData] = useState<StreakData>({} as StreakData);
+
+    useEffect(() => {
+        setTrackedData(workoutsList.reduce((collection, workoutItem) => {
+            return [...collection, ...workoutItem.workoutTrackData];
+        }, []as WorkoutTrackCollection[]));
+    }, [workoutsList])
 
     useEffect(() => {
         setTrackedDatesList(trackedData.map(item => item.timestamp).filter(dateItem => !!dateItem));
