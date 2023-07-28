@@ -61,9 +61,7 @@ function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProp
                                         setWorkoutTrackCollection(
                                             new WorkoutTrackCollection(
                                                 workoutTrackCollection.workout,
-                                                workoutTrackCollection.trackedData.filter(
-                                                    trackedItem => trackedItem.hasAllRequiredValues(workout.trackingValues)
-                                                ),
+                                                workoutTrackCollection.trackedData,
                                                 workoutTrackCollection.id
                                             )
                                         );
