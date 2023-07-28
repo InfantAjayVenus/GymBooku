@@ -2,6 +2,7 @@ import { AccessTimeOutlined, FitnessCenterOutlined, PinOutlined } from "@mui/ico
 import React, { Key } from "react";
 import getRandomId, { ID } from "src/utils/getRandomId";
 import { WorkoutTrackCollection } from "./WorkoutRecord";
+import isTimestampToday from "src/utils/isTimestampToday";
 
 export enum TrackingValues {
     TIME = 'TIME',
@@ -63,5 +64,22 @@ export class Workout {
 
     set workoutTrackData(updatedData: WorkoutTrackCollection[]) {
         this._workoutTrackData = updatedData;
+    }
+
+    static copyFrom(workout: Workout) {
+        const workoutCopy = new Workout(workout.name, workout.trackingValues, [...workout.workoutTrackData], workout.id);
+
+        return workoutCopy;
+    }
+
+    getTodayTrackedData(): WorkoutTrackCollection | undefined {
+        return this._workoutTrackData.find(item => isTimestampToday(item.timestamp));
+    }
+
+    getPreviouslyTrackedData(): WorkoutTrackCollection | undefined {
+        return this._workoutTrackData
+            .filter(item => !isTimestampToday(item.timestamp))
+            .sort((itemA, itemB) => itemA.timestamp.valueOf() - itemB.timestamp.valueOf())
+            .pop();
     }
 }
