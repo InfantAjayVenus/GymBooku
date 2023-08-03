@@ -1,6 +1,7 @@
 import { DAYS_OF_WEEK, Plan } from "./models/Plan";
 import { TrackingValues, Workout } from "./models/Workout";
 import { WorkoutTrackCollection, WorkoutTrackRecord } from "./models/WorkoutRecord";
+import getRandomId from "./utils/getRandomId";
 
 const workout1 = new Workout("Push-ups", [TrackingValues.TIME, TrackingValues.COUNT]);
 const workout2 = new Workout("Squats", [TrackingValues.COUNT, TrackingValues.WEIGHT]);
@@ -21,97 +22,63 @@ function getRandomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function getRandomTimestamp() {
-    // Generate a random timestamp within the past week
-    const currentTime = Date.now();
-    const pastWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    const randomTimestamp = currentTime - Math.floor(Math.random() * pastWeek);
-    return new Date(randomTimestamp);
-}
+const PREVIOUS_TRACKDATA_DATE_LIMIT = 7;
+const PREVIOUS_TRACKDATA_MIN_LIMIT = 4;
+TEST_WORKOUTS.forEach(workout => {
+    /**
+     * TODO
+     * Choose Random Dates for the past n days
+     * Create a workout track collection for each day
+     */
+    const randomDates = new Array(PREVIOUS_TRACKDATA_MIN_LIMIT).fill(0)
+        .map(_ => getRandomNumber(0, PREVIOUS_TRACKDATA_DATE_LIMIT))
+        .map(index => {
+            const date = new Date();
+            date.setDate(date.getDate() - index);
+            return date;
+        });
 
-// Generate unique ID
-function generateUniqueId() {
-    return Math.random().toString(36).substr(2, 9);
-}
+    workout.workoutTrackData = randomDates.map(date => {
+        const trackedData = new Array(getRandomNumber(1, 5)).fill(0).map(_ => {
+            return workout.trackingValues.reduce((acc, value) => {
+                const label = value === TrackingValues.TIME ? 'time' : value === TrackingValues.COUNT ? 'count' : 'weight';
+                acc[label] = getRandomNumber(5, 15);
+                return acc;
+            }, {} as {
+                time?: Number | undefined;
+                count?: Number | undefined;
+                weight?: Number | undefined;
+            })
+            
+        }).map(data => {
+            const timestamp = new Date(date);
+            timestamp.setHours(getRandomNumber(0, 23), getRandomNumber(0, 59), getRandomNumber(0, 59), getRandomNumber(0, 59));
+            return new WorkoutTrackRecord(getRandomNumber(0, 100), data, getRandomId(), timestamp);
+        });
 
-// Generate sample data for WorkoutTrackCollection
-const workoutTrackCollection1 = new WorkoutTrackCollection(
-    workout1.id,
-    [
-        new WorkoutTrackRecord({ count: getRandomNumber(10, 20), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ count: getRandomNumber(10, 20), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ count: getRandomNumber(10, 20), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        // Add more WorkoutTrackRecord instances as needed
-    ],
-    generateUniqueId(),
-    getRandomTimestamp()
-);
+        return new WorkoutTrackCollection(workout.id, trackedData, getRandomId(), date);
+    })
+})
 
-const workoutTrackCollection2 = new WorkoutTrackCollection(
-    workout2.id,
-    [
-        new WorkoutTrackRecord({ weight: getRandomNumber(20, 50), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ weight: getRandomNumber(20, 50), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ weight: getRandomNumber(20, 50), time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        // Add more WorkoutTrackRecord instances as needed
-    ],
-    generateUniqueId(),
-    getRandomTimestamp()
-);
 
-const workoutTrackCollection3 = new WorkoutTrackCollection(
-    workout3.id,
-    [
-        new WorkoutTrackRecord({ time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        new WorkoutTrackRecord({ time: getRandomNumber(30, 60) }, generateUniqueId(), getRandomTimestamp()),
-        // Add more WorkoutTrackRecord instances as needed
-    ],
-    generateUniqueId(),
-    getRandomTimestamp()
-);
 
-export const TEST_TRACKED_COLLECTION = [workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3];
-// Generate additional WorkoutTrackCollection instances
-const additionalDataEntries = 12; // Adjust the number of additional data entries as needed
+// function getRandomTimestamp() {
+//     // Generate a random timestamp within the past week
+//     const currentTime = Date.now();
+//     const pastWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+//     const randomTimestamp = currentTime - Math.floor(Math.random() * pastWeek);
+//     return new Date(randomTimestamp);
+// }
 
-for (let i = 0; i < additionalDataEntries; i++) {
-    const randomWorkoutId = TEST_TRACKED_COLLECTION[Math.floor(Math.random() * TEST_TRACKED_COLLECTION.length)].workout;
-    const randomWorkout = TEST_TRACKED_COLLECTION.find((workout) => workout.id === randomWorkoutId);
+// function generateUniqueId() {
+//     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+//     const length = 9;
+//     let uniqueId = '';
 
-    const randomWorkoutTrackRecord = new WorkoutTrackRecord(
-        {
-            count: getRandomNumber(10, 20),
-            weight: getRandomNumber(20, 50),
-            time: getRandomNumber(30, 60),
-        },
-        generateUniqueId(),
-        getRandomTimestamp()
-    );
+//     for (let i = 0; i < length; i++) {
+//         const randomIndex = Math.floor(Math.random() * characters.length);
+//         uniqueId += characters.charAt(randomIndex);
+//     }
 
-    const workoutTrackCollection = new WorkoutTrackCollection(randomWorkoutId, [randomWorkoutTrackRecord], generateUniqueId(), getRandomTimestamp());
-    randomWorkout?.trackedData.push(randomWorkoutTrackRecord);
-    TEST_TRACKED_COLLECTION.push(workoutTrackCollection);
-}
-
-// Add the initial WorkoutTrackCollection instances to the sampleData array
-TEST_TRACKED_COLLECTION.push(workoutTrackCollection1, workoutTrackCollection2, workoutTrackCollection3);
-
-// Ensure at least 15 data entries
-while (TEST_TRACKED_COLLECTION.length < 15) {
-    const randomWorkoutId = TEST_TRACKED_COLLECTION[Math.floor(Math.random() * TEST_TRACKED_COLLECTION.length)].workout;
-    const randomWorkout = TEST_TRACKED_COLLECTION.find((workout) => workout.id === randomWorkoutId);
-
-    const randomWorkoutTrackRecord = new WorkoutTrackRecord(
-        {
-            count: getRandomNumber(10, 20),
-            weight: getRandomNumber(20, 50),
-            time: getRandomNumber(30, 60),
-        },
-        generateUniqueId(),
-        getRandomTimestamp()
-    );
-
-    randomWorkout?.trackedData.push(randomWorkoutTrackRecord);
-    TEST_TRACKED_COLLECTION.push(new WorkoutTrackCollection(randomWorkoutId, [randomWorkoutTrackRecord], generateUniqueId(), getRandomTimestamp()));
-}
+//     return uniqueId;
+// }
