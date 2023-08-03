@@ -1,40 +1,62 @@
-import { Add } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
-    Box,
+    Button,
     Container,
-    Fab,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grow,
+    IconButton,
     List,
     ListItem,
-    ListItemButton,
-    ListItemText,
     Stack,
-    SwipeableDrawer,
+    Toolbar,
     Typography
 } from "@mui/material";
-import { Key } from "react";
+import { Key, useEffect, useState } from "react";
 import GymBookuIcon from "src/components/GymBookuIcon";
-import Puller from "src/components/Puller";
 import StreakCard from "src/components/StreakCard";
-import WorkoutTrackCard, { WorkoutTrackCardProps } from "src/components/WorkoutTrackCard";
+import { WorkoutFormProps } from "src/components/WorkoutForm";
+import WorkoutTrackCard from "src/components/WorkoutTrackCard";
 import useDrawer from "src/hooks/useDrawer";
-import { StreakData } from "src/models/StreakData";
+import usePlannedWorkoutsList from "src/hooks/usePlannedWorkoutsList";
+import useStreakData from "src/hooks/useStreakData";
+import { Plan } from "src/models/Plan";
 import { Workout } from "src/models/Workout";
-import { PairedTrackRecord } from "src/models/WorkoutRecord";
+import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
 
-type onAddType = WorkoutTrackCardProps['onSave'];
+type onAddType = WorkoutFormProps['onSave'];
 
 interface HomeProps {
-    allWorkoutsList: Workout[];
-    streakData: StreakData;
-    trackedWorkoutData: PairedTrackRecord[];
+    workoutsList: Workout[];
+    plansList: Plan[];
     onAdd?: onAddType;
     onUpdate: onAddType;
-    onAddTrackedWorkout: (workout: Workout) => void
+    onDelete?: onAddType;
 }
 
-function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAddTrackedWorkout }: HomeProps) {
-    const workoutListDrawer = useDrawer();
-    const workoutsNotTrackedToday = allWorkoutsList.filter(item => !trackedWorkoutData?.some(trackedItem => trackedItem.today.workout === item.id));
+function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
+    const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+    const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection | null>(null);
+
+    const workoutTrackPage = useDrawer();
+    const streakData = useStreakData(workoutsList);
+    const plannedWorkouts = usePlannedWorkoutsList(workoutsList, plansList);
+
+
+    useEffect(() => {
+        if (!selectedWorkout) return;
+
+        workoutTrackPage.open();
+    }, [selectedWorkout]);
+
+    useEffect(() => {
+        if (workoutTrackPage.isOpen) return;
+
+        setSelectedWorkout(null);
+    }, [workoutTrackPage.isOpen])
+
     return (
         <>
             <Stack padding={4} spacing={2}>
@@ -44,99 +66,98 @@ function Home({ allWorkoutsList, streakData, trackedWorkoutData, onUpdate, onAdd
                 </Stack>
                 <StreakCard {...streakData} />
                 <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
-                {trackedWorkoutData.length > 0 && (
-                    <List>
-                        {trackedWorkoutData.map(trackedItem => {
-                            const workoutItem = allWorkoutsList.find(({ id }) => id === trackedItem.today.workout);
-                            return (
-                                    workoutItem && 
-                                    <ListItem key={trackedItem.today.id as Key} sx={{
-                                        padding: 0,
-                                        marginY: '1rem'
-                                    }}>
-                                        <WorkoutTrackCard
-                                            workout={workoutItem}
-                                            previousTrackedData={trackedItem.previous}
-                                            trackedData={trackedItem.today}
-                                            onSave={(savedWorkout) => {
-                                                onUpdate(savedWorkout);
-                                            }}
-                                        />
-                                    </ListItem>
-                            )
-                        })}
-                    </List>
-                )}
-                {trackedWorkoutData.length === 0 && (
-                    <Container sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4">🤷</Typography>
-                        <Typography variant="body1">There's no workout planned for today</Typography>
-                        <Typography variant="body2" color={'GrayText'}>Add a workout to keep the streak alive</Typography>
-                    </Container>
-                )}
+
+                <List>
+                    {plannedWorkouts.map((workoutItem) => {
+                        return (
+                            <ListItem
+                                key={workoutItem.id as Key}
+                                sx={{
+                                    py: '1rem',
+                                    borderBottom: '1px gray solid'
+                                }}
+                                onClick={() => setSelectedWorkout(workoutItem)}
+                            >
+                                <Typography variant="body1">{workoutItem.name}</Typography>
+                            </ListItem>
+                        )
+                    }).filter((element): element is JSX.Element => !!element)}
+                </List>
             </Stack>
-            <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
-                <Fab size="medium" color="primary" aria-label="add workout"
-                    onClick={() => {
-                        workoutListDrawer.open();
-                    }}
-                >
-                    <Add />
-                </Fab>
-            </Box>
-            <SwipeableDrawer
-                anchor="bottom"
-                open={workoutListDrawer.isOpen as boolean}
-                onOpen={() => {
-                    workoutListDrawer.open();
-                }}
-                onClose={() => {
-                    workoutListDrawer.close();
-                }}
+            <Dialog
+                open={workoutTrackPage.isOpen as boolean}
+                onClose={workoutTrackPage.close}
+                fullScreen
+                TransitionComponent={Grow}
+                TransitionProps={{ timeout: 300 }}
             >
-                <Puller />
-                <Stack padding={'1rem'} mt={'1rem'}>
-                    <Typography variant="body1" fontWeight={'bold'}>Add Workout for Tracking</Typography>
+                {selectedWorkout && (
+                    <>
+                        <DialogTitle>
+                            <Toolbar>
+                                <Typography sx={{ flex: 1 }} variant="h6" component="div">
+                                    Workout Details
+                                </Typography>
+                                <IconButton
+                                    edge="end"
+                                    color="inherit"
+                                    onClick={workoutTrackPage.close}
+                                    aria-label="close"
+                                >
+                                    <Close />
+                                </IconButton>
+                            </Toolbar>
+                        </DialogTitle>
+                        <DialogContent>
+                            <WorkoutTrackCard
+                                workout={selectedWorkout}
+                                trackedData={
+                                    selectedWorkout.getTodayTrackedData()
+                                }
+                                onSave={(updatedWorkoutTrackCollection) => {
+                                    if (!updatedWorkoutTrackCollection?.trackedData.every(
+                                        item => item.hasAllRequiredValues(selectedWorkout.trackingValues)
+                                    )) return;
 
-                    {workoutsNotTrackedToday.length > 0 && (
-                        <List>
-                            {workoutsNotTrackedToday.map(workoutItem => (
-                                <ListItem key={workoutItem.id as Key}>
-                                    <ListItemButton sx={{
-                                        padding: 0,
-                                        marginY: '1rem',
-                                    }}
-                                        onClick={() => {
-                                            onAddTrackedWorkout(workoutItem);
-                                            workoutListDrawer.close();
-                                        }}
-                                    >
-                                        <ListItemText primary={workoutItem.name} />
-
-                                    </ListItemButton>
-                                </ListItem>
-                            ))}
-                        </List>
-                    )}
-                    {workoutsNotTrackedToday.length === 0 && (
-                        <Container sx={{
-                            textAlign: 'center',
-                            padding: '2rem 0'
-                        }}>
-                            <Typography variant="h3">😎</Typography>
-                            <Typography variant="body1">Cool! You've managed to do all the workouts</Typography>
-                            <Typography variant="body2" color={'ActiveCaption'}>Add More Workouts to burn more calories</Typography>
-                        </Container>
-                    )}
-                </Stack>
-            </SwipeableDrawer>
-            {/* Todo:
-                Card:
-                    1. Current Streak
-                    2. Longest Streak
-                    3. Perfect Week
-                Today's Workouts:
-                    Workout[]: Accordian */}
+                                    setWorkoutTrackCollection(updatedWorkoutTrackCollection);
+                                }}
+                            />
+                            {selectedWorkout.getPreviouslyTrackedData() && (
+                                <Container sx={{ mt: 2 }}>
+                                    <Typography variant="h6">Previously Recorded</Typography>
+                                    {selectedWorkout.getPreviouslyTrackedData()?.trackedData.map((trackedDataItem, index) => (
+                                        <Stack direction={'row'} my={2} spacing={1} key={index}>
+                                            <Typography variant="body1" fontWeight={'bold'}>Set {index + 1}: </Typography>
+                                            <Typography variant="body2">{trackedDataItem.toString()}</Typography>
+                                        </Stack>
+                                    ))}
+                                </Container>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="error" onClick={() => {
+                                workoutTrackPage.close();
+                                if (!selectedWorkout.workoutTrackData.find(({ id }) => id === workoutTrackCollection?.id)) return;
+                                selectedWorkout.workoutTrackData = selectedWorkout.workoutTrackData.filter(({ id }) => id !== workoutTrackCollection?.id);
+                                onUpdate(Workout.copyFrom(Workout.copyFrom(selectedWorkout)));
+                            }}>
+                                Delete
+                            </Button>
+                            <Button
+                                color="primary"
+                                disabled={!workoutTrackCollection?.trackedData.every(item => item.hasAllRequiredValues(selectedWorkout.trackingValues))}
+                                onClick={() => {
+                                    if (workoutTrackCollection?.trackedData.some(item => !item.hasAllRequiredValues(selectedWorkout.trackingValues))) return;
+                                    workoutTrackCollection && selectedWorkout.workoutTrackData.push(workoutTrackCollection);
+                                    onUpdate(Workout.copyFrom(selectedWorkout));
+                                    workoutTrackPage.close();
+                                }}>
+                                save
+                            </Button>
+                        </DialogActions>
+                    </>
+                )}
+            </Dialog>
         </>
     );
 }
