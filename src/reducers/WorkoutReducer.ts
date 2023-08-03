@@ -19,7 +19,7 @@ export default function workoutReducer(state: Workout[], action: WorkoutAction) 
                 if('id' in stateItem) return stateItem;
 
                 const rawJSON = JSON.parse(JSON.stringify(stateItem));
-                return new Workout(rawJSON._workoutName, rawJSON._trackingValues, rawJSON._id);
+                return new Workout(rawJSON._workoutName, rawJSON._trackingValues, rawJSON._workoutTrackData, rawJSON._id);
             })
             
             return restoreState;
