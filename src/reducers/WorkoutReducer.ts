@@ -1,4 +1,5 @@
 import { Workout } from "src/models/Workout";
+import { WorkoutTrackCollection, WorkoutTrackRecord } from "src/models/WorkoutRecord";
 
 export enum WorkoutActionType {
     INIT_WORKOUT = "INIT_WORKOUT",
@@ -16,12 +17,29 @@ export default function workoutReducer(state: Workout[], action: WorkoutAction) 
     switch (action.type) {
         case WorkoutActionType.INIT_WORKOUT:
             const restoreState = action.payload.map(stateItem => {
-                if('id' in stateItem) return stateItem;
+                if ('id' in stateItem) return stateItem;
 
                 const rawJSON = JSON.parse(JSON.stringify(stateItem));
-                return new Workout(rawJSON._workoutName, rawJSON._trackingValues, rawJSON._workoutTrackData, rawJSON._id);
+                const restoredWorkoutTrackData = rawJSON._workoutTrackData.map((data: any) => new WorkoutTrackCollection(
+                    data._workout,
+                    data._trackedData.map(
+                        (trackedItem: any) => new WorkoutTrackRecord(
+                            trackedItem._index,
+                            {
+                                time: trackedItem._time,
+                                count: trackedItem._count,
+                                weight: trackedItem._weight
+                            },
+                            trackedItem._id,
+                            new Date(trackedItem._timestamp)
+                        )
+                    ),
+                    data._id,
+                    new Date(data._timestamp)
+                ));
+                return new Workout(rawJSON._workoutName, rawJSON._trackingValues, restoredWorkoutTrackData, rawJSON._id);
             })
-            
+
             return restoreState;
         case WorkoutActionType.ADD_WORKOUT:
             state = [...state, ...action.payload];
