@@ -19,7 +19,7 @@ import SetTrackCard from './SetTrackCard';
 
 export interface WorkoutTrackCardProps {
     workout: Workout;
-    trackedData: WorkoutTrackCollection;
+    trackedData?: WorkoutTrackCollection;
     onSave: (savedWorkoutTrackCollection: WorkoutTrackCollection) => void;
 }
 
@@ -28,7 +28,7 @@ function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProp
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection>();
 
     useEffect(() => {
-        setWorkoutTrackCollection(trackedData);
+        !workoutTrackCollection && setWorkoutTrackCollection(trackedData || new WorkoutTrackCollection(workout.id));
     }, [trackedData]);
 
     useEffect(() => {
