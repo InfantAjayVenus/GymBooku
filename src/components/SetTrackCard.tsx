@@ -41,7 +41,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
         const parsedWeight = parseFloat(parseFloat(weightValue).toFixed(2));
         const parsedCount = parseFloat(parseFloat(countValue).toFixed(2));
         const parsedTime = parseFloat(parseFloat(timeValue).toFixed(2));
-        setTrackedValues(new WorkoutTrackRecord({
+        setTrackedValues(new WorkoutTrackRecord(index, {
             time: !isNaN(parsedTime) ? parsedTime : undefined,
             weight: !isNaN(parsedWeight) ? parsedWeight : undefined,
             count: !isNaN(parsedCount) ? parsedCount : undefined

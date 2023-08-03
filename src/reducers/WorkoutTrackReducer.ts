@@ -23,6 +23,7 @@ export default function workoutRecordReducer(state: WorkoutTrackCollection[], ac
                     rawJson._workout,
                     rawJson._trackedData.map(
                         (data:any) => new WorkoutTrackRecord(
+                            data._index,
                             {
                                 time: data._time, 
                                 count: data._count, 
