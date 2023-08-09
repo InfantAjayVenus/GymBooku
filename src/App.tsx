@@ -27,6 +27,7 @@ enum Pages {
   Workouts,
 }
 
+const DATA_VERSION = '1.0'
 const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
 const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
 
@@ -34,13 +35,13 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
 
   const [workoutsList, workoutDispatch] = useStoredReducer(
-    "WORKOUT",
+    `WORKOUT_${DATA_VERSION}`,
     workoutReducer,
     INITIAL_WORKOUTS,
     (state) => ({ type: WorkoutActionType.INIT_WORKOUT, payload: state })
   );
   const [plansList, planDispatch] = useStoredReducer(
-    "WORKOUT_PLAN",
+    `WORKOUT_PLAN_${DATA_VERSION}`,
     planReducer,
     INITIAL_PLANS,
     (state) => ({ type: PlanActionType.INIT_PLAN, payload: state })
