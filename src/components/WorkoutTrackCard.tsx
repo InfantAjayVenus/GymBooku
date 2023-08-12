@@ -24,7 +24,7 @@ export interface WorkoutTrackCardProps {
 }
 
 function WorkoutTrackCard({ workout, trackedData, onSave }: WorkoutTrackCardProps) {
-    const trackingFormCollapse = useDrawer();
+    const trackingFormCollapse = useDrawer(!workout.getPreviouslyTrackedData());
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection>();
 
     useEffect(() => {
