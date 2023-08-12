@@ -65,6 +65,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                 <Stack alignSelf={'end'}>
                     {trackingValues.includes(TrackingValues.COUNT) && (
                         <OutlinedInput
+                            autoFocus
                             endAdornment="reps"
                             inputProps={{
                                 shrink: "true",
@@ -82,6 +83,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                     )}
                     {trackingValues.includes(TrackingValues.WEIGHT) && (
                         <OutlinedInput
+                            autoFocus
                             endAdornment="Kg"
                             inputProps={{
                                 shrink: "true",
@@ -99,6 +101,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                     )}
                     {trackingValues.includes(TrackingValues.TIME) && (
                         <OutlinedInput
+                            autoFocus
                             endAdornment="S"
                             inputProps={{
                                 shrink: "true",
