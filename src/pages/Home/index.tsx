@@ -1,10 +1,13 @@
 import {
+    Chip,
     List,
     ListItem,
+    ListItemButton,
+    Popover,
     Stack,
     Typography
 } from "@mui/material";
-import { Key, useState } from "react";
+import { Key, useEffect, useRef, useState } from "react";
 import GymBookuIcon from "src/components/GymBookuIcon";
 import StreakCard from "src/components/StreakCard";
 import { WorkoutFormProps } from "src/components/WorkoutForm";
@@ -13,7 +16,9 @@ import useStreakData from "src/hooks/useStreakData";
 import { Plan } from "src/models/Plan";
 import { Workout } from "src/models/Workout";
 import WorkoutTrackerScreen from "./WorkoutTrackerScreen";
-import { CheckCircleOutline } from "@mui/icons-material";
+import { ArrowDropDown, CheckCircleOutline } from "@mui/icons-material";
+import useDrawer from "src/hooks/useDrawer";
+import getToday from "src/utils/getToday";
 
 type onAddType = WorkoutFormProps['onSave'];
 
@@ -26,10 +31,17 @@ interface HomeProps {
 }
 
 function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
+    const filterElementRef = useRef(null);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+    const [filteredPlanId, setFilteredPlanId] = useState('ALL');
 
+    const filterPopup = useDrawer();
     const streakData = useStreakData(workoutsList);
-    const plannedWorkouts = usePlannedWorkoutsList(workoutsList, plansList);
+    const plannedWorkouts = usePlannedWorkoutsList(workoutsList, filteredPlanId === 'ALL' ? plansList : plansList.filter(item => item.id === filteredPlanId));
+
+    useEffect(() => {
+        filterPopup.close();
+    }, [filteredPlanId]);
 
     return (
         <>
@@ -39,7 +51,18 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                     <Typography variant="h5" fontWeight={'bold'} component={'h3'}>GymBooku</Typography>
                 </Stack>
                 <StreakCard {...streakData} />
-                <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
+                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
+                    <Chip
+                        ref={filterElementRef}
+                        size="small"
+                        label={'All'}
+                        deleteIcon={<ArrowDropDown />}
+                        onDelete={() => {
+                            filterPopup.toggle();
+                        }}
+                    />
+                </Stack>
 
                 <List>
                     {plannedWorkouts.map((workoutItem) => {
@@ -77,6 +100,24 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                 }}
                 onClose={() => setSelectedWorkout(null)}
             />
+            <Popover
+                open={filterPopup.isOpen as boolean}
+                anchorEl={filterElementRef.current}
+                onClose={() => {
+                    filterPopup.close();
+                }}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+            >
+                <List>
+                    <ListItemButton onClick={() => setFilteredPlanId('ALL')}>All</ListItemButton>
+                    {plansList.filter((item) => item.hasDay(getToday())).map((planItem) => {
+                        return <ListItemButton onClick={() => setFilteredPlanId(planItem.id as string)}>{planItem.name}</ListItemButton>
+                    })}
+                </List>
+            </Popover>
         </>
     );
 }
