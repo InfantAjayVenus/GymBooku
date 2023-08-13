@@ -13,6 +13,7 @@ import useStreakData from "src/hooks/useStreakData";
 import { Plan } from "src/models/Plan";
 import { Workout } from "src/models/Workout";
 import WorkoutTrackerScreen from "./WorkoutTrackerScreen";
+import { CheckCircleOutline } from "@mui/icons-material";
 
 type onAddType = WorkoutFormProps['onSave'];
 
@@ -51,7 +52,10 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                                 }}
                                 onClick={() => setSelectedWorkout(workoutItem)}
                             >
-                                <Typography variant="body1">{workoutItem.name}</Typography>
+                                <Stack direction={'row'} justifyContent={'space-between'} width={'100%'}>
+                                    <Typography variant="body1" color={!!workoutItem.getTodayTrackedData() ? 'text.disabled' : ''}>{workoutItem.name}</Typography>
+                                    {!!workoutItem.getTodayTrackedData() && <CheckCircleOutline color="disabled" />}
+                                </Stack>
                             </ListItem>
                         )
                     }).filter((element): element is JSX.Element => !!element)}
@@ -66,7 +70,7 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                     onUpdate(Workout.copyFrom(selectedWorkout));
                 }}
                 onDelete={(deletedWorkoutTrackCollection) => {
-                    if(!selectedWorkout) return;
+                    if (!selectedWorkout) return;
                     if (!selectedWorkout.workoutTrackData.find(({ id }) => id === deletedWorkoutTrackCollection?.id)) return;
                     selectedWorkout.workoutTrackData = selectedWorkout.workoutTrackData.filter(({ id }) => id !== deletedWorkoutTrackCollection?.id);
                     onUpdate(Workout.copyFrom(Workout.copyFrom(selectedWorkout)));
