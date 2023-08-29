@@ -1,4 +1,4 @@
-import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined } from '@mui/icons-material';
+import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined, MonitorWeightOutlined } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -14,6 +14,9 @@ import { WorkoutList } from './pages/WorkoutList';
 import WorkoutPlanner from './pages/WorkoutPlanner';
 import planReducer, { PlanActionType } from './reducers/PlanReducer';
 import workoutReducer, { WorkoutAction, WorkoutActionType } from './reducers/WorkoutReducer';
+import WeightTracker from './pages/WeightTracker';
+import weightReducer, { WeightReducerActionType } from './reducers/WeightReducer';
+import { WeightCollection } from './models/WeightCollection';
 
 const darkTheme = createTheme({
   palette: {
@@ -25,11 +28,13 @@ enum Pages {
   Home,
   Plans,
   Workouts,
+  Weights,
 }
 
 const DATA_VERSION = '1.0'
 const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
 const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
+const INITIAL_WEIGHT = import.meta.env.DEV ? new WeightCollection() : new WeightCollection();
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
@@ -45,6 +50,13 @@ function App() {
     planReducer,
     INITIAL_PLANS,
     (state) => ({ type: PlanActionType.INIT_PLAN, payload: state })
+  )
+
+  const [weightCollection, weightDispatch] = useStoredReducer(
+    `WEIGHT_${DATA_VERSION}`,
+    weightReducer,
+    INITIAL_WEIGHT,
+    (state) => ({ type: WeightReducerActionType.INIT_WEIGHT, payload: state })
   )
 
   return (
@@ -103,6 +115,17 @@ function App() {
             values={workoutsList}
           />
         }
+        {
+          currentPage === Pages.Weights && 
+          <WeightTracker 
+            weightsTrackedData={weightCollection}
+            updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
+              console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
+              
+              weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
+            }}
+          />
+        }
       </main>
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         <BottomNavigation
@@ -115,6 +138,7 @@ function App() {
           <BottomNavigationAction label="Home" icon={<HomeOutlined />} />
           <BottomNavigationAction label="Plans" icon={<CalendarViewWeekOutlined />} />
           <BottomNavigationAction label="Workouts" icon={<FitnessCenterOutlined />} />
+          <BottomNavigationAction label="Weights" icon={<MonitorWeightOutlined />} />
         </BottomNavigation>
       </Paper>
     </ThemeProvider>
