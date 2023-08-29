@@ -37,7 +37,10 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
 
     const filterPopup = useDrawer();
     const streakData = useStreakData(workoutsList);
-    const plannedWorkouts = usePlannedWorkoutsList(workoutsList, filteredPlanId === 'ALL' ? plansList : plansList.filter(item => item.id === filteredPlanId));
+    const plannedWorkouts = usePlannedWorkoutsList(
+        workoutsList,
+        filteredPlanId === 'ALL' ? plansList : plansList.filter(item => item.id === filteredPlanId)
+    );
 
     useEffect(() => {
         filterPopup.close();
@@ -76,7 +79,9 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                                 onClick={() => setSelectedWorkout(workoutItem)}
                             >
                                 <Stack direction={'row'} justifyContent={'space-between'} width={'100%'}>
-                                    <Typography variant="body1" color={!!workoutItem.getTodayTrackedData() ? 'text.disabled' : ''}>{workoutItem.name}</Typography>
+                                    <Typography variant="body1" color={!!workoutItem.getTodayTrackedData() ? 'text.disabled' : ''}>
+                                        {workoutItem.name}
+                                    </Typography>
                                     {!!workoutItem.getTodayTrackedData() && <CheckCircleOutline color="disabled" />}
                                 </Stack>
                             </ListItem>
@@ -112,9 +117,13 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                 }}
             >
                 <List>
-                    <ListItemButton onClick={() => setFilteredPlanId('ALL')}>All</ListItemButton>
+                    <ListItemButton key="all" onClick={() => setFilteredPlanId('ALL')}>All</ListItemButton>
                     {plansList.filter((item) => item.hasDay(getToday())).map((planItem) => {
-                        return <ListItemButton onClick={() => setFilteredPlanId(planItem.id as string)}>{planItem.name}</ListItemButton>
+                        return (
+                            <ListItemButton key={planItem.id as string} onClick={() => setFilteredPlanId(planItem.id as string)}>
+                                {planItem.name}
+                            </ListItemButton>
+                        )
                     })}
                 </List>
             </Popover>
