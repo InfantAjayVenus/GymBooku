@@ -1,4 +1,5 @@
 import { DAYS_OF_WEEK, Plan } from "./models/Plan";
+import { Weight, WeightCollection } from "./models/WeightCollection";
 import { TrackingValues, Workout } from "./models/Workout";
 import { WorkoutTrackCollection, WorkoutTrackRecord } from "./models/WorkoutRecord";
 import getRandomId from "./utils/getRandomId";
@@ -60,6 +61,24 @@ TEST_WORKOUTS.forEach(workout => {
     })
 })
 
+    
+export const TEST_WEIGHTS = new WeightCollection(
+    
+    Array.from(
+        new Set(
+            new Array(
+                getRandomNumber(5, 50)).fill(0).map(_ => getRandomNumber(0, PREVIOUS_TRACKDATA_DATE_LIMIT)
+            )
+        )
+    ).slice(0, getRandomNumber(5, 15))
+    .sort((a, b) => b - a)
+    .map(dateOffset => { 
+        const date = new Date();
+        date.setDate(date.getDate() - dateOffset);
+    
+        return new Weight(getRandomNumber(75, 90), date);
+    })
+)
 
 
 // function getRandomTimestamp() {

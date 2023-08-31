@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Workout } from 'src/models/Workout';
 import { DEFAULT_PLANS } from './data.default';
-import { TEST_PLANS, TEST_WORKOUTS } from './data.mock';
+import { TEST_PLANS, TEST_WEIGHTS, TEST_WORKOUTS } from './data.mock';
 import useStoredReducer from './hooks/useStoredReducer';
 import { Plan } from './models/Plan';
 import Home from './pages/Home';
@@ -34,7 +34,7 @@ enum Pages {
 const DATA_VERSION = '1.0'
 const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
 const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
-const INITIAL_WEIGHT = import.meta.env.DEV ? new WeightCollection() : new WeightCollection();
+const INITIAL_WEIGHT = import.meta.env.DEV ? TEST_WEIGHTS : new WeightCollection();
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
