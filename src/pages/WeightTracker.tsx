@@ -101,6 +101,17 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         <Puller />
         <Stack spacing={2} padding={4}>
           <Typography variant="h6">Track Weight</Typography>
+          <Typography variant="caption">
+            {selectedWeight &&
+              weightsTrackedData
+                .getWeightById(selectedWeight)
+                ?.timestamp
+                .toLocaleDateString(
+                  'en-GB',
+                  { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
+                )
+            }
+          </Typography>
           <OutlinedInput
             autoFocus
             endAdornment="kg"
