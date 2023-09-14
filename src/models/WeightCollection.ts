@@ -6,7 +6,7 @@ export class WeightCollection {
   _goal: number;
   _duration: Duration;
 
-  constructor(weights: Weight[]=[], id = getRandomId(), goal = 0, duration = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }) {
+  constructor(weights: Weight[] = [], id = getRandomId(), goal = 0, duration = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }) {
     this._id = id;
     this._weights = weights;
     this._goal = goal;
@@ -45,6 +45,10 @@ export class WeightCollection {
     return new WeightCollection([...this._weights], this._id, this._goal, this._duration);
   }
 
+  getWeightById(searchId: ID) {
+    return this._weights.find(item => item._id === searchId);
+  }
+
   getWeightByDate(date: Date) {
     return this._weights.find(item => item.timestamp.toDateString() === date.toDateString());
   }
@@ -73,7 +77,7 @@ export class Weight {
     return this._timestamp;
   }
 
-  getCopy(updatedWeightValue=this._weightValue) {
+  getCopy(updatedWeightValue = this._weightValue) {
     return new Weight(updatedWeightValue, this._timestamp, this._id);
   }
 }

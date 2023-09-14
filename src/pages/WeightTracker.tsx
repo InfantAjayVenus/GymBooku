@@ -13,6 +13,7 @@ import Puller from "src/components/Puller";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import { Weight, WeightCollection } from "src/models/WeightCollection";
+import { ID } from "src/utils/getRandomId";
 
 interface WeightTrackerProps {
   weightsTrackedData: WeightCollection;
@@ -23,35 +24,39 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   const bottomDrawer = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
+  const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
 
   const debouncedWeightValue = useDebounce(inputValue, 600);
 
+  const resetSelectedWeight = () => {
+    if (!selectedWeight) return;
+    const selectedWeightValue = weightsTrackedData.getWeightById(selectedWeight)?.value || null;
+    selectedWeightValue && setWeightValue(selectedWeightValue);
+  }
+
   useEffect(() => {
-    const previousWeightToday = weightsTrackedData.getWeightByDate(new Date());
-    console.log('Updating Previous Weight:', previousWeightToday?.value)
-    previousWeightToday && setWeightValue(previousWeightToday.value);
+    const todayWeight = weightsTrackedData.getWeightByDate(new Date());
+    todayWeight && setSelectedWeight(todayWeight.id);
   }, [])
 
-  const onWeightChange = (updatedWeightValue: number) => {
-    const previousWeightToday = weightsTrackedData.getWeightByDate(new Date());
+  useEffect(resetSelectedWeight, [selectedWeight])
+
+  const onWeightChange = (updatedWeightId: ID, updatedWeightValue: number) => {
+    const updatedWeight = weightsTrackedData.getWeightById(updatedWeightId);
+    const updateWeightIndex = weightsTrackedData.weights.findIndex(item => item.id === updatedWeightId);
     const updatedWeightTrackedData = weightsTrackedData.getCopy();
-    updatedWeightTrackedData.weights = [
-      ...weightsTrackedData.weights.filter((weight) => weight.id !== previousWeightToday?.id),
-      new Weight(updatedWeightValue, new Date(), previousWeightToday?.id)
-    ];
+    updatedWeightTrackedData.weights[updateWeightIndex] = new Weight(updatedWeightValue, updatedWeight?.timestamp, updatedWeight?.id);
     updateWeightsTrackedData(updatedWeightTrackedData);
   }
 
 
   useEffect(() => {
     const updatedWeightValue = parseFloat(debouncedWeightValue);
-    console.log('updatedWeightValue', updatedWeightValue);
 
     setWeightValue(isNaN(updatedWeightValue) ? NaN : updatedWeightValue);
   }, [debouncedWeightValue]);
 
   useEffect(() => {
-    console.log("Updating inputValue:", weightValue)
     setInputValue(weightValue?.toString() || '');
   }, [weightValue]);
 
@@ -61,7 +66,12 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Weight Tracker</Typography>
         {weightsTrackedData.weights.map((weight) => {
           return (
-            <Stack key={weight.id as string} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Stack key={weight.id as string} direction={'row'} alignItems={'center'} justifyContent={'space-between'}
+              onClick={() => {
+                setSelectedWeight(weight.id);
+                bottomDrawer.open();
+              }}
+            >
               <Typography >{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
               <Typography >{weight.value} Kg</Typography>
             </Stack>
@@ -71,6 +81,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
         <Fab size="medium" color="primary" aria-label="add workout"
           onClick={() => {
+            resetSelectedWeight();
             bottomDrawer.open();
           }}
         >
@@ -106,7 +117,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             <Button
               variant="contained"
               onClick={() => {
-                onWeightChange(Number(weightValue));
+                selectedWeight && onWeightChange(selectedWeight, Number(weightValue));
                 bottomDrawer.close();
               }}
             >Save</Button>
