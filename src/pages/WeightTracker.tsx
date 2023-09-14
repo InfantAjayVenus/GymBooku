@@ -21,14 +21,16 @@ interface WeightTrackerProps {
 
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
-  const [weightValue, setWeightValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [weightValue, setWeightValue] = useState(NaN);
 
-  const debouncedWeightValue = useDebounce(weightValue, 500);
+  const debouncedWeightValue = useDebounce(inputValue, 600);
 
   useEffect(() => {
     const previousWeightToday = weightsTrackedData.getWeightByDate(new Date());
-    previousWeightToday && setWeightValue(previousWeightToday.value.toString());
-  })
+    console.log('Updating Previous Weight:', previousWeightToday?.value)
+    previousWeightToday && setWeightValue(previousWeightToday.value);
+  }, [])
 
   const onWeightChange = (updatedWeightValue: number) => {
     const previousWeightToday = weightsTrackedData.getWeightByDate(new Date());
@@ -41,10 +43,17 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   }
 
 
-  useEffect(() => {    
+  useEffect(() => {
     const updatedWeightValue = parseFloat(debouncedWeightValue);
-    setWeightValue(isNaN(updatedWeightValue) ? '' : updatedWeightValue.toString());
+    console.log('updatedWeightValue', updatedWeightValue);
+
+    setWeightValue(isNaN(updatedWeightValue) ? NaN : updatedWeightValue);
   }, [debouncedWeightValue]);
+
+  useEffect(() => {
+    console.log("Updating inputValue:", weightValue)
+    setInputValue(weightValue?.toString() || '');
+  }, [weightValue]);
 
   return (
     <>
@@ -87,9 +96,9 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             inputProps={{
               shrink: "true",
             }}
-            value={weightValue}
+            value={inputValue}
             onChange={(e) => {
-              setWeightValue(e.target.value);
+              setInputValue(e.target.value);
             }}
           />
           <Stack direction={'row'} justifyContent={'flex-end'}>
