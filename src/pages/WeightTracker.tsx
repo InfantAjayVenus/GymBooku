@@ -74,7 +74,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           <Typography variant="h1" fontWeight='semi-bold'>{currentWeekAverage}</Typography>
         </Stack>
         <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Tracked Weights</Typography>
-        {weightsTrackedData.weights.map((weight) => {
+        {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
           return (
             <Stack key={weight.id as string} direction={'row'} alignItems={'center'} justifyContent={'space-between'}
               onClick={() => {
