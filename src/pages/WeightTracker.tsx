@@ -12,8 +12,11 @@ import { useEffect, useState } from "react";
 import Puller from "src/components/Puller";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
+import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
 import { Weight, WeightCollection } from "src/models/WeightCollection";
+import getAverage from "src/utils/getAverage";
 import { ID } from "src/utils/getRandomId";
+import getWeek from "src/utils/getWeek";
 
 interface WeightTrackerProps {
   weightsTrackedData: WeightCollection;
@@ -27,6 +30,9 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
 
   const debouncedWeightValue = useDebounce(inputValue, 600);
+  const weeklyWeights = useWeeklyWeightTrackedData(weightsTrackedData.weights);
+  const currentWeekWeights = weeklyWeights.find(({ week }) => Number(week) === getWeek(new Date())) || {} as WeeklyWeights;
+  const currentWeekAverage = getAverage(currentWeekWeights?.weights?.map(item => item.value) || [], 1);
 
   const resetSelectedWeight = () => {
     if (!selectedWeight) return;
@@ -63,7 +69,11 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   return (
     <>
       <Stack padding={4} spacing={2} position={'relative'}>
-        <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Weight Tracker</Typography>
+        <Stack>
+          <Typography >Week's Avg</Typography>
+          <Typography variant="h1" fontWeight='semi-bold'>{currentWeekAverage}</Typography>
+        </Stack>
+        <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Tracked Weights</Typography>
         {weightsTrackedData.weights.map((weight) => {
           return (
             <Stack key={weight.id as string} direction={'row'} alignItems={'center'} justifyContent={'space-between'}
