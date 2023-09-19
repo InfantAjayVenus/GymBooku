@@ -2,13 +2,14 @@ import { Add } from "@mui/icons-material";
 import {
   Box,
   Button,
+  Divider,
   Fab,
   OutlinedInput,
   Stack,
   SwipeableDrawer,
   Typography
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Puller from "src/components/Puller";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
@@ -70,21 +71,34 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     <>
       <Stack padding={4} spacing={2} position={'relative'}>
         <Stack>
-          <Typography >Week's Avg</Typography>
-          <Typography variant="h1" fontWeight='semi-bold'>{currentWeekAverage}</Typography>
+          <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+          <Typography variant="h2" fontWeight='semi-bold' py={'1rem'}>{currentWeekAverage}</Typography>
         </Stack>
         <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Tracked Weights</Typography>
         {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
+          const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
+          const textStyleProps = isWeightCurrentWeek ? {
+            fontWeight: 'bold',
+          } : {
+            color: 'GrayText',
+          }
           return (
-            <Stack key={weight.id as string} direction={'row'} alignItems={'center'} justifyContent={'space-between'}
-              onClick={() => {
-                setSelectedWeight(weight.id);
-                bottomDrawer.open();
-              }}
-            >
-              <Typography >{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
-              <Typography >{weight.value} Kg</Typography>
-            </Stack>
+            <React.Fragment key={weight.id as string}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                justifyContent={'space-between'}
+                px={'0.25rem'}
+                onClick={isWeightCurrentWeek ? () => {
+                  setSelectedWeight(weight.id);
+                  bottomDrawer.open();
+                } : () => { }}
+              >
+                <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
+                <Typography {...textStyleProps}>{weight.value} Kg</Typography>
+              </Stack>
+              <Divider />
+            </React.Fragment>
           )
         })}
       </Stack>
