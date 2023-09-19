@@ -1,5 +1,5 @@
 import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined, MonitorWeightOutlined } from '@mui/icons-material';
-import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import { Unstable_TrapFocus as TrapFocus, BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Typography, useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useState } from 'react';
@@ -17,6 +17,7 @@ import workoutReducer, { WorkoutAction, WorkoutActionType } from './reducers/Wor
 import WeightTracker from './pages/WeightTracker';
 import weightReducer, { WeightReducerActionType } from './reducers/WeightReducer';
 import { WeightCollection } from './models/WeightCollection';
+import useDrawer from './hooks/useDrawer';
 
 const darkTheme = createTheme({
   palette: {
@@ -28,7 +29,7 @@ enum Pages {
   Home,
   Plans,
   Workouts,
-  Weights,
+  Weight,
 }
 
 const DATA_VERSION = '1.0'
@@ -37,6 +38,8 @@ const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
 const INITIAL_WEIGHT = import.meta.env.DEV ? TEST_WEIGHTS : new WeightCollection();
 
 function App() {
+  const breakPoint = useMediaQuery(darkTheme.breakpoints.up('md'));
+  const banner = useDrawer(true);
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
 
   const [workoutsList, workoutDispatch] = useStoredReducer(
@@ -72,7 +75,54 @@ function App() {
         <link rel="mask-icon" href="/calendar.svg" color="#FFFFFF" />
         <meta name="theme-color" content="#ffffff" />
       </Helmet>
-
+      <TrapFocus open={banner.isOpen && breakPoint} disableAutoFocus disableEnforceFocus>
+        <Fade appear={false} in={breakPoint}>
+          <Paper
+            role="dialog"
+            square
+            tabIndex={-1}
+            sx={{
+              display: 'block',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              m: 0,
+              p: 2,
+              borderWidth: 0,
+              borderTopWidth: 1,
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              justifyContent="space-between"
+              gap={2}
+            >
+              <Box
+                sx={{
+                  flexShrink: 1,
+                  alignSelf: { xs: 'flex-start', sm: 'center' },
+                }}
+              >
+                <Typography fontWeight="bold">This App is designed to suit mobile view and may not be best viewed in Desktop.</Typography>
+              </Box>
+              <Stack
+                gap={2}
+                direction={{
+                  xs: 'row-reverse',
+                  sm: 'row',
+                }}
+                sx={{
+                  flexShrink: 0,
+                  alignSelf: { xs: 'flex-end', sm: 'center' },
+                }}
+              >
+                <Button size="small" onClick={banner.close} variant="contained">Okay</Button>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Fade>
+      </TrapFocus>
       <main>
         {currentPage === Pages.Home &&
           <Home
@@ -116,12 +166,12 @@ function App() {
           />
         }
         {
-          currentPage === Pages.Weights && 
-          <WeightTracker 
+          currentPage === Pages.Weight &&
+          <WeightTracker
             weightsTrackedData={weightCollection}
             updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
               console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
-              
+
               weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
             }}
           />
@@ -138,7 +188,7 @@ function App() {
           <BottomNavigationAction label="Home" icon={<HomeOutlined />} />
           <BottomNavigationAction label="Plans" icon={<CalendarViewWeekOutlined />} />
           <BottomNavigationAction label="Workouts" icon={<FitnessCenterOutlined />} />
-          <BottomNavigationAction label="Weights" icon={<MonitorWeightOutlined />} />
+          <BottomNavigationAction label="Weight" icon={<MonitorWeightOutlined />} />
         </BottomNavigation>
       </Paper>
     </ThemeProvider>
