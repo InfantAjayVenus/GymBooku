@@ -2,9 +2,13 @@ import { Add } from "@mui/icons-material";
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
   Divider,
   Fab,
   OutlinedInput,
+  Paper,
   Stack,
   SwipeableDrawer,
   Typography
@@ -26,9 +30,11 @@ interface WeightTrackerProps {
 
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
+  const goalDialog = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
+  const [goalWeight, setGoalWeight] = useState<number>(0);
 
   const debouncedWeightValue = useDebounce(inputValue, 600);
   const weeklyWeights = useWeeklyWeightTrackedData(weightsTrackedData.weights);
@@ -44,6 +50,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   useEffect(() => {
     const todayWeight = weightsTrackedData.getWeightByDate(new Date());
     todayWeight && setSelectedWeight(todayWeight.id);
+    weightsTrackedData?.goal && setGoalWeight(weightsTrackedData.goal);
   }, [])
 
   useEffect(resetSelectedWeight, [selectedWeight])
@@ -70,11 +77,29 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   return (
     <>
       <Stack padding={4} spacing={2} position={'relative'}>
-        <Stack>
-          <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
-          <Typography variant="h2" fontWeight='semi-bold' py={'1rem'}>{currentWeekAverage}</Typography>
+        <Stack direction={'row'} justifyContent={'space-between'}>
+          <Stack>
+            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+            <Typography variant="h1" fontWeight='semi-bold' py={'0.25rem'}>{currentWeekAverage}</Typography>
+          </Stack>
+          <Paper
+            variant="outlined"
+            sx={{
+              alignSelf: 'end',
+              paddingX: '1rem',
+              marginBottom: '0.5rem',
+              paddingY: '0.5rem',
+              borderRadius: '0.40rem',
+            }}
+            onClick={() => {
+              goalDialog.open();
+            }}
+          >
+            <Typography fontWeight={'bold'} textAlign={'center'}>Goal</Typography>
+            <Typography variant="h3" textAlign={'center'}>{weightsTrackedData.goal}</Typography>
+          </Paper>
         </Stack>
-        <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Tracked Weights</Typography>
+        <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
         {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
           const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
           const textStyleProps = isWeightCurrentWeek ? {
@@ -112,6 +137,54 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           <Add />
         </Fab>
       </Box>
+      <Dialog open={goalDialog.isOpen as boolean}
+        onClose={() => {
+          weightsTrackedData?.goal && setGoalWeight(weightsTrackedData.goal);
+        }}
+      >
+        <DialogContent>
+          <Stack direction={'row'} justifyContent={'space-around'} alignItems={'center'}>
+            <Typography width={'100%'}>
+              Set Weight Goal
+            </Typography>
+
+            <OutlinedInput
+              autoFocus
+              endAdornment="Kg"
+              inputProps={{
+                shrink: "true",
+              }}
+              sx={{
+                alignSelf: 'end'
+              }}
+              value={goalWeight}
+              onChange={(event) => {
+                const {
+                  target: {
+                    value
+                  } } = event;
+
+                setGoalWeight(Number(value));
+              }}
+            />
+
+          </Stack>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => {
+              const updatedWeightTrackedData = weightsTrackedData.getCopy();
+              updatedWeightTrackedData.goal = goalWeight;
+              updateWeightsTrackedData(updatedWeightTrackedData);
+              goalDialog.close();
+            }}
+          >
+            Save
+          </Button>
+          <Button color="error" onClick={() => { goalDialog.close() }}>Close</Button>
+        </DialogActions>
+      </Dialog>
       <SwipeableDrawer
         anchor="bottom"
         open={bottomDrawer.isOpen as boolean}
