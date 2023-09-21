@@ -77,27 +77,29 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   return (
     <>
       <Stack padding={4} spacing={2} position={'relative'}>
-        <Stack direction={'row'} justifyContent={'space-between'}>
-          <Stack>
-            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
-            <Typography variant="h1" fontWeight='semi-bold' py={'0.25rem'}>{currentWeekAverage}</Typography>
-          </Stack>
-          <Paper
-            variant="outlined"
-            sx={{
-              alignSelf: 'end',
-              paddingX: '1rem',
-              marginBottom: '0.5rem',
-              paddingY: '0.5rem',
-              borderRadius: '0.40rem',
-            }}
-            onClick={() => {
-              goalDialog.open();
-            }}
-          >
-            <Typography fontWeight={'bold'} textAlign={'center'}>Goal</Typography>
-            <Typography variant="h3" textAlign={'center'}>{weightsTrackedData.goal}</Typography>
-          </Paper>
+        <Stack>
+          <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+          <Stack direction={'row'} justifyContent={'space-between'}>
+            <Typography variant="h1" fontWeight='semi-bold' >{currentWeekAverage}</Typography>
+            <Paper
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingX: '1rem',
+                marginY: '0.5rem',
+                borderRadius: '0.40rem',
+              }}
+              onClick={() => {
+                goalDialog.open();
+              }}
+            >
+              <Typography fontWeight={'bold'} textAlign={'center'}>Goal</Typography>
+              <Typography variant="h3" textAlign={'center'}>{weightsTrackedData.goal}</Typography>
+            </Paper></Stack>
+
         </Stack>
         <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
         {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
