@@ -55,7 +55,15 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
 
   useEffect(resetSelectedWeight, [selectedWeight])
 
-  const onWeightChange = (updatedWeightId: ID, updatedWeightValue: number) => {
+  const onAddWeight = (weightValue: number) => {
+    const updatedWeightsData = weightsTrackedData.getCopy();
+    const newWeight = new Weight(weightValue);
+    updatedWeightsData.weights.push(newWeight);
+    updateWeightsTrackedData(updatedWeightsData);
+    setSelectedWeight(newWeight.id);
+  }
+
+  const onUpdateWeight = (updatedWeightId: ID, updatedWeightValue: number) => {
     const updatedWeight = weightsTrackedData.getWeightById(updatedWeightId);
     const updateWeightIndex = weightsTrackedData.weights.findIndex(item => item.id === updatedWeightId);
     const updatedWeightTrackedData = weightsTrackedData.getCopy();
@@ -227,7 +235,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             <Button
               variant="contained"
               onClick={() => {
-                selectedWeight && onWeightChange(selectedWeight, Number(weightValue));
+                selectedWeight ? onUpdateWeight(selectedWeight, Number(weightValue)) : onAddWeight(Number(weightValue));
                 bottomDrawer.close();
               }}
             >Save</Button>
