@@ -12,15 +12,16 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy
 } from '@dnd-kit/sortable';
-import { List } from "@mui/material";
+import { List, SxProps, Theme } from "@mui/material";
 
 interface SortableListContainerProps {
     idList: string[];
     children: React.ReactNode[];
     handleDragEnd: (event: DragEndEvent) => void;
+    sx?: SxProps<Theme>;
 }
 
-export default function SortableListContainer({children, idList, handleDragEnd}: SortableListContainerProps) {
+export default function SortableListContainer({children, idList, sx, handleDragEnd}: SortableListContainerProps) {
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -38,7 +39,7 @@ export default function SortableListContainer({children, idList, handleDragEnd}:
         items={idList}
         strategy={verticalListSortingStrategy}
       >
-        <List>{children}</List>
+        <List sx={sx}>{children}</List>
       </SortableContext>
     </DndContext>
         

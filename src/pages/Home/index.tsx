@@ -74,6 +74,9 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                 </Stack>
 
                 <SortableListContainer
+                    sx={{
+                        pb: '2.5rem',
+                    }}
                     idList={workoutIndex}
                     handleDragEnd={(event) => {
                         const { active, over } = event;
