@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('https://infantajayvenus.github.io/GymBooku/sw.js', { scope: 'https://infantajayvenus.github.io/GymBooku/' })})}
