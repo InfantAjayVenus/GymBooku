@@ -31,7 +31,7 @@ export default defineConfig({
       manifest: {
         name: "Gymbooku",
         short_name: "Gymbooku",
-        background_color: "#000000",
+        background_color: "#EAF4FB",
         theme_color: "#fa4b4b",
         icons: [
           { src: "./calendar-192x192.png", sizes: "192x192", type: "image/png" },
