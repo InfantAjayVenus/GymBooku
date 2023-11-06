@@ -38,6 +38,12 @@ export class Workout {
         this._workoutTrackData = workoutTrackData;
     }
 
+    static fromJSON(rawJSON: any) {
+        const { _id, _workout, _trackingValues, _workoutTrackData } = rawJSON;
+        const workout = new Workout(_workout, _trackingValues, _workoutTrackData.map((data: any) => WorkoutTrackCollection.fromJSON(data)), _id);
+        return workout;
+    }
+
     get id() {
         return this._id;
     }

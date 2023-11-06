@@ -13,6 +13,15 @@ export class WeightCollection {
     this._duration = duration;
   }
 
+  static fromJSON(rawJSON: any) {
+    return new WeightCollection(
+      rawJSON._weights.map((rawWeight: any) => Weight.fromJSON(rawWeight)),
+      rawJSON._id,
+      rawJSON._goal,
+      rawJSON._duration
+    );
+  }
+
   set weights(value: Weight[]) {
     this._weights = value;
   }
@@ -63,6 +72,10 @@ export class Weight {
     this._id = id;
     this._timestamp = timestamp;
     this._weightValue = weight;
+  }
+
+  static fromJSON(rawJSON: any) {
+    return new Weight(rawJSON._weightValue, new Date(rawJSON._timestamp), rawJSON._id);
   }
 
   get value() {

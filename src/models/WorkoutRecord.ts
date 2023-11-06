@@ -26,6 +26,23 @@ export class WorkoutTrackCollection {
         this._trackedData = trackedData;
     }
 
+    static fromJSON(rawJSON: any): WorkoutTrackCollection {
+        return new WorkoutTrackCollection(
+            rawJSON._workout,
+            rawJSON._trackedData.map((trackedItem: any) => new WorkoutTrackRecord(
+                trackedItem._index,
+                {
+                    time: trackedItem._time,
+                    count: trackedItem._count,
+                    weight: trackedItem._weight
+                },
+                trackedItem._id,
+                new Date(trackedItem._timestamp)
+            )),
+            rawJSON._id,
+            new Date(rawJSON._timestamp)
+        );
+    }
     get id() {
         return this._id;
     }
@@ -64,6 +81,18 @@ export class WorkoutTrackRecord {
         this._weight = weight;
     }
 
+    static fromJSON(rawJSON: any): WorkoutTrackRecord {
+        return new WorkoutTrackRecord(
+            rawJSON._index, 
+            { 
+                time: rawJSON._time, 
+                count: rawJSON._count, 
+                weight: rawJSON._weight
+            }, 
+            rawJSON._id, 
+            new Date(rawJSON._timestamp)
+        );
+    }
     set index(updatedIndex: Number) {
         this._index = updatedIndex;
     }
