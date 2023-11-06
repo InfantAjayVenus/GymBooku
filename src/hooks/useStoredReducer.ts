@@ -1,17 +1,13 @@
 import { get, set, update } from "idb-keyval";
 import { Dispatch, useEffect, useReducer } from "react";
 
-export interface Storable {
-    fromJSON(rawJSON: any): Storable;
-}
-
-export default function useStoredReducer<Storable, A>(
+export default function useStoredReducer<StateType, ActionType>(
     storeKey: IDBValidKey,
-    reducer: (state: Storable, action: A) => Storable,
-    initialState: Storable,
-    initializeActionGenerator: (restoreState: Storable) => A
-): [Storable, Dispatch<A>] {
-    const [state, dispatch] = useReducer((state: Storable, action: A) => {
+    reducer: (state: StateType, action: ActionType) => StateType,
+    initialState: StateType,
+    initializeActionGenerator: (restoreState: StateType) => ActionType
+): [StateType, Dispatch<ActionType>] {
+    const [state, dispatch] = useReducer((state: StateType, action: ActionType) => {
         const reducedState = reducer(state, action);
 
         const updatedState = JSON.parse(JSON.stringify(reducedState));
@@ -33,5 +29,5 @@ export default function useStoredReducer<Storable, A>(
         })();
     }, [])
 
-    return [state as Storable, dispatch as Dispatch<A>];
+    return [state as StateType, dispatch as Dispatch<ActionType>];
 }
