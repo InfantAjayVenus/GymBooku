@@ -1,13 +1,17 @@
 import { get, set, update } from "idb-keyval";
 import { Dispatch, useEffect, useReducer } from "react";
 
-export default function useStoredReducer<S, A>(
+export interface Storable {
+    fromJSON(rawJSON: any): Storable;
+}
+
+export default function useStoredReducer<Storable, A>(
     storeKey: IDBValidKey,
-    reducer: (state: S, action: A) => S,
-    initialState: S,
-    initializeActionGenerator: (restoreState: S) => A
-): [S, Dispatch<A>] {
-    const [state, dispatch] = useReducer((state: S, action: A) => {
+    reducer: (state: Storable, action: A) => Storable,
+    initialState: Storable,
+    initializeActionGenerator: (restoreState: Storable) => A
+): [Storable, Dispatch<A>] {
+    const [state, dispatch] = useReducer((state: Storable, action: A) => {
         const reducedState = reducer(state, action);
 
         const updatedState = getDeepCleanedObject(reducedState);
@@ -29,7 +33,7 @@ export default function useStoredReducer<S, A>(
         })();
     }, [])
 
-    return [state as S, dispatch as Dispatch<A>];
+    return [state as Storable, dispatch as Dispatch<A>];
 }
 
 function getDeepCleanedObject(object: any): any {
