@@ -14,7 +14,7 @@ export default function useStoredReducer<Storable, A>(
     const [state, dispatch] = useReducer((state: Storable, action: A) => {
         const reducedState = reducer(state, action);
 
-        const updatedState = getDeepCleanedObject(reducedState);
+        const updatedState = JSON.parse(JSON.stringify(reducedState));
 
         update(storeKey, () => updatedState)
             .catch(err => console.log(storeKey, updatedState, err));
@@ -26,7 +26,7 @@ export default function useStoredReducer<Storable, A>(
         (async () => {
             const storedData = await get(storeKey);
             if (!storedData) {
-                set(storeKey, getDeepCleanedObject(initialState));
+                set(storeKey, JSON.parse(JSON.stringify(initialState)));
             } else {
                 dispatch(initializeActionGenerator(storedData));
             }
@@ -34,23 +34,4 @@ export default function useStoredReducer<Storable, A>(
     }, [])
 
     return [state as Storable, dispatch as Dispatch<A>];
-}
-
-function getDeepCleanedObject(object: any): any {
-
-    if (object instanceof Array) return object.map(value => getDeepCleanedObject(value));
-    if (typeof object !== 'object') return object;
-    if (object instanceof Date) return object;
-
-    return Object.fromEntries(
-        Object.entries(object)
-            .filter(([_, value]) => (typeof value).toLowerCase() !== 'function')
-            .map(([key, value]) => {
-                if ((typeof value).toLowerCase() === 'object') return (
-                    [key, getDeepCleanedObject(value)]
-                );
-
-                return [key, value];
-            })
-    )
 }
