@@ -19,7 +19,7 @@ export default function planReducer(state: Plan[], action: PlanAction) {
                 if('id' in planItem) return planItem;
 
                 const rawJSON = JSON.parse(JSON.stringify(planItem));
-                return new Plan(rawJSON._name, rawJSON._workoutsList, rawJSON._daysList, rawJSON._id);
+                return Plan.fromJSON(rawJSON);
             })
             return restoreState;
         case PlanActionType.ADD_PLAN:

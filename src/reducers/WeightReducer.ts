@@ -1,4 +1,4 @@
-import { Weight, WeightCollection } from "src/models/WeightCollection";
+import { WeightCollection } from "src/models/WeightCollection";
 
 export enum WeightReducerActionType {
     INIT_WEIGHT = "INIT_WEIGHT",
@@ -15,18 +15,8 @@ export default function weightReducer(state: WeightCollection, action: WeightAct
         case WeightReducerActionType.INIT_WEIGHT: {
             if('id' in action.payload) return action.payload;
             const rawJson = JSON.parse(JSON.stringify(action.payload));
-            console.log('DEBUG:RAW_WEIGHT:', rawJson);
             
-            return new WeightCollection(
-                rawJson._weights.map((rawWeight: any) => new Weight(
-                    rawWeight._weightValue,
-                    new Date(rawWeight._timestamp),
-                    rawWeight._id
-                )),
-                rawJson._id,
-                rawJson._goal,
-                rawJson._duration
-            );
+            return WeightCollection.fromJSON(rawJson);
         }
         case WeightReducerActionType.UPDATE_WEIGHT: {
             return action.payload;

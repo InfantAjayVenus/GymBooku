@@ -1,5 +1,4 @@
 import { Workout } from "src/models/Workout";
-import { WorkoutTrackCollection, WorkoutTrackRecord } from "src/models/WorkoutRecord";
 
 export enum WorkoutActionType {
   INIT_WORKOUT = "INIT_WORKOUT",
@@ -20,24 +19,7 @@ export default function workoutReducer(state: Workout[], action: WorkoutAction) 
         if ('id' in stateItem) return stateItem;
 
         const rawJSON = JSON.parse(JSON.stringify(stateItem));
-        const restoredWorkoutTrackData = rawJSON._workoutTrackData.map((data: any) => new WorkoutTrackCollection(
-          data._workout,
-          data._trackedData.map(
-            (trackedItem: any) => new WorkoutTrackRecord(
-              trackedItem._index,
-              {
-                time: trackedItem._time,
-                count: trackedItem._count,
-                weight: trackedItem._weight
-              },
-              trackedItem._id,
-              new Date(trackedItem._timestamp)
-            )
-          ),
-          data._id,
-          new Date(data._timestamp)
-        ));
-        return new Workout(rawJSON._workoutName, rawJSON._trackingValues, restoredWorkoutTrackData || [], rawJSON._id);
+        return Workout.fromJSON(rawJSON);
       })
 
       return restoreState;
