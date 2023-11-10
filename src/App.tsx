@@ -1,23 +1,20 @@
 import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined, MonitorWeightOutlined } from '@mui/icons-material';
-import { Unstable_TrapFocus as TrapFocus, BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Typography, useMediaQuery } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Unstable_TrapFocus as TrapFocus, Typography, useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Workout } from 'src/models/Workout';
-import { DEFAULT_PLANS } from './data.default';
-import { TEST_PLANS, TEST_WEIGHTS, TEST_WORKOUTS } from './data.mock';
+import { TEST_WEIGHTS } from './data.mock';
+import useDrawer from './hooks/useDrawer';
 import useStoredReducer from './hooks/useStoredReducer';
-import { Plan } from './models/Plan';
+import { WeightCollection } from './models/WeightCollection';
 import Home from './pages/Home';
+import WeightTracker from './pages/WeightTracker';
 import { WorkoutList } from './pages/WorkoutList';
 import WorkoutPlanner from './pages/WorkoutPlanner';
-import planReducer, { PlanActionType } from './reducers/PlanReducer';
-import workoutReducer, { WorkoutAction, WorkoutActionType } from './reducers/WorkoutReducer';
-import WeightTracker from './pages/WeightTracker';
+import PlanProvider from './providers/PlanProvider';
+import WorkoutProvider from './providers/WorkoutProvider';
 import weightReducer, { WeightReducerActionType } from './reducers/WeightReducer';
-import { WeightCollection } from './models/WeightCollection';
-import useDrawer from './hooks/useDrawer';
 
 const darkTheme = createTheme({
   palette: {
@@ -33,27 +30,12 @@ enum Pages {
 }
 
 const DATA_VERSION = '1.0'
-const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
-const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
 const INITIAL_WEIGHT = import.meta.env.DEV ? TEST_WEIGHTS : new WeightCollection();
 
 function App() {
   const breakPoint = useMediaQuery(darkTheme.breakpoints.up('md'));
   const banner = useDrawer(true);
   const [currentPage, setCurrentPage] = useState<Pages>(Pages.Home);
-
-  const [workoutsList, workoutDispatch] = useStoredReducer(
-    `WORKOUT_${DATA_VERSION}`,
-    workoutReducer,
-    INITIAL_WORKOUTS,
-    (state) => ({ type: WorkoutActionType.INIT_WORKOUT, payload: state })
-  );
-  const [plansList, planDispatch] = useStoredReducer(
-    `WORKOUT_PLAN_${DATA_VERSION}`,
-    planReducer,
-    INITIAL_PLANS,
-    (state) => ({ type: PlanActionType.INIT_PLAN, payload: state })
-  )
 
   const [weightCollection, weightDispatch] = useStoredReducer(
     `WEIGHT_${DATA_VERSION}`,
@@ -124,54 +106,24 @@ function App() {
         </Fade>
       </TrapFocus>
       <main>
-        {currentPage === Pages.Home &&
-          <Home
-            workoutsList={workoutsList}
-            plansList={plansList}
-            onDelete={(deletedWorkout: Workout) => {
-              workoutDispatch({ type: WorkoutActionType.DELETE_WORKOUT, payload: [deletedWorkout] })
-            }}
-            onUpdate={(updatedWorkout: Workout) => {
-              workoutDispatch({ type: WorkoutActionType.UPDATE_WORKOUT, payload: [updatedWorkout] })
-            }}
-          />
-        }
-        {currentPage === Pages.Plans &&
-          <WorkoutPlanner
-            values={plansList}
-            workoutsList={workoutsList}
-            onAdd={(savedPlan: Plan) => {
-              planDispatch({ type: PlanActionType.ADD_PLAN, payload: [savedPlan] });
-            }}
-            onDelete={(deletedPlan: Plan) => {
-              planDispatch({ type: PlanActionType.DELETE_PLAN, payload: [deletedPlan] });
-            }}
-            onUpdate={(updatedPlan: Plan) => {
-              planDispatch({ type: PlanActionType.UPDATE_PLAN, payload: [updatedPlan] });
-            }}
-          />
-        }
-        {currentPage === Pages.Workouts &&
-          <WorkoutList
-            onAdd={(savedWorkout: Workout) => {
-              workoutDispatch({ type: WorkoutActionType.ADD_WORKOUT, payload: [savedWorkout] } as WorkoutAction)
-            }}
-            onDelete={(deletedWorkout: Workout) => {
-              workoutDispatch({ type: WorkoutActionType.DELETE_WORKOUT, payload: [deletedWorkout] })
-            }}
-            onUpdate={(updatedWorkout: Workout) => {
-              workoutDispatch({ type: WorkoutActionType.UPDATE_WORKOUT, payload: [updatedWorkout] })
-            }}
-            values={workoutsList}
-          />
-        }
+        <WorkoutProvider>
+          <PlanProvider>
+            {currentPage === Pages.Home &&
+              <Home />
+            }
+            {currentPage === Pages.Plans &&
+              <WorkoutPlanner />
+            }
+          </PlanProvider>
+          {currentPage === Pages.Workouts &&
+            <WorkoutList/>
+          }
+        </WorkoutProvider>
         {
           currentPage === Pages.Weight &&
           <WeightTracker
             weightsTrackedData={weightCollection}
             updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
-              console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
-
               weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
             }}
           />

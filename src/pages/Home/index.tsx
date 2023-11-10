@@ -8,30 +8,25 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import { Key, useEffect, useRef, useState } from "react";
+import { Key, useContext, useEffect, useRef, useState } from "react";
 import GymBookuIcon from "src/components/GymBookuIcon";
 import { SortableListContainer, SortableListItem } from "src/components/SortableList";
 import StreakCard from "src/components/StreakCard";
-import { WorkoutFormProps } from "src/components/WorkoutForm";
 import useDrawer from "src/hooks/useDrawer";
 import usePlannedWorkoutsList from "src/hooks/usePlannedWorkoutsList";
 import useStreakData from "src/hooks/useStreakData";
-import { Plan } from "src/models/Plan";
 import { Workout } from "src/models/Workout";
+import { PlanContext } from "src/providers/PlanProvider";
+import { WorkoutContext } from "src/providers/WorkoutProvider";
 import getToday from "src/utils/getToday";
 import WorkoutTrackerScreen from "./WorkoutTrackerScreen";
 
-type onAddType = WorkoutFormProps['onSave'];
-
 interface HomeProps {
-    workoutsList: Workout[];
-    plansList: Plan[];
-    onAdd?: onAddType;
-    onUpdate: onAddType;
-    onDelete?: onAddType;
 }
 
-function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
+function Home({}: HomeProps) {
+    const {workoutsList, updateWorkout: onUpdate} = useContext(WorkoutContext);
+    const {plansList} = useContext(PlanContext);
     const filterElementRef = useRef(null);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
     const [filteredPlanId, setFilteredPlanId] = useState('ALL');

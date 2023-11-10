@@ -14,23 +14,24 @@ import {
     SwipeableDrawer,
     Typography
 } from "@mui/material";
-import { Fragment, Key, useState } from "react";
+import { Fragment, Key, useContext, useState } from "react";
 import Puller from "src/components/Puller";
-import WorkoutForm, { WorkoutFormProps } from "src/components/WorkoutForm";
+import WorkoutForm from "src/components/WorkoutForm";
 import useDrawer from "src/hooks/useDrawer";
 import { TRACKING_VALUES_ICON, Workout } from "src/models/Workout";
+import { WorkoutContext } from 'src/providers/WorkoutProvider';
 import { ID } from "src/utils/getRandomId";
 
-type onAddType = WorkoutFormProps['onSave']
-
 interface WorkoutListProps {
-    values: Workout[];
-    onAdd: onAddType,
-    onUpdate: onAddType,
-    onDelete: onAddType,
 }
 
-export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListProps) {
+export function WorkoutList({}: WorkoutListProps) {
+    const {
+        workoutsList,
+        addWorkout: onAdd,
+        deleteWorkout: onDelete,
+        updateWorkout: onUpdate,
+    } = useContext(WorkoutContext);
     const bottomDrawer = useDrawer();
     const menuPopover = useDrawer();
     const [focussedValueId, setFocussedValueId] = useState<ID | null>(null);
@@ -48,7 +49,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
             <Stack padding={4} spacing={2}>
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout List</Typography>
                 <List>
-                    {values.map((valueItem) => (
+                    {workoutsList.map((valueItem) => (
                         <Fragment key={valueItem.id as Key}>
                             <ListItem
                                 key={valueItem.id as Key}
@@ -133,7 +134,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
             >
                 <MenuItem key={1} sx={{ justifyContent: 'space-between', width: '100%' }}
                     onClick={() => {
-                        setUpdateWorkout(values.find(({id}) => id === focussedValueId) || null);
+                        setUpdateWorkout(workoutsList.find(({id}) => id === focussedValueId) || null);
                         bottomDrawer.open();
                         onCloseMenu();
                     }}>
@@ -144,7 +145,7 @@ export function WorkoutList({ values, onAdd, onDelete, onUpdate }: WorkoutListPr
                 </MenuItem>
                 <MenuItem key={2} sx={{ justifyContent: 'space-between', width: '100%' }}
                     onClick={() => {
-                        const deletedWorkout = values.find(({ id }) => id === focussedValueId);
+                        const deletedWorkout = workoutsList.find(({ id }) => id === focussedValueId);
                         deletedWorkout && onDelete(deletedWorkout);
                         onCloseMenu();
                     }}

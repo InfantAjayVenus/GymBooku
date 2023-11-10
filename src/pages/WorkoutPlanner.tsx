@@ -16,25 +16,22 @@ import {
     SwipeableDrawer,
     Typography
 } from "@mui/material";
-import { Fragment, Key, useState } from "react";
-import PlanForm, { PlanFormProps } from "src/components/PlanForm";
+import { Fragment, Key, useContext, useState } from "react";
+import PlanForm from "src/components/PlanForm";
 import Puller from "src/components/Puller";
 import useDrawer from "src/hooks/useDrawer";
 import { Plan } from "src/models/Plan";
-import { Workout } from "src/models/Workout";
+import { PlanContext } from "src/providers/PlanProvider";
+import { WorkoutContext } from "src/providers/WorkoutProvider";
 import { ID } from "src/utils/getRandomId";
 
-type onAddType = PlanFormProps['onSave'];
 
 interface WorkoutPlannerProps {
-    values: Plan[];
-    workoutsList: Workout[];
-    onAdd: onAddType;
-    onDelete: onAddType;
-    onUpdate: onAddType;
 }
 
-function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: WorkoutPlannerProps) {
+function WorkoutPlanner({ }: WorkoutPlannerProps) {
+    const { plansList, addPlan, updatePlan, deletePlan } = useContext(PlanContext);
+    const { workoutsList } = useContext(WorkoutContext);
     const formDrawer = useDrawer();
     const menuPopover = useDrawer();
     const [menuAnchorElement, setMenuAnchorElement] = useState<HTMLElement | null>(null);
@@ -51,9 +48,9 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
         <>
             <Stack padding={4} spacing={2} position={'relative'}>
                 <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Workout Plans</Typography>
-                {values.length > 0 && (
+                {plansList.length > 0 && (
                     <List>
-                        {values.map((planItem) => (
+                        {plansList.map((planItem) => (
                             <Fragment key={planItem.id as Key}>
                                 <ListItem
                                     key={planItem.id as Key}
@@ -116,8 +113,8 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                         ))}
                     </List>
                 )}
-                {values.length === 0 && (
-                    <Container sx={{textAlign: 'center', mt: '8rem !important'}}>
+                {plansList.length === 0 && (
+                    <Container sx={{ textAlign: 'center', mt: '8rem !important' }}>
                         <Typography variant="h4">🤷</Typography>
                         <Typography variant="body1">You haven't planned for any workouts yet</Typography>
                         <Typography variant="body2" color={'GrayText'}>Create workout plans and make your workout routine effective 💪.</Typography>
@@ -149,9 +146,9 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                     {...{ planData: currentPlanData || undefined }}
                     onSave={(savedPlan) => {
                         if (currentPlanData) {
-                            onUpdate(savedPlan);
+                            updatePlan(savedPlan);
                         } else {
-                            onAdd(savedPlan);
+                            addPlan(savedPlan);
                         }
                         formDrawer.close();
                     }}
@@ -171,7 +168,7 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
             >
                 <MenuItem key={1} sx={{ justifyContent: 'space-between', width: '100%' }}
                     onClick={() => {
-                        setCurrentPlanData(values.find(({ id }) => id === currentPlanId) || null);
+                        setCurrentPlanData(plansList.find(({ id }) => id === currentPlanId) || null);
                         formDrawer.open();
                         onCloseMenu();
                     }}>
@@ -182,8 +179,8 @@ function WorkoutPlanner({ values, workoutsList, onAdd, onDelete, onUpdate }: Wor
                 </MenuItem>
                 <MenuItem key={2} sx={{ justifyContent: 'space-between', width: '100%' }}
                     onClick={() => {
-                        const deletedPlan = values.find(({ id }) => id === currentPlanId);
-                        deletedPlan && onDelete(deletedPlan);
+                        const deletedPlan = plansList.find(({ id }) => id === currentPlanId);
+                        deletedPlan && deletePlan(deletedPlan);
                         onCloseMenu();
                     }}
                 >
