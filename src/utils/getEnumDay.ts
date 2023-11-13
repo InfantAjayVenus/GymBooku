@@ -1,7 +1,6 @@
 import { DAYS_OF_WEEK } from "src/models/Plan";
 
-export default (): DAYS_OF_WEEK => {
-    const today = new Date();
+export default (today=new Date()): DAYS_OF_WEEK => {
     const localeToday = new Date(today.valueOf() - (today.getTimezoneOffset() * 60 * 1000));
     const localeDay = localeToday.toDateString().split(' ')[0].toLowerCase();
     
