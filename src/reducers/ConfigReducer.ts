@@ -1,3 +1,5 @@
+import Config from "src/models/Config";
+
 export enum ConfigActionType {
     INIT_CONFIG = 'INIT_CONFIG',
     UPDATE_CONFIG = 'UPDATE_CONFIG',

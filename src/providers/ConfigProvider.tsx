@@ -1,5 +1,6 @@
 import { createContext } from "react";
 import useStoredReducer from "src/hooks/useStoredReducer";
+import Config from "src/models/Config";
 import ConfigReducer, { ConfigActionType } from "src/reducers/ConfigReducer";
 
 interface ConfigContextType {

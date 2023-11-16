@@ -1,4 +1,4 @@
-class Config {
+export default class Config {
     constructor(private version: string, private config:any={}) {}
 
     get currentVersion() {
