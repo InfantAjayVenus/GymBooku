@@ -39,8 +39,8 @@ export class Workout {
     }
 
     static fromJSON(rawJSON: any) {
-        const { _id, _workout, _trackingValues, _workoutTrackData } = rawJSON;
-        const workout = new Workout(_workout, _trackingValues, _workoutTrackData.map((data: any) => WorkoutTrackCollection.fromJSON(data)), _id);
+        const { _id, _workoutName, _trackingValues, _workoutTrackData } = rawJSON;
+        const workout = new Workout(_workoutName, _trackingValues, _workoutTrackData.map((data: any) => WorkoutTrackCollection.fromJSON(data)), _id);
         return workout;
     }
 
