@@ -15,6 +15,7 @@ import WorkoutPlanner from './pages/WorkoutPlanner';
 import PlanProvider from './providers/PlanProvider';
 import WorkoutProvider from './providers/WorkoutProvider';
 import weightReducer, { WeightReducerActionType } from './reducers/WeightReducer';
+import SessionProvider from './providers/SessionProvider';
 
 const darkTheme = createTheme({
   palette: {
@@ -108,15 +109,17 @@ function App() {
       <main>
         <WorkoutProvider>
           <PlanProvider>
-            {currentPage === Pages.Home &&
-              <Home />
-            }
+            <SessionProvider>
+              {currentPage === Pages.Home &&
+                <Home />
+              }
+            </SessionProvider>
             {currentPage === Pages.Plans &&
               <WorkoutPlanner />
             }
           </PlanProvider>
           {currentPage === Pages.Workouts &&
-            <WorkoutList/>
+            <WorkoutList />
           }
         </WorkoutProvider>
         {
