@@ -1,7 +1,10 @@
-import { createContext } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import useStoredReducer from 'src/hooks/useStoredReducer';
 import { WorkoutSession } from 'src/models/WorkoutSession';
 import SessionReducer, { SessionActionType } from 'src/reducers/SessionReducer';
+import compareDatesOnly from 'src/utils/compareDatesOnly';
+import { ConfigContext } from './ConfigProvider';
+import { PlanContext } from './PlanProvider';
 
 type SessionEventType = (session: WorkoutSession) => void;
 
@@ -14,10 +17,13 @@ interface SessionContextType {
 export const SessionContext = createContext<SessionContextType>({
     sessionsList: [],
     latestSession: WorkoutSession.getSession([], new Date()),
-    updateSession: () => {},
+    updateSession: () => { },
 });
 export default function SessionProvider({ children }: { children: React.ReactNode }) {
 
+    const { config, updateConfig } = useContext(ConfigContext);
+    const { plansList } = useContext(PlanContext);
+    const latestSession = config.configData.latestSession || WorkoutSession.getSession(plansList, new Date());
     const [sessionsList, sessionDispatch] = useStoredReducer(
         'WORKOUT_SESSIONS',
         SessionReducer,
@@ -25,17 +31,24 @@ export default function SessionProvider({ children }: { children: React.ReactNod
         (state) => ({ type: SessionActionType.INIT_SESSION, payload: state }),
     );
 
-    /**
-     * TODO: 
-     * 1. Create a Stored State Hook
-     * 2. Create a hook/util to get the latest session and store it
-     * 3. Add a hook/util to create new session everyday
-     */
+    useEffect(() => {
+        if (!sessionsList.map((item) => item.id).includes(latestSession.id)) return;
+
+        updateConfig({ configData: { latestSession: WorkoutSession.getSession(plansList, new Date()) } });
+    }, [sessionsList]);
+
+    useEffect(() => {
+        updateConfig({ configData: { latestSession: latestSession.getUpdatedSession(plansList) } });
+    }, [plansList])
+
+    if (!compareDatesOnly(latestSession.sessionDate, new Date())) {
+        sessionDispatch({ type: SessionActionType.ADD_SESSION, payload: [latestSession] });
+    }
 
     return (
         <SessionContext.Provider value={{
             sessionsList,
-            latestSession: sessionsList[0],
+            latestSession,
             updateSession: (session: WorkoutSession) => sessionDispatch({ type: SessionActionType.UPDATE_SESSION, payload: [session] }),
         }}>
             {children}

@@ -23,6 +23,10 @@ export class WorkoutSession {
     return new WorkoutSession(plansForDate.map(({id}) => id), workoutsForFilteredPlans, getRandomId(), sessionDate);
   }
 
+  static getCopyFrom(session: WorkoutSession) {
+    return new WorkoutSession(session._plans, session._workouts, session._id, session._sessionDate);   
+  }
+
   static fromJSON(rawJSON: any) {
     if(!['_id', '_sessionDate', '_workouts', '_plans'].every((key) => key in rawJSON)) {
       throw new Error('Invalid JSON');
@@ -46,8 +50,16 @@ export class WorkoutSession {
     return this._plans;
   }
 
-  updateWorkoutsList(workoutsList: ID[]) {
+  updateSessionByPlan(plansList: Plan[]) {
+    const today = getEnumDay(this._sessionDate);
+    const plansForDate = plansList.filter(plan => plan.daysList.includes(today));
+    this._plans = Array.from(new Set([...plansForDate.map(item => item.id), ...this._plans]));
+    return WorkoutSession.getCopyFrom(this);
+  }
+
+  updateSessionByWorkout(workoutsList: ID[]) {
     this._workouts = workoutsList;
+    return WorkoutSession.getCopyFrom(this);
   }
   
 }
