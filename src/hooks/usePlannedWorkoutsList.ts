@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Plan } from "src/models/Plan";
 import { Workout } from "src/models/Workout";
 import { ID } from "src/utils/getRandomId";
-import getToday from "src/utils/getToday";
+import getToday from "src/utils/getEnumDay";
 
 export default function usePlannedWorkoutsList(workoutsList: Workout[], plansList: Plan[]): Workout[] {
     const [plannedWorkoutsList, setPlannedWorkoutsList] = useState<Workout[]>([])
