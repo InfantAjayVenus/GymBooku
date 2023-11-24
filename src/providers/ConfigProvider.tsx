@@ -10,7 +10,7 @@ interface ConfigContextType {
 
 export const ConfigContext = createContext<ConfigContextType>({
     config: new Config('1.0'),
-    updateConfig: (_: any) => {},
+    updateConfig: (_: any) => { },
 });
 
 export default function ConfigProvider({ children }: { children: React.ReactNode }) {
@@ -20,8 +20,13 @@ export default function ConfigProvider({ children }: { children: React.ReactNode
         new Config('1.0'),
         (state) => ({ type: ConfigActionType.INIT_CONFIG, payload: state })
     )
+
     return (
-        <ConfigContext.Provider value={{ config, updateConfig: (config: any) => configDispatch({ type: ConfigActionType.UPDATE_CONFIG, payload: config }) }}>
+        <ConfigContext.Provider
+            value={{
+                config,
+                updateConfig: (updatedConfig: any) => configDispatch({ type: ConfigActionType.UPDATE_CONFIG, payload: { ...updatedConfig } })
+            }}>
             {children}
         </ConfigContext.Provider>
     );
