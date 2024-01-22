@@ -1,11 +1,12 @@
-import { Dispatch, useEffect, useReducer } from "react";
+import { Dispatch, useEffect, useReducer, useState } from "react";
 
 export default function useStoredReducer<StateType, ActionType>(
     storeKey: string,
     reducer: (state: StateType, action: ActionType) => StateType,
     initialState: StateType,
     initializeActionGenerator: (restoreState: StateType) => ActionType
-): [StateType, Dispatch<ActionType>] {
+): [StateType, Dispatch<ActionType>, Boolean] {
+    const [isLoaded, setIsLoaded] = useState(false);
     const [state, dispatch] = useReducer((state: StateType, action: ActionType) => {
         const reducedState = reducer(state, action);
 
@@ -24,8 +25,9 @@ export default function useStoredReducer<StateType, ActionType>(
             } else {
                 dispatch(initializeActionGenerator(JSON.parse(storedData)));
             }
+            setIsLoaded(true);
         })();
     }, [])
 
-    return [state as StateType, dispatch as Dispatch<ActionType>];
+    return [state as StateType, dispatch as Dispatch<ActionType>, isLoaded];
 }
