@@ -24,7 +24,7 @@ export class WorkoutSession {
   }
 
   static getCopyFrom(session: WorkoutSession) {
-    return new WorkoutSession(session._plans, session._workouts, session._id, session._sessionDate);   
+    return new WorkoutSession([...session._plans], [...session._workouts], session._id, session._sessionDate);   
   }
 
   static fromJSON(rawJSON: any) {
@@ -53,8 +53,14 @@ export class WorkoutSession {
 
   updateSessionByPlan(plansList: Plan[]) {
     const today = getEnumDay(this._sessionDate);
+
     const plansForDate = plansList.filter(plan => plan.daysList.includes(today));
     this._plans = Array.from(new Set([...plansForDate.map(item => item.id), ...this._plans]));
+
+    this._workouts = Array.from(new Set(plansForDate.reduce((acc, planItem) => {
+      return [...acc, ...planItem.workoutsList]
+    }, [] as ID[])));
+
     return WorkoutSession.getCopyFrom(this);
   }
 
