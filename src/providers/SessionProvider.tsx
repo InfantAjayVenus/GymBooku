@@ -1,54 +1,58 @@
 import { createContext, useContext, useEffect } from 'react';
 import useStoredReducer from 'src/hooks/useStoredReducer';
+import useStoredState from 'src/hooks/useStoredState';
 import { WorkoutSession } from 'src/models/WorkoutSession';
 import SessionReducer, { SessionActionType } from 'src/reducers/SessionReducer';
-import compareDatesOnly from 'src/utils/compareDatesOnly';
-import { ConfigContext } from './ConfigProvider';
+import { ID } from 'src/utils/getRandomId';
 import { PlanContext } from './PlanProvider';
 
 type SessionEventType = (session: WorkoutSession) => void;
 
 interface SessionContextType {
     sessionsList: Array<WorkoutSession>;
-    latestSession: WorkoutSession;
+    currentSession?: WorkoutSession;
+    addSession: SessionEventType
     updateSession: SessionEventType
 }
 
 export const SessionContext = createContext<SessionContextType>({
     sessionsList: [],
-    latestSession: WorkoutSession.getSession([], new Date()),
+    currentSession: WorkoutSession.getSession([], new Date()),
+    addSession: () => { },
     updateSession: () => { },
 });
 export default function SessionProvider({ children }: { children: React.ReactNode }) {
 
-    const { config, updateConfig } = useContext(ConfigContext);
     const { plansList } = useContext(PlanContext);
-    const latestSession = config.configData.latestSession || WorkoutSession.getSession(plansList, new Date());
-    const [sessionsList, sessionDispatch] = useStoredReducer(
+    const [sessionsList, sessionDispatch, hasSessionLoaded] = useStoredReducer(
         'WORKOUT_SESSIONS',
         SessionReducer,
         [],
         (state) => ({ type: SessionActionType.INIT_SESSION, payload: state }),
     );
+    const [currentSessionId, setCurrentSessionId] = useStoredState<ID>(
+        '',
+        'WORKOUT_CURRENT_SESSION',
+        (id) => id
+    );
 
     useEffect(() => {
-        if (!sessionsList.map((item) => item.id).includes(latestSession.id)) return;
+        if(!hasSessionLoaded) return;
+        const currentSession = sessionsList.find(item => item.id === currentSessionId);
+        if (!currentSession) return;
 
-        updateConfig({ configData: { latestSession: WorkoutSession.getSession(plansList, new Date()) } });
-    }, [sessionsList]);
+        sessionDispatch({ type: SessionActionType.UPDATE_SESSION, payload: [currentSession.updateSessionByPlan(plansList)] })
+    }, [plansList]);
 
-    useEffect(() => {
-        updateConfig({ configData: { latestSession: latestSession.getUpdatedSession(plansList) } });
-    }, [plansList])
-
-    if (!compareDatesOnly(latestSession.sessionDate, new Date())) {
-        sessionDispatch({ type: SessionActionType.ADD_SESSION, payload: [latestSession] });
-    }
 
     return (
         <SessionContext.Provider value={{
             sessionsList,
-            latestSession,
+            currentSession: sessionsList.find(session => session.id === currentSessionId),
+            addSession: (session: WorkoutSession) => {
+                sessionDispatch({type: SessionActionType.ADD_SESSION, payload: [session]});
+                setCurrentSessionId(session.id);
+            },
             updateSession: (session: WorkoutSession) => sessionDispatch({ type: SessionActionType.UPDATE_SESSION, payload: [session] }),
         }}>
             {children}
