@@ -29,16 +29,17 @@ export class WorkoutSession {
 
   static fromJSON(rawJSON: any) {
     if(!['_id', '_sessionDate', '_workouts', '_plans'].every((key) => key in rawJSON)) {
+      console.error(rawJSON);
       throw new Error('Invalid JSON');
     }
-    return new WorkoutSession(rawJSON._plansList, rawJSON._workouts, rawJSON._id, new Date(rawJSON._sessionDate));
+    return new WorkoutSession(rawJSON._plans, rawJSON._workouts, rawJSON._id, new Date(rawJSON._sessionDate));
   }
 
   get id() {
     return this._id;
   }
 
-  get sessionDate() {
+  get date() {
     return this._sessionDate;
   }
 
