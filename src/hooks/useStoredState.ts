@@ -4,7 +4,7 @@ function useStoredState<T>(initialValue: T, key: string, restore: (rawJSON: any)
   const [value, setValue] = useState<T>(() => {
     const storedValue = localStorage.getItem(key);
     if (storedValue) {
-      return restore(JSON.parse(JSON.stringify(storedValue)));
+      return restore(JSON.parse(storedValue));
     } else {
       return initialValue;
     }
