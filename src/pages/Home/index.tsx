@@ -1,47 +1,51 @@
-import { arrayMove } from "@dnd-kit/sortable";
-import { ArrowDropDown, CheckCircleOutline } from "@mui/icons-material";
+import { Add, ArrowDropDown, CheckCircleOutline } from "@mui/icons-material";
 import {
+    Box,
     Chip,
+    Fab,
     List,
     ListItemButton,
     Popover,
     Stack,
     Typography
 } from "@mui/material";
-import { Key, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import GymBookuIcon from "src/components/GymBookuIcon";
-import { SortableListContainer, SortableListItem } from "src/components/SortableList";
 import StreakCard from "src/components/StreakCard";
 import useDrawer from "src/hooks/useDrawer";
-import usePlannedWorkoutsList from "src/hooks/usePlannedWorkoutsList";
 import useStreakData from "src/hooks/useStreakData";
 import { Workout } from "src/models/Workout";
 import { PlanContext } from "src/providers/PlanProvider";
 import { WorkoutContext } from "src/providers/WorkoutProvider";
-import getToday from "src/utils/getToday";
+import getToday from "src/utils/getEnumDay";
 import WorkoutTrackerScreen from "./WorkoutTrackerScreen";
+import { SessionContext } from "src/providers/SessionProvider";
+import { SortableListContainer, SortableListItem } from "src/components/SortableList";
+import { WorkoutSession } from "src/models/WorkoutSession";
 
-interface HomeProps {
-}
+interface HomeProps { };
 
-function Home({}: HomeProps) {
-    const {workoutsList, updateWorkout: onUpdate} = useContext(WorkoutContext);
-    const {plansList} = useContext(PlanContext);
+function Home({ }: HomeProps) {
+    const { currentSession, addSession, updateSession } = useContext(SessionContext);
+    const { workoutsList, updateWorkout: onUpdate } = useContext(WorkoutContext);
+    const { plansList } = useContext(PlanContext);
     const filterElementRef = useRef(null);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+
     const [filteredPlanId, setFilteredPlanId] = useState('ALL');
-    const [workoutIndex, setWorkoutIndex] = useState([] as string[]);
 
     const filterPopup = useDrawer();
     const streakData = useStreakData(workoutsList);
-    const plannedWorkouts = usePlannedWorkoutsList(
-        workoutsList,
-        filteredPlanId === 'ALL' ? plansList : plansList.filter(item => item.id === filteredPlanId)
-    );
 
-    useEffect(() => {
-        setWorkoutIndex(new Array(plannedWorkouts.length).fill(0).map((_, index) => index.toString()));
-    }, [plannedWorkouts]);
+    /**
+     * TODO:
+     * Change SessionWorkoutsList populator to preserve workout order
+     */
+
+    const sessionWorkoutsList = currentSession?.workouts?.map((workoutId) => {
+        const workout = workoutsList.find(workoutItem => workoutItem.id === workoutId);
+        return workout!;
+    }, [] as Workout[]) || [];
 
     useEffect(() => {
         filterPopup.close();
@@ -67,54 +71,45 @@ function Home({}: HomeProps) {
                         }}
                     />
                 </Stack>
-
                 <SortableListContainer
-                    sx={{
-                        pb: '2.5rem',
-                    }}
-                    idList={workoutIndex}
-                    handleDragEnd={(event) => {
-                        const { active, over } = event;
-                        console.log('DEBUG:event', event);
-
-                        if (active.id !== over?.id) {
-                            const oldIndex = workoutIndex.findIndex((value) => value === active.id);
-                            const newIndex = workoutIndex.findIndex((value) => value === over?.id);
-
-                            setWorkoutIndex(arrayMove(workoutIndex, oldIndex, newIndex));
-                        }
-
+                    itemList={currentSession?.workouts || []}
+                    updateOnDragEnd={(updatedWorkoutIds) => {
+                        const updatedLatestSession = currentSession?.updateSessionByWorkout(updatedWorkoutIds);
+                        updatedLatestSession && updateSession(updatedLatestSession);
+                        /**
+                         * TODO:
+                         * Update the session with the changes
+                         */
                     }}
                 >
-                    {workoutIndex.map((workoutItemIndex) => {
+                    {sessionWorkoutsList.map((workoutItem, index) => {
+                        if (!workoutItem) return;
                         return (
                             <SortableListItem
-                                key={workoutItemIndex as Key}
-                                id={workoutItemIndex.toString()}
-                                sx={{
-                                    
-                                    borderBottom: '1px gray solid'
-                                }}
+                                key={workoutItem.id as React.Key}
+                                id={workoutItem.id as string}
+                                index={index}
                             >
                                 <Stack
                                     py='0.5rem'
                                     direction={'row'}
                                     justifyContent={'space-between'}
                                     width={'100%'}
-                                    onClick={() => setSelectedWorkout(plannedWorkouts[Number(workoutItemIndex)])}
+                                    onClick={() => setSelectedWorkout(workoutItem)}
                                 >
                                     <Typography
                                         variant="body1"
-                                        color={!!plannedWorkouts[Number(workoutItemIndex)].getTodayTrackedData() ? 'text.disabled' : ''}
+                                        color={!!workoutItem.getTodayTrackedData() ? 'text.disabled' : ''}
                                     >
-                                        {plannedWorkouts[Number(workoutItemIndex)].name}
+                                        {workoutItem.name}
                                     </Typography>
-                                    {!!plannedWorkouts[Number(workoutItemIndex)].getTodayTrackedData() && <CheckCircleOutline color="disabled" />}
+                                    {!!workoutItem.getTodayTrackedData() && <CheckCircleOutline color="disabled" />}
                                 </Stack>
                             </SortableListItem>
-                        )
-                    }).filter((element): element is JSX.Element => !!element)}
+                        );
+                    })}
                 </SortableListContainer>
+
             </Stack>
             <WorkoutTrackerScreen
                 selectedWorkout={selectedWorkout}
@@ -132,6 +127,16 @@ function Home({}: HomeProps) {
                 }}
                 onClose={() => setSelectedWorkout(null)}
             />
+<Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
+                <Fab size="medium" color="primary" aria-label="add workout"
+                    onClick={() => {
+                        const newSession = WorkoutSession.getSession(plansList);
+                        addSession(newSession);
+                    }}
+                >
+                    <Add />
+                </Fab>
+            </Box>
             <Popover
                 open={filterPopup.isOpen as boolean}
                 anchorEl={filterElementRef.current}
