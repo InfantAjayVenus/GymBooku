@@ -16,7 +16,7 @@ export const ConfigContext = createContext<ConfigContextType>({
 });
 
 export default function ConfigProvider({ children }: { children: React.ReactNode }) {
-    const [config, configDispatch] = useStoredReducer(
+    const [config, configDispatch, hasConfigLoaded] = useStoredReducer(
         'WORKOUT_CONFIG',
         ConfigReducer,
         new Config('1.0', new Date()),
@@ -24,12 +24,13 @@ export default function ConfigProvider({ children }: { children: React.ReactNode
     )
 
     useRecurringTimer(() => {
+        if(!hasConfigLoaded) return;
         const newDate = new Date();
         if (compareDatesOnly(newDate, config.date)) return;
         configDispatch({ type: ConfigActionType.UPDATE_CONFIG_DATE, payload: newDate as any });
     }, (1000 * 60) * 5);
 
-    return (
+    return hasConfigLoaded && (
         <ConfigContext.Provider
             value={{
                 config,
