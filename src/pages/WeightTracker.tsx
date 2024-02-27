@@ -79,7 +79,8 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   }, [debouncedWeightValue]);
 
   useEffect(() => {
-    setInputValue(weightValue?.toString() || '');
+    const displayWeightValue = weightValue?.toString() || '';
+    setInputValue(displayWeightValue === 'NaN' ? '' : displayWeightValue);
   }, [weightValue]);
 
   return (
