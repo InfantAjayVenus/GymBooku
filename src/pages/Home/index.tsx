@@ -1,8 +1,9 @@
-import { Add, ArrowDropDown, CheckCircleOutline, FitnessCenterRounded } from "@mui/icons-material";
+import { Add, ArrowDropDown, CheckCircleOutline, DirectionsRunOutlined } from "@mui/icons-material";
 import {
     Box,
     Button,
     Chip,
+    Drawer,
     Fab,
     List,
     ListItemButton,
@@ -10,19 +11,19 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Key, useContext, useEffect, useRef, useState } from "react";
 import GymBookuIcon from "src/components/GymBookuIcon";
+import { SortableListContainer, SortableListItem } from "src/components/SortableList";
 import StreakCard from "src/components/StreakCard";
 import useDrawer from "src/hooks/useDrawer";
 import useStreakData from "src/hooks/useStreakData";
 import { Workout } from "src/models/Workout";
+import { WorkoutSession } from "src/models/WorkoutSession";
 import { PlanContext } from "src/providers/PlanProvider";
+import { SessionContext } from "src/providers/SessionProvider";
 import { WorkoutContext } from "src/providers/WorkoutProvider";
 import getToday from "src/utils/getEnumDay";
 import WorkoutTrackerScreen from "./WorkoutTrackerScreen";
-import { SessionContext } from "src/providers/SessionProvider";
-import { SortableListContainer, SortableListItem } from "src/components/SortableList";
-import { WorkoutSession } from "src/models/WorkoutSession";
 
 interface HomeProps { };
 
@@ -37,6 +38,8 @@ function Home({ }: HomeProps) {
 
     const filterPopup = useDrawer();
     const streakData = useStreakData(workoutsList);
+
+    const workoutsListDrawer = useDrawer();
 
     /**
      * TODO:
@@ -60,18 +63,21 @@ function Home({ }: HomeProps) {
                     <Typography variant="h5" fontWeight={'bold'} component={'h3'}>GymBooku</Typography>
                 </Stack>
                 <StreakCard {...streakData} />
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                    <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
-                    <Chip
-                        ref={filterElementRef}
-                        size="small"
-                        label={'All'}
-                        deleteIcon={<ArrowDropDown />}
-                        onDelete={() => {
-                            filterPopup.toggle();
-                        }}
-                    />
-                </Stack>
+                {!!currentSession &&
+                    <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                        <Typography variant="body1" fontWeight={'bold'}>Today's Workouts</Typography>
+                        <Chip
+                            ref={filterElementRef}
+                            size="small"
+                            label={'All'}
+                            deleteIcon={<ArrowDropDown />}
+                            onDelete={() => {
+                                filterPopup.toggle();
+                            }}
+                        />
+                    </Stack>
+                }
+
                 <SortableListContainer
                     itemList={currentSession?.workouts || []}
                     updateOnDragEnd={(updatedWorkoutIds) => {
@@ -110,9 +116,10 @@ function Home({ }: HomeProps) {
                         );
                     })}
                 </SortableListContainer>
-                <Button
-                    startIcon={<FitnessCenterRounded />}
-                    variant="contained"
+                {!currentSession && <Button
+                    startIcon={<DirectionsRunOutlined />}
+                    size="large"
+                    variant="outlined"
                     onClick={() => {
                         const newSession = WorkoutSession.getSession(plansList);
                         addSession(newSession);
@@ -120,6 +127,7 @@ function Home({ }: HomeProps) {
                 >
                     Start Workout Session
                 </Button>
+                }
             </Stack>
             <WorkoutTrackerScreen
                 selectedWorkout={selectedWorkout}
@@ -137,16 +145,18 @@ function Home({ }: HomeProps) {
                 }}
                 onClose={() => setSelectedWorkout(null)}
             />
-<Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
-                <Fab size="medium" color="primary" aria-label="add workout"
-                    onClick={() => {
-                        const newSession = WorkoutSession.getSession(plansList);
-                        addSession(newSession);
-                    }}
-                >
-                    <Add />
-                </Fab>
-            </Box>
+            {!!currentSession &&
+                <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
+                    <Fab size="medium" color="primary" aria-label="add workout"
+                        onClick={() => {
+                            workoutsListDrawer.open();
+                        }}
+                    >
+                        <Add />
+                    </Fab>
+                </Box>
+            }
+
             <Popover
                 open={filterPopup.isOpen as boolean}
                 anchorEl={filterElementRef.current}
@@ -169,6 +179,24 @@ function Home({ }: HomeProps) {
                     })}
                 </List>
             </Popover>
+
+            <Drawer
+                open={workoutsListDrawer.isOpen as boolean}
+                onClose={workoutsListDrawer.close}
+                anchor="bottom"
+            >
+                <List>
+                    {workoutsList.filter(item => !sessionWorkoutsList.map(({ id }) => id).includes(item.id)).map(workoutItem => (
+                        <ListItemButton
+                            key={workoutItem.id as Key}
+                            onClick={() => {
+                                currentSession?.updateSessionByWorkout([...sessionWorkoutsList.map(({ id }) => id), workoutItem.id]);
+                                workoutsListDrawer.close();
+                            }}
+                        >{workoutItem.name}</ListItemButton>
+                    ))}
+                </List>
+            </Drawer>
         </>
     );
 }
