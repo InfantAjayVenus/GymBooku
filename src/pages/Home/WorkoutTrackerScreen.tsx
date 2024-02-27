@@ -18,15 +18,17 @@ import WorkoutTrackCard from "src/components/WorkoutTrackCard";
 import useDrawer from "src/hooks/useDrawer";
 import { Workout } from "src/models/Workout";
 import { WorkoutTrackCollection } from "src/models/WorkoutRecord";
+import { ID } from "src/utils/getRandomId";
 
 interface WorkoutTrackerScreenProps {
     selectedWorkout: Workout | null;
     onSave: (updatedWorkoutTrackCollection: WorkoutTrackCollection) => void;
-    onDelete: (deletedWorkoutTrackCollection: WorkoutTrackCollection) => void;
+    onClear: (deletedWorkoutTrackCollection: WorkoutTrackCollection) => void;
+    onDelete: (deletedWorkoutId: ID) => void
     onClose: () => void;
 }
 
-export default function WorkoutTrackerScreen({ selectedWorkout, onSave, onDelete, onClose }: WorkoutTrackerScreenProps) {
+export default function WorkoutTrackerScreen({ selectedWorkout, onSave, onClear, onDelete, onClose }: WorkoutTrackerScreenProps) {
     const workoutTrackPage = useDrawer();
     const [workoutTrackCollection, setWorkoutTrackCollection] = useState<WorkoutTrackCollection | null>(null);
 
@@ -146,23 +148,49 @@ export default function WorkoutTrackerScreen({ selectedWorkout, onSave, onDelete
                         )}
                     </DialogContent>
                     <DialogActions>
-                        <Button color="error" onClick={() => {
-                            if (!workoutTrackCollection) return;
-                            onDelete(workoutTrackCollection);
-                            workoutTrackPage.close();
-                        }}>
-                            Delete
-                        </Button>
-                        <Button
-                            color="primary"
-                            disabled={!workoutTrackCollection?.trackedData.every(item => item.hasAllRequiredValues(selectedWorkout.trackingValues))}
-                            onClick={() => {
-                                if (!workoutTrackCollection) return;
-                                onSave(workoutTrackCollection);
-                                workoutTrackPage.close();
-                            }}>
-                            save
-                        </Button>
+                        <Stack width={'100%'} paddingX={'32'} direction={'row'} justifyContent={'space-between'} >
+                            <Button
+                                color="error"
+                                onClick={() => {
+                                    if (!selectedWorkout) return;
+                                    if(workoutTrackCollection) {
+                                        onClear(workoutTrackCollection);
+                                    }
+                                    workoutTrackPage.close();
+                                    onDelete(selectedWorkout.id);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                            <Stack direction={'row'}>
+                                <Button
+                                    color="error"
+                                    variant="outlined"
+                                    onClick={() => {
+                                        if (!workoutTrackCollection) return;
+                                        onClear(workoutTrackCollection);
+                                        workoutTrackPage.close();
+                                    }}>
+                                    Clear
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant="outlined"
+                                    disabled={!workoutTrackCollection?.trackedData.every(item => item.hasAllRequiredValues(selectedWorkout.trackingValues))}
+                                    onClick={() => {
+                                        if (!workoutTrackCollection) return;
+                                        onSave(workoutTrackCollection);
+                                        workoutTrackPage.close();
+                                    }}>
+                                    save
+                                </Button>
+                            </Stack>
+
+
+                        </Stack>
+
+
+
                     </DialogActions>
                 </>
             )}

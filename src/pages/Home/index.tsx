@@ -137,11 +137,14 @@ function Home({ }: HomeProps) {
                     updatedWorkoutTrackCollection && selectedWorkout.workoutTrackData.push(updatedWorkoutTrackCollection);
                     onUpdate(Workout.copyFrom(selectedWorkout));
                 }}
-                onDelete={(deletedWorkoutTrackCollection) => {
+                onClear={(deletedWorkoutTrackCollection) => {
                     if (!selectedWorkout) return;
                     if (!selectedWorkout.workoutTrackData.find(({ id }) => id === deletedWorkoutTrackCollection?.id)) return;
                     selectedWorkout.workoutTrackData = selectedWorkout.workoutTrackData.filter(({ id }) => id !== deletedWorkoutTrackCollection?.id);
                     onUpdate(Workout.copyFrom(Workout.copyFrom(selectedWorkout)));
+                }}
+                onDelete={(deletedWorkoutId) => {
+                    currentSession?.updateSessionByWorkout([...sessionWorkoutsList.map(({id}) => id).filter((id) => id !== deletedWorkoutId)]);
                 }}
                 onClose={() => setSelectedWorkout(null)}
             />
