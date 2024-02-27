@@ -1,6 +1,7 @@
-import { Add, ArrowDropDown, CheckCircleOutline } from "@mui/icons-material";
+import { Add, ArrowDropDown, CheckCircleOutline, FitnessCenterRounded } from "@mui/icons-material";
 import {
     Box,
+    Button,
     Chip,
     Fab,
     List,
@@ -109,7 +110,16 @@ function Home({ }: HomeProps) {
                         );
                     })}
                 </SortableListContainer>
-
+                <Button
+                    startIcon={<FitnessCenterRounded />}
+                    variant="contained"
+                    onClick={() => {
+                        const newSession = WorkoutSession.getSession(plansList);
+                        addSession(newSession);
+                    }}
+                >
+                    Start Workout Session
+                </Button>
             </Stack>
             <WorkoutTrackerScreen
                 selectedWorkout={selectedWorkout}
