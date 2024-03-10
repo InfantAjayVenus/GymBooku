@@ -7,12 +7,14 @@ import {
   DialogContent,
   Divider,
   Fab,
+  Menu,
   OutlinedInput,
   Paper,
   Stack,
   SwipeableDrawer,
   Typography
 } from "@mui/material";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import React, { useEffect, useState } from "react";
 import Puller from "src/components/Puller";
 import useDebounce from "src/hooks/useDebounce";
@@ -22,6 +24,8 @@ import { Weight, WeightCollection } from "src/models/WeightCollection";
 import getAverage from "src/utils/getAverage";
 import { ID } from "src/utils/getRandomId";
 import getWeek from "src/utils/getWeek";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 interface WeightTrackerProps {
   weightsTrackedData: WeightCollection;
@@ -31,10 +35,13 @@ interface WeightTrackerProps {
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
   const goalDialog = useDrawer();
+  const datePicker = useDrawer();
+
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
   const [goalWeight, setGoalWeight] = useState<number>(0);
+  const [datePickerAnchorElement, setDatePickerAnchorElement] = useState<HTMLElement | null>(null);
 
   const debouncedWeightValue = useDebounce(inputValue, 600);
   const weeklyWeights = useWeeklyWeightTrackedData(weightsTrackedData.weights);
@@ -69,6 +76,11 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     const updatedWeightTrackedData = weightsTrackedData.getCopy();
     updatedWeightTrackedData.weights[updateWeightIndex] = new Weight(updatedWeightValue, updatedWeight?.timestamp, updatedWeight?.id);
     updateWeightsTrackedData(updatedWeightTrackedData);
+  }
+
+  const onCloseDatePicker = () => {
+    datePicker.close();
+    setDatePickerAnchorElement(null);
   }
 
 
@@ -209,17 +221,56 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         <Puller />
         <Stack spacing={2} padding={4}>
           <Typography variant="h6">Track Weight</Typography>
-          <Typography variant="caption">
-            {selectedWeight &&
-              weightsTrackedData
-                .getWeightById(selectedWeight)
-                ?.timestamp
-                .toLocaleDateString(
-                  'en-GB',
-                  { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
-                )
-            }
-          </Typography>
+          <>
+            <Button
+              variant="text"
+              sx={{
+                justifyContent: 'left'
+              }}
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                datePicker.open();
+                setDatePickerAnchorElement(event.currentTarget);
+              }}
+            >
+              {selectedWeight &&
+                weightsTrackedData
+                  .getWeightById(selectedWeight)
+                  ?.timestamp
+                  .toLocaleDateString(
+                    'en-GB',
+                    { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
+                  )
+              }
+            </Button>
+            <Menu
+              anchorEl={datePickerAnchorElement}
+              open={datePicker.isOpen as boolean}
+              onClose={onCloseDatePicker}
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar
+                  value={selectedWeight && dayjs(
+                    weightsTrackedData
+                      .getWeightById(selectedWeight)
+                      ?.timestamp
+                      .toLocaleDateString(
+                        'en-GB',
+                        { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
+                      )
+                  )}
+                  onChange={(date, state) => {
+                    if (state === 'finish') {
+                      console.log('DATE_CHANGED:', date.valueOf(), state);
+                      /**
+                       * TODO
+                       * Update State with the new date Value
+                       */
+                    }
+                  }}
+                />
+              </LocalizationProvider>
+            </Menu>
+          </>
           <OutlinedInput
             autoFocus
             endAdornment="kg"
