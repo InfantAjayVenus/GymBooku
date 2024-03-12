@@ -90,8 +90,8 @@ export class Weight {
     return this._timestamp;
   }
 
-  getCopy(updatedWeightValue = this._weightValue) {
-    return new Weight(updatedWeightValue, this._timestamp, this._id);
+  getCopy({updatedWeightValue=this._weightValue, updatedDate=this._timestamp}) {
+    return new Weight(updatedWeightValue, updatedDate, this._id);
   }
 }
 
