@@ -1,5 +1,7 @@
+import dayjs from "dayjs";
+import WeekOfYear from 'dayjs/plugin/weekOfYear';
+
 export default function getWeek(date: Date): number {
-  const yearStart = new Date(date.getFullYear(), 0, 1);
-  const daysDifference = (date.valueOf() - yearStart.valueOf()) / (24 * 60 * 60 * 1000);
-  return Math.ceil((daysDifference + yearStart.getDay()) / 7);
+  dayjs.extend(WeekOfYear)
+  return dayjs(date).week();
 }
