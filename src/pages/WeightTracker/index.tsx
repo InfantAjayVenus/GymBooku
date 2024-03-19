@@ -7,25 +7,22 @@ import {
   DialogContent,
   Divider,
   Fab,
-  Menu,
   OutlinedInput,
   Paper,
   Stack,
   SwipeableDrawer,
   Typography
 } from "@mui/material";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import Puller from "src/components/Puller";
-import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
 import { Weight, WeightCollection } from "src/models/WeightCollection";
+import { WeightTrackForm } from "src/pages/WeightTracker/WeightTrackForm";
 import getAverage from "src/utils/getAverage";
-import { ID } from "src/utils/getRandomId";
 import getWeek from "src/utils/getWeek";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import isTimestampToday from "src/utils/isTimestampToday";
 
 interface WeightTrackerProps {
   weightsTrackedData: WeightCollection;
@@ -35,65 +32,21 @@ interface WeightTrackerProps {
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
   const goalDialog = useDrawer();
-  const datePicker = useDrawer();
 
-  const [inputValue, setInputValue] = useState('');
-  const [weightValue, setWeightValue] = useState(NaN);
-  const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
+  const [selectedWeight, setSelectedWeight] = useState<Weight>(new Weight(0, new Date()));
   const [goalWeight, setGoalWeight] = useState<number>(0);
-  const [datePickerAnchorElement, setDatePickerAnchorElement] = useState<HTMLElement | null>(null);
 
-  const debouncedWeightValue = useDebounce(inputValue, 600);
   const weeklyWeights = useWeeklyWeightTrackedData(weightsTrackedData.weights);
   const currentWeekWeights = weeklyWeights.find(({ week }) => Number(week) === getWeek(new Date())) || {} as WeeklyWeights;
   const currentWeekAverage = getAverage(currentWeekWeights?.weights?.map(item => item.value) || [], 1);
 
-  const resetSelectedWeight = () => {
-    if (!selectedWeight) return;
-    const selectedWeightValue = weightsTrackedData.getWeightById(selectedWeight)?.value || null;
-    selectedWeightValue && setWeightValue(selectedWeightValue);
-  }
-
   useEffect(() => {
     const todayWeight = weightsTrackedData.getWeightByDate(new Date());
-    todayWeight && setSelectedWeight(todayWeight.id);
+    todayWeight && setSelectedWeight(todayWeight);
     weightsTrackedData?.goal && setGoalWeight(weightsTrackedData.goal);
   }, [])
 
-  useEffect(resetSelectedWeight, [selectedWeight])
 
-  const onAddWeight = (weightValue: number) => {
-    const updatedWeightsData = weightsTrackedData.getCopy();
-    const newWeight = new Weight(weightValue);
-    updatedWeightsData.weights.push(newWeight);
-    updateWeightsTrackedData(updatedWeightsData);
-    setSelectedWeight(newWeight.id);
-  }
-
-  const onUpdateWeight = (updatedWeightId: ID, updatedWeightValue: number) => {
-    const updatedWeight = weightsTrackedData.getWeightById(updatedWeightId);
-    const updateWeightIndex = weightsTrackedData.weights.findIndex(item => item.id === updatedWeightId);
-    const updatedWeightTrackedData = weightsTrackedData.getCopy();
-    updatedWeightTrackedData.weights[updateWeightIndex] = new Weight(updatedWeightValue, updatedWeight?.timestamp, updatedWeight?.id);
-    updateWeightsTrackedData(updatedWeightTrackedData);
-  }
-
-  const onCloseDatePicker = () => {
-    datePicker.close();
-    setDatePickerAnchorElement(null);
-  }
-
-
-  useEffect(() => {
-    const updatedWeightValue = parseFloat(debouncedWeightValue);
-
-    setWeightValue(isNaN(updatedWeightValue) ? NaN : updatedWeightValue);
-  }, [debouncedWeightValue]);
-
-  useEffect(() => {
-    const displayWeightValue = weightValue?.toString() || '';
-    setInputValue(displayWeightValue === 'NaN' ? '' : displayWeightValue);
-  }, [weightValue]);
 
   return (
     <>
@@ -138,7 +91,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
                 justifyContent={'space-between'}
                 px={'0.25rem'}
                 onClick={isWeightCurrentWeek ? () => {
-                  setSelectedWeight(weight.id);
+                  setSelectedWeight(weight);
                   bottomDrawer.open();
                 } : () => { }}
               >
@@ -153,7 +106,9 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
         <Fab size="medium" color="primary" aria-label="add workout"
           onClick={() => {
-            resetSelectedWeight();
+            if (!isTimestampToday(selectedWeight.timestamp)) {
+              setSelectedWeight(new Weight(0, new Date()));
+            }
             bottomDrawer.open();
           }}
         >
@@ -208,7 +163,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           <Button color="error" onClick={() => { goalDialog.close() }}>Close</Button>
         </DialogActions>
       </Dialog>
-      <SwipeableDrawer
+      {<SwipeableDrawer
         anchor="bottom"
         open={bottomDrawer.isOpen as boolean}
         onOpen={() => {
@@ -219,81 +174,18 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         }}
       >
         <Puller />
-        <Stack spacing={2} padding={4}>
-          <Typography variant="h6">Track Weight</Typography>
-          <>
-            <Button
-              variant="text"
-              sx={{
-                justifyContent: 'left'
-              }}
-              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                datePicker.open();
-                setDatePickerAnchorElement(event.currentTarget);
-              }}
-            >
-              {selectedWeight &&
-                weightsTrackedData
-                  .getWeightById(selectedWeight)
-                  ?.timestamp
-                  .toLocaleDateString(
-                    'en-GB',
-                    { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
-                  )
-              }
-            </Button>
-            <Menu
-              anchorEl={datePickerAnchorElement}
-              open={datePicker.isOpen as boolean}
-              onClose={onCloseDatePicker}
-            >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  value={selectedWeight && dayjs(
-                    weightsTrackedData
-                      .getWeightById(selectedWeight)
-                      ?.timestamp
-                      .toLocaleDateString(
-                        'en-GB',
-                        { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
-                      )
-                  )}
-                  onChange={(date, state) => {
-                    if (state === 'finish') {
-                      console.log('DATE_CHANGED:', date.valueOf(), state);
-                      /**
-                       * TODO
-                       * Update State with the new date Value
-                       */
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </Menu>
-          </>
-          <OutlinedInput
-            autoFocus
-            endAdornment="kg"
-            inputProps={{
-              shrink: "true",
-            }}
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-          />
-          <Stack direction={'row'} justifyContent={'flex-end'}>
-            <Button variant="text" color="error" onClick={() => bottomDrawer.close()}>Cancel</Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                selectedWeight ? onUpdateWeight(selectedWeight, Number(weightValue)) : onAddWeight(Number(weightValue));
-                bottomDrawer.close();
-              }}
-            >Save</Button>
-          </Stack>
-        </Stack>
-      </SwipeableDrawer>
+        <WeightTrackForm weight={selectedWeight} onClose={() => {
+          bottomDrawer.close();
+        }} onSave={(updatedWeight) => {
+          const updatedWeightIndex = weightsTrackedData.weights.findIndex(({ id, timestamp }) => id === updatedWeight.id 
+          || dayjs(timestamp).isSame(updatedWeight.timestamp, 'date'));
+          
+          const updateIndex = updatedWeightIndex < 0 ? weightsTrackedData.weights.length : updatedWeightIndex;
+          weightsTrackedData.weights[updateIndex] = updatedWeight;
+
+          updateWeightsTrackedData(weightsTrackedData.getCopy());
+        }} />
+      </SwipeableDrawer>}
     </>
   )
 }
