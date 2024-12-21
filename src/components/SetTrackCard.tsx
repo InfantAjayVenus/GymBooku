@@ -67,6 +67,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                         <OutlinedInput
                             autoFocus
                             endAdornment="reps"
+                            inputMode="numeric"
                             inputProps={{
                                 shrink: "true",
                             }}
