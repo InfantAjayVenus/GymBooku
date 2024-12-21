@@ -32,7 +32,7 @@ enum Pages {
   Weight,
 }
 
-const DATA_VERSION = '1.0'
+const DATA_VERSION = '1.0.1';
 const INITIAL_WORKOUTS = import.meta.env.DEV ? TEST_WORKOUTS : DEFAULT_PLANS;
 const INITIAL_PLANS = import.meta.env.DEV ? TEST_PLANS : [];
 const INITIAL_WEIGHT = import.meta.env.DEV ? TEST_WEIGHTS : new WeightCollection();
