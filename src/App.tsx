@@ -1,5 +1,5 @@
-import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined, MonitorWeightOutlined } from '@mui/icons-material';
-import { Unstable_TrapFocus as TrapFocus, BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Typography, useMediaQuery } from '@mui/material';
+import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined } from '@mui/icons-material';
+import { BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Unstable_TrapFocus as TrapFocus, Typography, useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useState } from 'react';
@@ -7,17 +7,17 @@ import { Helmet } from 'react-helmet';
 import { Workout } from 'src/models/Workout';
 import { DEFAULT_PLANS } from './data.default';
 import { TEST_PLANS, TEST_WEIGHTS, TEST_WORKOUTS } from './data.mock';
+import useDrawer from './hooks/useDrawer';
 import useStoredReducer from './hooks/useStoredReducer';
 import { Plan } from './models/Plan';
+import { WeightCollection } from './models/WeightCollection';
 import Home from './pages/Home';
+import WeightTracker from './pages/WeightTracker';
 import { WorkoutList } from './pages/WorkoutList';
 import WorkoutPlanner from './pages/WorkoutPlanner';
 import planReducer, { PlanActionType } from './reducers/PlanReducer';
-import workoutReducer, { WorkoutAction, WorkoutActionType } from './reducers/WorkoutReducer';
-import WeightTracker from './pages/WeightTracker';
 import weightReducer, { WeightReducerActionType } from './reducers/WeightReducer';
-import { WeightCollection } from './models/WeightCollection';
-import useDrawer from './hooks/useDrawer';
+import workoutReducer, { WorkoutAction, WorkoutActionType } from './reducers/WorkoutReducer';
 
 const darkTheme = createTheme({
   palette: {
@@ -188,7 +188,7 @@ function App() {
           <BottomNavigationAction label="Home" icon={<HomeOutlined />} />
           <BottomNavigationAction label="Plans" icon={<CalendarViewWeekOutlined />} />
           <BottomNavigationAction label="Workouts" icon={<FitnessCenterOutlined />} />
-          <BottomNavigationAction label="Weight" icon={<MonitorWeightOutlined />} />
+          {/* <BottomNavigationAction label="Weight" icon={<MonitorWeightOutlined />} /> */}
         </BottomNavigation>
       </Paper>
     </ThemeProvider>
