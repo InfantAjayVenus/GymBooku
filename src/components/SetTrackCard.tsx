@@ -67,8 +67,8 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                         <OutlinedInput
                             autoFocus
                             endAdornment="reps"
-                            inputMode="numeric"
                             inputProps={{
+                                inputMode: "numeric",
                                 shrink: "true",
                             }}
                             value={count}
@@ -87,6 +87,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                             autoFocus
                             endAdornment="Kg"
                             inputProps={{
+                                inputMode: "numeric",
                                 shrink: "true",
                             }}
                             value={weight}
@@ -105,6 +106,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                             autoFocus
                             endAdornment="S"
                             inputProps={{
+                                inputMode: "numeric",
                                 shrink: "true",
                             }}
                             value={time}
