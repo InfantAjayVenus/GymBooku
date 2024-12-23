@@ -18,7 +18,7 @@ interface SetTrackCardProps {
 
 
 
-function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetTrackCardProps) {
+function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: SetTrackCardProps) {
     const [trackedValues, setTrackedValues] = useState<WorkoutTrackRecord | null>();
     const [weight, setWeight] = useState('');
     const [count, setCount] = useState('');
@@ -45,7 +45,7 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
             time: !isNaN(parsedTime) ? parsedTime : undefined,
             weight: !isNaN(parsedWeight) ? parsedWeight : undefined,
             count: !isNaN(parsedCount) ? parsedCount : undefined
-        }, ));
+        },));
 
     }, [weightValue, countValue, timeValue])
 
@@ -55,6 +55,12 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
         onUpdate(trackedValues, index);
     }, [trackedValues])
 
+    const trackedMap = {
+        [TrackingValues.COUNT]: { setter: setCount, adornment: 'reps', displayValue: count },
+        [TrackingValues.WEIGHT]: { setter: setWeight, adornment: 'Kg', displayValue: weight },
+        [TrackingValues.TIME]: { setter: setTime, adornment: 'S', displayValue: time },
+    }
+
     return (
         <Paper variant="outlined">
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-around'}>
@@ -63,63 +69,28 @@ function SetTrackCard({ index=1, initialValues, trackingValues, onUpdate }: SetT
                     textAlign={'center'}
                 >Set {index + 1}</Typography>
                 <Stack alignSelf={'end'}>
-                    {trackingValues.includes(TrackingValues.COUNT) && (
-                        <OutlinedInput
-                            autoFocus
-                            endAdornment="reps"
-                            inputProps={{
-                                inputMode: "numeric",
-                                shrink: "true",
-                            }}
-                            value={count}
-                            onChange={(event) => {
-                                const {
-                                    target: {
-                                        value
-                                    } } = event;
+                    {trackingValues.map((trackingValue) => {
+                        const { setter, adornment, displayValue } = trackedMap[trackingValue];
+                        return (
+                            <OutlinedInput
+                                autoFocus
+                                endAdornment={adornment}
+                                inputProps={{
+                                    inputMode: "numeric",
+                                    shrink: "true",
+                                }}
+                                value={displayValue}
+                                onChange={(event) => {
+                                    const {
+                                        target: {
+                                            value
+                                        } } = event;
 
-                                setCount(value);
-                            }}
-                        />
-                    )}
-                    {trackingValues.includes(TrackingValues.WEIGHT) && (
-                        <OutlinedInput
-                            autoFocus
-                            endAdornment="Kg"
-                            inputProps={{
-                                inputMode: "numeric",
-                                shrink: "true",
-                            }}
-                            value={weight}
-                            onChange={(event) => {
-                                const {
-                                    target: {
-                                        value
-                                    } } = event;
-
-                                setWeight(value);
-                            }}
-                        />
-                    )}
-                    {trackingValues.includes(TrackingValues.TIME) && (
-                        <OutlinedInput
-                            autoFocus
-                            endAdornment="S"
-                            inputProps={{
-                                inputMode: "numeric",
-                                shrink: "true",
-                            }}
-                            value={time}
-                            onChange={(event) => {
-                                const {
-                                    target: {
-                                        value
-                                    } } = event;
-
-                                setTime(value);
-                            }}
-                        />
-                    )}
+                                    setter(value);
+                                }}
+                            />
+                        )
+                    })}
                 </Stack>
             </Stack>
         </Paper>
