@@ -19,15 +19,16 @@ interface SetTrackCardProps {
 
 
 function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: SetTrackCardProps) {
+    const DEBOUNCE_TIME = 300;
     const [trackedValues, setTrackedValues] = useState<WorkoutTrackRecord | null>();
     const [weight, setWeight] = useState('');
     const [count, setCount] = useState('');
     const [time, setTime] = useState('');
     const inputContainerRef = useRef<HTMLDivElement>(null);
 
-    const weightValue = useDebounce<string>(weight, 700);
-    const countValue = useDebounce<string>(count, 700);
-    const timeValue = useDebounce<string>(time, 700);
+    const weightValue = useDebounce<string>(weight, DEBOUNCE_TIME);
+    const countValue = useDebounce<string>(count, DEBOUNCE_TIME);
+    const timeValue = useDebounce<string>(time, DEBOUNCE_TIME);
 
     useEffect(() => {
         initialValues && setTrackedValues(initialValues);
