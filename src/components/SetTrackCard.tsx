@@ -4,7 +4,7 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useDebounce from "src/hooks/useDebounce";
 import { TrackingValues } from "src/models/Workout";
 import { WorkoutTrackRecord } from "src/models/WorkoutRecord";
@@ -23,6 +23,7 @@ function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: Se
     const [weight, setWeight] = useState('');
     const [count, setCount] = useState('');
     const [time, setTime] = useState('');
+    const inputContainerRef = useRef<HTMLDivElement>(null);
 
     const weightValue = useDebounce<string>(weight, 700);
     const countValue = useDebounce<string>(count, 700);
@@ -33,6 +34,9 @@ function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: Se
         initialValues && setWeight(initialValues.weight?.toString() || '');
         initialValues && setCount(initialValues.count?.toString() || '');
         initialValues && setTime(initialValues.time?.toString() || '');
+
+        if (document.activeElement?.tagName.toLowerCase() === 'input') return;
+        inputContainerRef.current?.querySelector('input')?.focus();
     }, [initialValues])
 
     useEffect(() => {
@@ -46,6 +50,13 @@ function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: Se
             weight: !isNaN(parsedWeight) ? parsedWeight : undefined,
             count: !isNaN(parsedCount) ? parsedCount : undefined
         },));
+
+        const activeElement = document.activeElement as HTMLElement;
+
+        const inputElements = inputContainerRef.current?.querySelectorAll('input');
+
+        const focussedInputIndex = Array.from(inputElements!).findIndex((inputElement) => activeElement.isSameNode(inputElement));
+        inputElements![focussedInputIndex + 1]?.focus();
 
     }, [weightValue, countValue, timeValue])
 
@@ -68,12 +79,12 @@ function SetTrackCard({ index = 1, initialValues, trackingValues, onUpdate }: Se
                     width={'100%'}
                     textAlign={'center'}
                 >Set {index + 1}</Typography>
-                <Stack alignSelf={'end'}>
+                <Stack alignSelf={'end'} ref={inputContainerRef}>
                     {trackingValues.map((trackingValue) => {
                         const { setter, adornment, displayValue } = trackedMap[trackingValue];
                         return (
                             <OutlinedInput
-                                autoFocus
+                                key={`input-${trackingValue}`}
                                 endAdornment={adornment}
                                 inputProps={{
                                     inputMode: "numeric",
