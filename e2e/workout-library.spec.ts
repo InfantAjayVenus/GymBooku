@@ -83,7 +83,7 @@ test.describe('Workout Library', () => {
 
     await openWorkoutsPage(page);
     await openWorkoutMenu(page, 'Push-ups');
-    await page.getByRole('menuitem', { name: /Edit/ }).click();
+    await page.getByRole('menuitem', { name: /Edit/i }).click();
 
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
     await expect(page.getByLabel('Workout Name')).toHaveValue('Push-ups');
