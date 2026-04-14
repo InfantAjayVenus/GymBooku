@@ -60,4 +60,16 @@ test.describe('Workout Library', () => {
     await expect(page.getByLabel('Workout Name')).toBeFocused();
     await expect(page.getByLabel('Workout Name')).not.toHaveJSProperty('validationMessage', '');
   });
+
+  test('1.3 add a workout requires a tracking value', async ({ page }) => {
+    const workoutName = `No Tracking ${Date.now()}`;
+
+    await openWorkoutsPage(page);
+    await openAddWorkoutForm(page);
+    await page.getByLabel('Workout Name').fill(workoutName);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
+    await expect(page.getByRole('list').getByText(workoutName)).toHaveCount(0);
+  });
 });
