@@ -1,4 +1,4 @@
-export type ID = String;
+export type ID = string;
 
 export default (): ID =>
     `${toBase64(new Date().getUTCMonth())

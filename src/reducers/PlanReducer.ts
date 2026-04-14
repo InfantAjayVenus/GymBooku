@@ -10,7 +10,7 @@ export enum PlanActionType {
 export interface PlanAction {
     type: PlanActionType,
     payload: Plan[]
-};
+}
 
 export default function planReducer(state: Plan[], action: PlanAction) {
     switch (action.type) {

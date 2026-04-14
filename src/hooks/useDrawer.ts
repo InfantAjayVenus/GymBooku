@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function useDrawer(initialDrawState:Boolean = false) {
+export default function useDrawer(initialDrawState = false) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(initialDrawState);
 
     return {

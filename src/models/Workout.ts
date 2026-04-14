@@ -9,13 +9,13 @@ export enum TrackingValues {
     COUNT = 'COUNT',
     WEIGHT = 'WEIGHT',
 
-};
+}
 
 interface TrackingMixin {
     [TrackingValues.TIME]: (key: Key) => React.ReactElement;
     [TrackingValues.COUNT]: (key: Key) => React.ReactElement;
     [TrackingValues.WEIGHT]: (key: Key) => React.ReactElement;
-};
+}
 
 export const TRACKING_VALUES_ICON: TrackingMixin = {
     [TrackingValues.TIME]: (key) => React.createElement(AccessTimeOutlined, {key}),
@@ -26,11 +26,11 @@ export const TRACKING_VALUES_ICON: TrackingMixin = {
 
 export class Workout {
     private _id: ID;
-    private _workoutName: String;
+    private _workoutName: string;
     private _trackingValues: TrackingValues[];
     private _workoutTrackData: WorkoutTrackCollection[];
 
-    constructor(name: String, trackingValues: TrackingValues[], workoutTrackData: WorkoutTrackCollection[]=[], id: ID = getRandomId()) {
+    constructor(name: string, trackingValues: TrackingValues[], workoutTrackData: WorkoutTrackCollection[]=[], id: ID = getRandomId()) {
 
         this._id = id;
         this._workoutName = name;
@@ -54,7 +54,7 @@ export class Workout {
         return this._workoutTrackData;
     }
 
-    set name(updatedName: String) {
+    set name(updatedName: string) {
         this._workoutName = updatedName;
     }
 

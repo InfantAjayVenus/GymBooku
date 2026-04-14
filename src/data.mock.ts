@@ -46,9 +46,9 @@ TEST_WORKOUTS.forEach(workout => {
                 acc[label] = getRandomNumber(5, 15);
                 return acc;
             }, {} as {
-                time?: Number | undefined;
-                count?: Number | undefined;
-                weight?: Number | undefined;
+                time?: number | undefined;
+                count?: number | undefined;
+                weight?: number | undefined;
             })
             
         }).map(data => {

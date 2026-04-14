@@ -49,13 +49,13 @@ export class WorkoutTrackCollection {
 
 export class WorkoutTrackRecord {
     private _id: ID;
-    private _index: Number
-    private _time?: Number;
-    private _count?: Number;
-    private _weight?: Number;
+    private _index: number
+    private _time?: number;
+    private _count?: number;
+    private _weight?: number;
     private _timestamp: Date;
 
-    constructor(index: Number=0, { time, count, weight }: { time?: Number, count?: Number, weight?: Number } = {},id=getRandomId(), timestamp=new Date()) {
+    constructor(index=0, { time, count, weight }: { time?: number, count?: number, weight?: number } = {},id=getRandomId(), timestamp=new Date()) {
         this._id = id;
         this._index = index;
         this._timestamp = timestamp;
@@ -64,19 +64,19 @@ export class WorkoutTrackRecord {
         this._weight = weight;
     }
 
-    set index(updatedIndex: Number) {
+    set index(updatedIndex: number) {
         this._index = updatedIndex;
     }
 
-    set time(updatedTime: Number | undefined) {
+    set time(updatedTime: number | undefined) {
         this._time = updatedTime;
     }
 
-    set count(updatedCount: Number | undefined) {
+    set count(updatedCount: number | undefined) {
         this._count = updatedCount;
     }
 
-    set weight(updatedWeight: Number | undefined) {
+    set weight(updatedWeight: number | undefined) {
         this._weight = updatedWeight;
     }
 

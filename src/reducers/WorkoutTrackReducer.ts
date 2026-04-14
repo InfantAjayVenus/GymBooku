@@ -11,7 +11,7 @@ export enum WorkoutRecordActionType {
 export interface WorkoutRecordAction {
     type: WorkoutRecordActionType,
     payload: WorkoutTrackCollection[],
-};
+}
 
 export default function workoutRecordReducer(state: WorkoutTrackCollection[], action: WorkoutRecordAction) {
     switch (action.type) {

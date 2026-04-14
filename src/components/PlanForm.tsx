@@ -35,7 +35,7 @@ const INITIAL_SELECTED_WORKOUTS = [] as ID[];
 const INITIAL_SELECTED_DAYS = [] as DAYS_OF_WEEK[];
 
 function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
-    const [planName, setPlanName] = useState<String>(planData ? planData?.name : INITIAL_PLAN_NAME);
+    const [planName, setPlanName] = useState<string>(planData ? planData?.name : INITIAL_PLAN_NAME);
     const [selectedWorkoutsList, setSelectedWorkoutsList] = useState<ID[]>(planData?.workoutsList || INITIAL_SELECTED_WORKOUTS);
     const [selectedDays, setSelectedDays] = useState<DAYS_OF_WEEK[]>(planData?.daysList || INITIAL_SELECTED_DAYS)
 
@@ -96,7 +96,7 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                             input={<OutlinedInput id="select-multiple-chip" label="Select Workouts" />}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value: String) => workoutsList.find(({ id }) => id === value)?.name || value).join(',')}
+                                    {selected.map((value: string) => workoutsList.find(({ id }) => id === value)?.name || value).join(',')}
                                 </Box>
                             )}
                         >
@@ -131,7 +131,7 @@ function PlanForm({ workoutsList, planData, onSave }: PlanFormProps) {
                             input={<OutlinedInput id="select-multiple-chip" label="Select Days" />}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value: String) => (
+                                    {selected.map((value: string) => (
                                         <Chip key={value as Key} label={value.slice(0, 3)} />
                                     ))}
                                 </Box>
