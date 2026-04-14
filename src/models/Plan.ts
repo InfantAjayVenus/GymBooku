@@ -12,11 +12,11 @@ export enum DAYS_OF_WEEK {
 
 export class Plan {
     private _id: ID;
-    private _name: String;
+    private _name: string;
     private _workoutsList: ID[];
     private _daysList: DAYS_OF_WEEK[];
 
-    constructor(name:String, workoutsList: ID[], daysList: DAYS_OF_WEEK[], id: ID = getRandomId()) {
+    constructor(name:string, workoutsList: ID[], daysList: DAYS_OF_WEEK[], id: ID = getRandomId()) {
         this._id = id;
         this._name = name;
         this._workoutsList = workoutsList;
@@ -43,7 +43,7 @@ export class Plan {
         return returnList;
     }
 
-    set name(updatedName: String) {
+    set name(updatedName: string) {
         this._name = updatedName;
     }
 

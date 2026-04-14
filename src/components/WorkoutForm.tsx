@@ -20,7 +20,7 @@ import { TRACKING_VALUES_ICON, TrackingValues, Workout } from 'src/models/Workou
 export interface WorkoutFormProps {
     workoutData?: Workout
     onSave: (savedWorkout: Workout) => void,
-};
+}
 
 const INITIAL_TRACKING_VALUES: TrackingValues[] = [];
 const INITIAL_WOURKOUT_NAME = '';
@@ -28,7 +28,7 @@ const INITIAL_WOURKOUT_NAME = '';
 export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
 
     const [selectedTrackingValues, setSelectedTrackingValues] = useState<TrackingValues[]>(workoutData ? workoutData?.trackingValues : INITIAL_TRACKING_VALUES);
-    const [workoutName, setWorkoutName] = useState<String>(workoutData ? workoutData?.name : INITIAL_WOURKOUT_NAME);
+    const [workoutName, setWorkoutName] = useState<string>(workoutData ? workoutData?.name : INITIAL_WOURKOUT_NAME);
 
     useEffect(() => {
         setSelectedTrackingValues(workoutData?.trackingValues || INITIAL_TRACKING_VALUES);
@@ -86,7 +86,7 @@ export default function WorkoutForm({ onSave, workoutData }: WorkoutFormProps) {
                             input={<OutlinedInput id="select-multiple-chip" label="Tracking Values" />}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value: String) => (
+                                    {selected.map((value: string) => (
                                         <Chip key={value as Key} label={value} />
                                     ))}
                                 </Box>

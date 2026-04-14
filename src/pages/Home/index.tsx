@@ -110,7 +110,7 @@ function Home({ workoutsList, plansList, onUpdate }: HomeProps) {
                                 >
                                     <Typography
                                         variant="body1"
-                                        color={!!plannedWorkouts[Number(workoutItemIndex)].getTodayTrackedData() ? 'text.disabled' : ''}
+                                        color={plannedWorkouts[Number(workoutItemIndex)].getTodayTrackedData() ? 'text.disabled' : ''}
                                     >
                                         {plannedWorkouts[Number(workoutItemIndex)].name}
                                     </Typography>
