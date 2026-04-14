@@ -34,6 +34,11 @@ async function selectTrackingValues(page: import('@playwright/test').Page, value
   await page.keyboard.press('Escape');
 }
 
+async function openWorkoutMenu(page: import('@playwright/test').Page, workoutName: string) {
+  const row = page.getByRole('listitem').filter({ hasText: workoutName });
+  await row.getByRole('button', { name: 'more' }).click();
+}
+
 test.describe('Workout Library', () => {
   test('1.1 add a new workout', async ({ page }) => {
     const workoutName = `Burpees ${Date.now()}`;
@@ -71,5 +76,26 @@ test.describe('Workout Library', () => {
 
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
     await expect(page.getByRole('list').getByText(workoutName)).toHaveCount(0);
+  });
+
+  test('1.4 edit an existing workout', async ({ page }) => {
+    const updatedName = `Mountain Climbers ${Date.now()}`;
+
+    await openWorkoutsPage(page);
+    await openWorkoutMenu(page, 'Push-ups');
+    await page.getByRole('menuitem', { name: /Edit/ }).click();
+
+    await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
+    await expect(page.getByLabel('Workout Name')).toHaveValue('Push-ups');
+    await expect(page.getByText('TIME')).toBeVisible();
+    await expect(page.getByText('COUNT')).toBeVisible();
+
+    await page.getByLabel('Workout Name').fill(updatedName);
+    await selectTrackingValues(page, ['WEIGHT']);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeHidden();
+    await expect(page.getByText(updatedName)).toBeVisible();
+    await expect(page.getByText('Push-ups')).toBeHidden();
   });
 });
