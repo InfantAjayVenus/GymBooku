@@ -98,4 +98,13 @@ test.describe('Workout Library', () => {
     await expect(page.getByText(updatedName)).toBeVisible();
     await expect(page.getByText('Push-ups')).toBeHidden();
   });
+
+  test('1.5 delete a workout', async ({ page }) => {
+    await openWorkoutsPage(page);
+    await openWorkoutMenu(page, 'Push-ups');
+    await page.getByRole('menuitem', { name: /Delete/ }).click();
+
+    await expect(page.getByText('Push-ups')).toBeHidden();
+    await expect(page.getByText('Squats')).toBeVisible();
+  });
 });
