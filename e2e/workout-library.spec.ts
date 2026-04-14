@@ -49,4 +49,15 @@ test.describe('Workout Library', () => {
     await expect(page.getByText('COUNT')).toBeHidden();
     await expect(page.getByText('WEIGHT')).toBeHidden();
   });
+
+  test('1.2 add a workout requires a name', async ({ page }) => {
+    await openWorkoutsPage(page);
+    await openAddWorkoutForm(page);
+    await selectTrackingValues(page, ['COUNT']);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
+    await expect(page.getByLabel('Workout Name')).toBeFocused();
+    await expect(page.getByLabel('Workout Name')).not.toHaveJSProperty('validationMessage', '');
+  });
 });
