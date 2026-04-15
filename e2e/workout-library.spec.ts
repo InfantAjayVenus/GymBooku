@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-async function resetAppData(page: import('@playwright/test').Page) {
+async function resetAppData(page: Page) {
   await page.goto('/');
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
@@ -12,19 +12,19 @@ async function resetAppData(page: import('@playwright/test').Page) {
   });
 }
 
-async function openWorkoutsPage(page: import('@playwright/test').Page) {
+async function openWorkoutsPage(page: Page) {
   await resetAppData(page);
   await page.goto('/');
   await page.getByRole('button', { name: 'Workouts' }).click();
   await expect(page.getByRole('heading', { name: 'Workout List' })).toBeVisible();
 }
 
-async function openAddWorkoutForm(page: import('@playwright/test').Page) {
+async function openAddWorkoutForm(page: Page) {
   await page.getByRole('button', { name: 'add workout' }).click();
   await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
 }
 
-async function selectTrackingValues(page: import('@playwright/test').Page, values: string[]) {
+async function selectTrackingValues(page: Page, values: string[]) {
   await page.getByRole('combobox', { name: 'Tracking Values' }).click();
 
   for (const value of values) {
@@ -34,7 +34,7 @@ async function selectTrackingValues(page: import('@playwright/test').Page, value
   await page.keyboard.press('Escape');
 }
 
-async function openWorkoutMenu(page: import('@playwright/test').Page, workoutName: string) {
+async function openWorkoutMenu(page: Page, workoutName: string) {
   const row = page.getByRole('listitem').filter({ hasText: workoutName });
   await row.getByRole('button', { name: 'more' }).click();
 }
@@ -51,6 +51,7 @@ test.describe('Workout Library', () => {
 
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeHidden();
     await expect(page.getByText(workoutName)).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: workoutName })).toBeVisible();
     await expect(page.getByText('COUNT')).toBeHidden();
     await expect(page.getByText('WEIGHT')).toBeHidden();
   });
@@ -76,6 +77,7 @@ test.describe('Workout Library', () => {
 
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
     await expect(page.getByRole('list').getByText(workoutName)).toHaveCount(0);
+    await expect(page.getByRole('combobox', { name: 'Tracking Values' })).not.toHaveJSProperty('validationMessage', '');
   });
 
   test('1.4 edit an existing workout', async ({ page }) => {
