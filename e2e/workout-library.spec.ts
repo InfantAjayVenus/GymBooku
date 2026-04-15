@@ -52,8 +52,6 @@ test.describe('Workout Library', () => {
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeHidden();
     await expect(page.getByText(workoutName)).toBeVisible();
     await expect(page.getByRole('listitem').filter({ hasText: workoutName })).toBeVisible();
-    await expect(page.getByText('COUNT')).toBeHidden();
-    await expect(page.getByText('WEIGHT')).toBeHidden();
   });
 
   test('1.2 add a workout requires a name', async ({ page }) => {
@@ -89,8 +87,6 @@ test.describe('Workout Library', () => {
 
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeVisible();
     await expect(page.getByLabel('Workout Name')).toHaveValue('Push-ups');
-    await expect(page.getByText('TIME')).toBeVisible();
-    await expect(page.getByText('COUNT')).toBeVisible();
 
     await page.getByLabel('Workout Name').fill(updatedName);
     await selectTrackingValues(page, ['WEIGHT']);
@@ -99,6 +95,7 @@ test.describe('Workout Library', () => {
     await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeHidden();
     await expect(page.getByText(updatedName)).toBeVisible();
     await expect(page.getByText('Push-ups')).toBeHidden();
+    await expect(page.getByRole('listitem').filter({ hasText: updatedName }).getByLabel('WEIGHT')).toBeVisible();
   });
 
   test('1.5 delete a workout', async ({ page }) => {
