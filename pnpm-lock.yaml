@@ -14,9 +14,6 @@ importers:
       '@dnd-kit/sortable':
         specifier: ^7.0.2
         version: 7.0.2(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@18.3.1)
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
@@ -54,6 +51,9 @@ importers:
         specifier: ^2.15.0
         version: 2.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
+      '@dnd-kit/utilities':
+        specifier: ^3.2.2
+        version: 3.2.2(react@18.3.1)
       '@playwright/test':
         specifier: ^1.59.1
         version: 1.59.1
