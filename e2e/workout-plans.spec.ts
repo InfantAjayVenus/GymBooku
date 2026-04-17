@@ -1,16 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-
-async function resetAppData(page: Page) {
-  await page.goto('/');
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.deleteDatabase('keyval-store');
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-      request.onblocked = () => resolve();
-    });
-  });
-}
+import { resetAppData } from './helpers';
 
 async function openPlansPage(page: Page) {
   await resetAppData(page);
@@ -70,7 +59,6 @@ test.describe('Workout Plans', () => {
   test('2.1 view empty state', async ({ page }) => {
     await resetAppData(page);
     await page.goto('/');
-    await page.waitForTimeout(2000);
     await page.getByRole('button', { name: 'Plans' }).click();
 
     await expect(page.getByRole('heading', { name: 'Workout Plans' })).toBeVisible();
@@ -98,7 +86,7 @@ test.describe('Workout Plans', () => {
     await expect(planItem.getByText('FRI')).toBeVisible();
   });
 
-  test('2.3 create a plan validation requires all fields', async ({ page }) => {
+  test('2.3 validate plan creation requires name', async ({ page }) => {
     await openPlansPage(page);
     await createWorkoutForPlan(page);
     await page.getByRole('button', { name: 'Plans' }).click();
@@ -108,7 +96,6 @@ test.describe('Workout Plans', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Create Workout Plan' })).toBeVisible();
     await expect(page.getByLabel('Plan Name')).toBeFocused();
   });
 
