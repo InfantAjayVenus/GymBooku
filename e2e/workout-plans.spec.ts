@@ -23,6 +23,8 @@ async function createWorkoutForPlan(page: Page) {
 
   await expect(page.getByRole('heading', { name: 'Add Workout' })).toBeHidden();
   await expect(page.getByText('Push-ups').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Plans' }).click();
+  await expect(page.getByRole('heading', { name: 'Workout Plans' })).toBeVisible();
 }
 
 async function openAddPlanForm(page: Page) {
@@ -69,7 +71,6 @@ test.describe('Workout Plans', () => {
 
     await openPlansPage(page);
     await createWorkoutForPlan(page);
-    await page.getByRole('button', { name: 'Plans' }).click();
 
     await openAddPlanForm(page);
     await page.getByLabel('Plan Name').fill(planName);
@@ -89,7 +90,6 @@ test.describe('Workout Plans', () => {
   test('2.3 validate plan creation requires name', async ({ page }) => {
     await openPlansPage(page);
     await createWorkoutForPlan(page);
-    await page.getByRole('button', { name: 'Plans' }).click();
 
     await page.getByRole('button', { name: 'add workout' }).click();
     await expect(page.getByRole('heading', { name: 'Create Workout Plan' })).toBeVisible();
@@ -104,7 +104,6 @@ test.describe('Workout Plans', () => {
 
     await openPlansPage(page);
     await createWorkoutForPlan(page);
-    await page.getByRole('button', { name: 'Plans' }).click();
 
     await page.getByRole('button', { name: 'add workout' }).click();
     await page.getByLabel('Plan Name').fill('Initial Plan');
@@ -131,7 +130,6 @@ test.describe('Workout Plans', () => {
   test('2.5 delete a plan', async ({ page }) => {
     await openPlansPage(page);
     await createWorkoutForPlan(page);
-    await page.getByRole('button', { name: 'Plans' }).click();
 
     await page.getByRole('button', { name: 'add workout' }).click();
     await page.getByLabel('Plan Name').fill('To Delete');
