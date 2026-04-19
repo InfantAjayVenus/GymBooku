@@ -2,102 +2,48 @@ import { DAYS_OF_WEEK, Plan } from "./models/Plan";
 import { Weight, WeightCollection } from "./models/WeightCollection";
 import { TrackingValues, Workout } from "./models/Workout";
 import { WorkoutTrackCollection, WorkoutTrackRecord } from "./models/WorkoutRecord";
-import getRandomId from "./utils/getRandomId";
 
-const workout1 = new Workout("Push-ups", [TrackingValues.TIME, TrackingValues.COUNT]);
-const workout2 = new Workout("Squats", [TrackingValues.COUNT, TrackingValues.WEIGHT]);
-const workout3 = new Workout("Running", [TrackingValues.TIME]);
-const workout4 = new Workout("Bench Press", [TrackingValues.COUNT, TrackingValues.WEIGHT, TrackingValues.TIME]);
+const daysAgo = (days: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return date;
+};
 
-export const TEST_WORKOUTS = [workout1, workout2, workout3, workout4];
+const pushUps = new Workout(
+    "Push-ups",
+    [TrackingValues.TIME, TrackingValues.COUNT],
+    [
+        new WorkoutTrackCollection(
+            "push-ups-history",
+            [
+                new WorkoutTrackRecord(0, { count: 10, time: 30 }, "push-ups-set-1", daysAgo(4)),
+                new WorkoutTrackRecord(1, { count: 12, time: 35 }, "push-ups-set-2", daysAgo(4)),
+            ],
+            "push-ups-session",
+            daysAgo(4),
+        ),
+    ],
+    "push-ups",
+);
 
-const plan1 = new Plan("Full Body Workout", [workout1.id, workout2.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY]);
-const plan2 = new Plan("Leg Day", [workout2.id], [DAYS_OF_WEEK.TUESDAY, DAYS_OF_WEEK.THURSDAY]);
-const plan3 = new Plan("Cardio", [workout3.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY, DAYS_OF_WEEK.SATURDAY]);
-const plan4 = new Plan("Upper Body Workout", [workout1.id, workout4.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY]);
+const squats = new Workout("Squats", [TrackingValues.COUNT, TrackingValues.WEIGHT], [], "squats");
+const running = new Workout("Running", [TrackingValues.TIME], [], "running");
+const benchPress = new Workout("Bench Press", [TrackingValues.COUNT, TrackingValues.WEIGHT, TrackingValues.TIME], [], "bench-press");
 
-export const TEST_PLANS = [plan1, plan2, plan3, plan4];
+export const TEST_WORKOUTS = [pushUps, squats, running, benchPress];
 
-// Create a helper function to generate random numbers within a range
-function getRandomNumber(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
+export const TEST_PLANS = [
+    new Plan("Full Body Workout", [pushUps.id, squats.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY], "full-body"),
+    new Plan("Leg Day", [squats.id], [DAYS_OF_WEEK.TUESDAY, DAYS_OF_WEEK.THURSDAY], "leg-day"),
+    new Plan("Cardio", [running.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY, DAYS_OF_WEEK.SATURDAY], "cardio"),
+    new Plan("Upper Body Workout", [pushUps.id, benchPress.id], [DAYS_OF_WEEK.MONDAY, DAYS_OF_WEEK.WEDNESDAY, DAYS_OF_WEEK.FRIDAY], "upper-body"),
+];
 
-const PREVIOUS_TRACKDATA_DATE_LIMIT = 7;
-const PREVIOUS_TRACKDATA_MIN_LIMIT = 4;
-TEST_WORKOUTS.forEach(workout => {
-    /**
-     * TODO
-     * Choose Random Dates for the past n days
-     * Create a workout track collection for each day
-     */
-    const randomDates = new Array(PREVIOUS_TRACKDATA_MIN_LIMIT).fill(0)
-        .map(_ => getRandomNumber(0, PREVIOUS_TRACKDATA_DATE_LIMIT))
-        .map(index => {
-            const date = new Date();
-            date.setDate(date.getDate() - index);
-            return date;
-        });
-
-    workout.workoutTrackData = randomDates.map(date => {
-        const trackedData = new Array(getRandomNumber(1, 5)).fill(0).map(_ => {
-            return workout.trackingValues.reduce((acc, value) => {
-                const label = value === TrackingValues.TIME ? 'time' : value === TrackingValues.COUNT ? 'count' : 'weight';
-                acc[label] = getRandomNumber(5, 15);
-                return acc;
-            }, {} as {
-                time?: number | undefined;
-                count?: number | undefined;
-                weight?: number | undefined;
-            })
-            
-        }).map(data => {
-            const timestamp = new Date(date);
-            timestamp.setHours(getRandomNumber(0, 23), getRandomNumber(0, 59), getRandomNumber(0, 59), getRandomNumber(0, 59));
-            return new WorkoutTrackRecord(getRandomNumber(0, 100), data, getRandomId(), timestamp);
-        });
-
-        return new WorkoutTrackCollection(workout.id, trackedData, getRandomId(), date);
-    })
-})
-
-    
 export const TEST_WEIGHTS = new WeightCollection(
-    
-    Array.from(
-        new Set(
-            new Array(
-                getRandomNumber(5, 50)).fill(0).map(_ => getRandomNumber(0, PREVIOUS_TRACKDATA_DATE_LIMIT)
-            )
-        )
-    ).slice(0, getRandomNumber(5, 15))
-    .sort((a, b) => b - a)
-    .map(dateOffset => { 
-        const date = new Date();
-        date.setDate(date.getDate() - dateOffset);
-    
-        return new Weight(getRandomNumber(75, 90), date);
-    })
-)
-
-
-// function getRandomTimestamp() {
-//     // Generate a random timestamp within the past week
-//     const currentTime = Date.now();
-//     const pastWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-//     const randomTimestamp = currentTime - Math.floor(Math.random() * pastWeek);
-//     return new Date(randomTimestamp);
-// }
-
-// function generateUniqueId() {
-//     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-//     const length = 9;
-//     let uniqueId = '';
-
-//     for (let i = 0; i < length; i++) {
-//         const randomIndex = Math.floor(Math.random() * characters.length);
-//         uniqueId += characters.charAt(randomIndex);
-//     }
-
-//     return uniqueId;
-// }
+    [
+        new Weight(82, daysAgo(7), "weight-1"),
+        new Weight(81, daysAgo(5), "weight-2"),
+        new Weight(80, daysAgo(3), "weight-3"),
+    ],
+    "weights",
+);
