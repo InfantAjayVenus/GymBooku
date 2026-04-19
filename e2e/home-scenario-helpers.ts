@@ -1,7 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 import { resetAppData, selectDays, selectWorkouts } from './helpers';
 
-const DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+async function getToday(page: Page) {
+  return page.evaluate(() => new Date().toDateString().split(' ')[0].toUpperCase());
+}
 
 export async function openHomePage(page: Page) {
   await resetAppData(page);
@@ -18,7 +20,7 @@ export async function createPlan(page: Page, planName: string, workoutName: stri
 
   await page.getByLabel('Plan Name').fill(planName);
   await selectWorkouts(page, [workoutName]);
-  await selectDays(page, DAYS);
+  await selectDays(page, [await getToday(page)]);
   await page.getByRole('button', { name: 'Save' }).click();
 
   await expect(page.getByRole('heading', { name: 'Create Workout Plan' })).toBeHidden();
@@ -37,6 +39,4 @@ export async function fillWorkoutSet(page: Page, setIndex: number, values: numbe
   for (const [index, value] of values.entries()) {
     await trackerInputs.nth(offset + index).fill(value.toString());
   }
-
-  await page.waitForTimeout(1000);
 }
