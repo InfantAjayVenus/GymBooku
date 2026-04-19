@@ -11,3 +11,23 @@ export async function resetAppData(page: Page) {
     });
   });
 }
+
+export async function selectWorkouts(page: Page, names: string[]) {
+  await page.getByRole('combobox', { name: /Select Workouts/ }).click();
+
+  for (const name of names) {
+    await page.getByRole('option', { name: new RegExp(name) }).first().click();
+  }
+
+  await page.keyboard.press('Escape');
+}
+
+export async function selectDays(page: Page, days: string[]) {
+  await page.getByRole('combobox', { name: /Select Days/ }).click();
+
+  for (const day of days) {
+    await page.getByRole('option', { name: new RegExp(day) }).click();
+  }
+
+  await page.keyboard.press('Escape');
+}

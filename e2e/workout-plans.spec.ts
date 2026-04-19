@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { resetAppData } from './helpers';
+import { resetAppData, selectDays, selectWorkouts } from './helpers';
 
 async function openPlansPage(page: Page) {
   await resetAppData(page);
@@ -30,26 +30,6 @@ async function createWorkoutForPlan(page: Page) {
 async function openAddPlanForm(page: Page) {
   await page.getByRole('button', { name: 'add workout' }).click();
   await expect(page.getByRole('heading', { name: 'Create Workout Plan' })).toBeVisible();
-}
-
-async function selectWorkouts(page: Page, names: string[]) {
-  await page.getByRole('combobox', { name: /Select Workouts/ }).click();
-
-  for (const name of names) {
-    await page.getByRole('option', { name: new RegExp(name) }).first().click();
-  }
-
-  await page.keyboard.press('Escape');
-}
-
-async function selectDays(page: Page, days: string[]) {
-  await page.getByRole('combobox', { name: /Select Days/ }).click();
-
-  for (const day of days) {
-    await page.getByRole('option', { name: new RegExp(day) }).click();
-  }
-
-  await page.keyboard.press('Escape');
 }
 
 async function openPlanMenu(page: Page, planName: string) {
