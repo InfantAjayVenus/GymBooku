@@ -1,4 +1,4 @@
-import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined } from '@mui/icons-material';
+import { CalendarViewWeekOutlined, FitnessCenterOutlined, HomeOutlined, MonitorWeightOutlined } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Fade, Paper, Stack, Unstable_TrapFocus as TrapFocus, Typography, useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -188,7 +188,7 @@ function App() {
           <BottomNavigationAction label="Home" icon={<HomeOutlined />} />
           <BottomNavigationAction label="Plans" icon={<CalendarViewWeekOutlined />} />
           <BottomNavigationAction label="Workouts" icon={<FitnessCenterOutlined />} />
-          {/* <BottomNavigationAction label="Weight" icon={<MonitorWeightOutlined />} /> */}
+          <BottomNavigationAction label="Weight" icon={<MonitorWeightOutlined />} />
         </BottomNavigation>
       </Paper>
     </ThemeProvider>
