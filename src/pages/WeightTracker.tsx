@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Puller from "src/components/Puller";
+import TrackWeightDrawer from "src/components/TrackWeightDrawer";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
@@ -171,53 +172,20 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           <Add />
         </Fab>
       </Box>
-      <SwipeableDrawer
-        anchor="bottom"
-        open={bottomDrawer.isOpen as boolean}
-        onOpen={() => {
-          bottomDrawer.open();
-        }}
-        onClose={() => {
-          bottomDrawer.close();
-        }}
-      >
-        <Puller />
-        <Stack spacing={2} padding={4}>
-          <Typography variant="h6">Track Weight</Typography>
-          <Typography variant="caption">
-            {selectedWeight &&
-              weightsTrackedData
-                .getWeightById(selectedWeight)
-                ?.timestamp
-                .toLocaleDateString(
-                  'en-GB',
-                  { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' }
-                )
-            }
-          </Typography>
-          <OutlinedInput
-            autoFocus
-            endAdornment="kg"
-            inputProps={{
-              shrink: "true",
-            }}
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-          />
-          <Stack direction={'row'} justifyContent={'flex-end'}>
-            <Button variant="text" color="error" onClick={() => bottomDrawer.close()}>Cancel</Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                selectedWeight ? onUpdateWeight(selectedWeight, Number(weightValue)) : onAddWeight(Number(weightValue));
-                bottomDrawer.close();
-              }}
-            >Save</Button>
-          </Stack>
-        </Stack>
-      </SwipeableDrawer>
+      {/* TODO:Start */}
+      <TrackWeightDrawer
+        isOpen={bottomDrawer.isOpen as boolean}
+        onOpen={() => bottomDrawer.open()}
+        onClose={() => bottomDrawer.close()}
+        selectedWeight={selectedWeight}
+        weightsTrackedData={weightsTrackedData}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        weightValue={weightValue}
+        onAddWeight={onAddWeight}
+        onUpdateWeight={onUpdateWeight}
+      />
+      {/* TODO:End */}
     </>
   )
 }
