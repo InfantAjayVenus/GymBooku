@@ -5,24 +5,23 @@ export class WeightCollection {
   _weights: Weight[];
   _goal: number;
   _duration: Duration;
+  _isOnboarded: boolean;
+  _rateOfReduction: number;
 
-  constructor(weights: Weight[] = [], id = getRandomId(), goal = 0, duration = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }) {
+  constructor(
+    weights: Weight[] = [],
+    id = getRandomId(),
+    goal = 0,
+    duration = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 },
+    isOnboarded = false,
+    rateOfReduction = 0
+  ) {
     this._id = id;
     this._weights = weights;
     this._goal = goal;
     this._duration = duration;
-  }
-
-  set weights(value: Weight[]) {
-    this._weights = value;
-  }
-
-  set goal(value: number) {
-    this._goal = value;
-  }
-
-  set duration(value: Duration) {
-    this._duration = value;
+    this._isOnboarded = isOnboarded;
+    this._rateOfReduction = rateOfReduction;
   }
 
   get id() {
@@ -33,16 +32,51 @@ export class WeightCollection {
     return this._weights;
   }
 
+  set weights(value: Weight[]) {
+    this._weights = value;
+  }
+
   get goal() {
     return this._goal;
+  }
+
+  set goal(value: number) {
+    this._goal = value;
   }
 
   get duration() {
     return this._duration;
   }
 
+  set duration(value: Duration) {
+    this._duration = value;
+  }
+
+  get isOnboarded() {
+    return this._isOnboarded;
+  }
+
+  set isOnboarded(value: boolean) {
+    this._isOnboarded = value;
+  }
+
+  get rateOfReduction() {
+    return this._rateOfReduction;
+  }
+
+  set rateOfReduction(value: number) {
+    this._rateOfReduction = value;
+  }
+
   getCopy() {
-    return new WeightCollection([...this._weights], this._id, this._goal, this._duration);
+    return new WeightCollection(
+      [...this._weights],
+      this._id,
+      this._goal,
+      this._duration,
+      this._isOnboarded,
+      this._rateOfReduction
+    );
   }
 
   getWeightById(searchId: ID) {
