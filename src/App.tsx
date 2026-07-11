@@ -13,6 +13,7 @@ import { Plan } from './models/Plan';
 import { WeightCollection } from './models/WeightCollection';
 import Home from './pages/Home';
 import WeightTracker from './pages/WeightTracker';
+import WeightTrackerOnboarding from './pages/WeightTrackerOnboarding';
 import { WorkoutList } from './pages/WorkoutList';
 import WorkoutPlanner from './pages/WorkoutPlanner';
 import planReducer, { PlanActionType } from './reducers/PlanReducer';
@@ -166,15 +167,23 @@ function App() {
           />
         }
         {
-          currentPage === Pages.Weight &&
-          <WeightTracker
-            weightsTrackedData={weightCollection}
-            updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
-              console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
-
-              weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
-            }}
-          />
+          currentPage === Pages.Weight && (
+            weightCollection.isOnboarded ? (
+              <WeightTracker
+                weightsTrackedData={weightCollection}
+                updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
+                  console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
+                  weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
+                }}
+              />
+            ) : (
+              <WeightTrackerOnboarding 
+                onComplete={(initialData: WeightCollection) => {
+                  weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: initialData });
+                }}
+              />
+            )
+          )
         }
       </main>
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>

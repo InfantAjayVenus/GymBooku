@@ -25,7 +25,9 @@ export default function weightReducer(state: WeightCollection, action: WeightAct
                 )),
                 rawJson._id,
                 rawJson._goal,
-                rawJson._duration
+                rawJson._duration,
+                rawJson._isOnboarded,
+                rawJson._rateOfReduction
             );
         }
         case WeightReducerActionType.UPDATE_WEIGHT: {
