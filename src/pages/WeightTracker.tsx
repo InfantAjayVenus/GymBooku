@@ -19,6 +19,7 @@ import { Weight, WeightCollection } from "src/models/WeightCollection";
 import getAverage from "src/utils/getAverage";
 import { ID } from "src/utils/getRandomId";
 import getWeek from "src/utils/getWeek";
+import useWeightTrackerStats from "src/hooks/useWeightTrackerStats";
 
 interface WeightTrackerProps {
   weightsTrackedData: WeightCollection;
@@ -34,7 +35,14 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   const debouncedWeightValue = useDebounce(inputValue, 600);
   const weeklyWeights = useWeeklyWeightTrackedData(weightsTrackedData.weights);
   const currentWeekWeights = weeklyWeights.find(({ week }) => Number(week) === getWeek(new Date())) || {} as WeeklyWeights;
-  const currentWeekAverage = getAverage(currentWeekWeights?.weights?.map(item => item.value) || [], 1);
+  const currentWeekAverage = getAverage(currentWeekWeights?.weights?.map(item => item.value) || [], 2);
+
+  const {
+    displayTargetWeekAvg,
+    weeksToGo,
+    displayDiffToTarget,
+    displayDiffFromLastWeek,
+  } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
 
   const resetSelectedWeight = () => {
     if (!selectedWeight) return;
@@ -78,28 +86,53 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
 
   return (
     <>
-      <Stack padding={4} spacing={2} position={'relative'}>
-        <Stack>
-          <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
-          <Stack direction={'row'} justifyContent={'space-between'}>
-            <Typography variant="h1" fontWeight='semi-bold' >{currentWeekAverage}</Typography>
-            <Paper
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingX: '1rem',
-                marginY: '0.5rem',
-                borderRadius: '0.40rem',
-              }}
-            >
-              <Typography fontWeight={'bold'} textAlign={'center'}>Goal</Typography>
-              <Typography variant="h3" textAlign={'center'}>{weightsTrackedData.goal}</Typography>
-            </Paper></Stack>
+      <Stack padding={4} spacing={4} position={'relative'}>
 
+        <Stack direction={'row'} justifyContent={'space-between'}>
+          <Paper
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-evenly',
+              padding: '1rem',
+              borderRadius: '0.40rem',
+            }}
+          >
+            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
+              <Typography variant="h5" fontWeight='semi-bold' >{currentWeekAverage}/</Typography>
+              <Typography variant="h5" fontWeight='semi-bold' color={'GrayText'}>{displayTargetWeekAvg}</Typography>
+            </Stack>
+          </Paper>
+          <Paper
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-evenly',
+              padding: '1rem',
+              borderRadius: '0.40rem',
+            }}
+          >
+            <Typography variant="h4" textAlign={'center'}>{weightsTrackedData.goal} Kg</Typography>
+            <Typography variant="h5" textAlign={'center'}>{weeksToGo} Weeks</Typography>
+          </Paper>
         </Stack>
+
+        <Paper
+          variant="outlined"
+          style={{
+            padding: '1rem 1rem',
+            borderRadius: '0.4rem'
+          }}>
+          <Stack direction={'row'} spacing={2} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography>
+              {displayDiffToTarget} Kg to target
+            </Typography>
+            <Typography>
+              {displayDiffFromLastWeek} Kg from last week
+            </Typography>
+          </Stack>
+        </Paper>
         <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
         {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
           const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
