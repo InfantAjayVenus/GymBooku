@@ -172,7 +172,6 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           <Add />
         </Fab>
       </Box>
-      {/* TODO:Start */}
       <TrackWeightDrawer
         isOpen={bottomDrawer.isOpen as boolean}
         onOpen={() => bottomDrawer.open()}
@@ -185,7 +184,6 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         onAddWeight={onAddWeight}
         onUpdateWeight={onUpdateWeight}
       />
-      {/* TODO:End */}
     </>
   )
 }
