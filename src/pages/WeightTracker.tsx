@@ -82,7 +82,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
   }, [debouncedWeightValue]);
 
   useEffect(() => {
-    setInputValue(weightValue?.toString() || '');
+    setInputValue(Number.isNaN(weightValue) ? '' : weightValue.toString());
   }, [weightValue]);
 
   return (
