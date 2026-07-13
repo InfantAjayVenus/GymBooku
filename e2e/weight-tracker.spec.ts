@@ -37,7 +37,7 @@ test.describe('Weight Tracker', () => {
     await page.getByRole('button', { name: 'Start Tracking' }).click();
 
     // Now on tracker page
-    await page.getByRole('button', { name: 'add workout' }).click(); // The FAB aria-label is 'add workout'
+    await page.getByRole('button', { name: 'record weight' }).click(); // The FAB aria-label is 'add workout'
     
     await expect(page.getByRole('heading', { name: 'Track Weight' })).toBeVisible();
     
@@ -47,7 +47,6 @@ test.describe('Weight Tracker', () => {
 
     await expect(page.getByRole('heading', { name: 'Track Weight' })).toBeHidden();
     
-    // The new weight should appear in the list.
     await expect(page.getByText('79.5 Kg')).toBeVisible();
   });
 });
