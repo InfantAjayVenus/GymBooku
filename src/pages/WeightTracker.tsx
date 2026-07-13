@@ -163,7 +163,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         })}
       </Stack>
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
-        <Fab size="medium" color="primary" aria-label="add workout"
+        <Fab size="medium" color="primary" aria-label="record weight"
           onClick={() => {
             resetSelectedWeight();
             bottomDrawer.open();
