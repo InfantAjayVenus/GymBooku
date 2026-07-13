@@ -47,7 +47,7 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
     const handleSubmit = () => {
         const current = parseFloat(currentWeight);
         const target = parseFloat(targetWeight);
-        if (isNaN(current) || isNaN(target) || !rateOfReduction) return;
+        if (isNaN(current) || isNaN(target) || !rateOfReduction || current <= target) return;
 
         const collection = new WeightCollection();
         collection.isOnboarded = true;
