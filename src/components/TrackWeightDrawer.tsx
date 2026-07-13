@@ -59,9 +59,6 @@ export default function TrackWeightDrawer({
         <OutlinedInput
           autoFocus
           endAdornment="kg"
-          inputProps={{
-            shrink: "true",
-          }}
           value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value);
