@@ -4,9 +4,9 @@ import { Weight, WeightCollection } from '../models/WeightCollection';
 
 const PERCENTAGE_DIVISOR = 100;
 const SUNDAY_INDEX = 0;
+const MONDAY_INDEX = 1;
 const DAYS_IN_WEEK = 7;
 const DAYS_TO_ADD_IF_SUNDAY = 1;
-const NEXT_MONDAY_OFFSET = 8;
 const DAYS_FROM_MONDAY_TO_SATURDAY = 5;
 
 const RATE_0_5 = 0.5;
@@ -36,7 +36,7 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
         const today = new Date();
         const nextMonday = new Date(today);
         const day = nextMonday.getDay();
-        const diffToMonday = day === SUNDAY_INDEX ? DAYS_TO_ADD_IF_SUNDAY : NEXT_MONDAY_OFFSET - day;
+        const diffToMonday = day === SUNDAY_INDEX ? DAYS_TO_ADD_IF_SUNDAY : DAYS_IN_WEEK - day + MONDAY_INDEX;
         nextMonday.setDate(nextMonday.getDate() + diffToMonday);
 
         const endDate = new Date(nextMonday);
