@@ -172,7 +172,6 @@ function App() {
               <WeightTracker
                 weightsTrackedData={weightCollection}
                 updateWeightsTrackedData={(updatedWeightCollection: WeightCollection) => {
-                  console.log("DEBUG:UPDATE_DISPATCH:", updatedWeightCollection.weights);
                   weightDispatch({ type: WeightReducerActionType.UPDATE_WEIGHT, payload: updatedWeightCollection })
                 }}
               />
