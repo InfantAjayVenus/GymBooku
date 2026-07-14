@@ -18,7 +18,7 @@ import { Fragment, Key, useState } from "react";
 import Puller from "src/components/Puller";
 import WorkoutForm, { WorkoutFormProps } from "src/components/WorkoutForm";
 import useDrawer from "src/hooks/useDrawer";
-import { TRACKING_VALUES_ICON, TrackingValues, Workout } from "src/models/Workout";
+import { TRACKING_VALUES_ICON, Workout } from "src/models/Workout";
 import { ID } from "src/utils/getRandomId";
 
 type onAddType = WorkoutFormProps['onSave']

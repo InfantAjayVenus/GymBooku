@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Box, Button, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography, Paper } from '@mui/material';
 import { Weight, WeightCollection } from '../models/WeightCollection';
 
