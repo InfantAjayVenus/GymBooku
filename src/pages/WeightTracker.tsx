@@ -7,7 +7,7 @@ import {
   Stack,
   Typography
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
@@ -40,6 +40,31 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     displayDiffToTarget,
     displayDiffFromLastWeek,
   } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
+
+  const currentProgramWeek = useMemo(() => {
+    if (!weightsTrackedData.weights.length) return 0;
+    const startDate = weightsTrackedData.weights.reduce((oldest, current) => 
+      current.timestamp < oldest.timestamp ? current : oldest
+    ).timestamp;
+    
+    const startDay = startDate.getDay();
+    const getMonday = (d: Date) => {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        date.setDate(diff);
+        date.setHours(0,0,0,0);
+        return date;
+    };
+    
+    const startMonday = getMonday(startDate);
+    const currentMonday = getMonday(new Date());
+    
+    const diffTime = currentMonday.getTime() - startMonday.getTime();
+    const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
+    
+    return Math.max(0, diffWeeks + (startDay === 1 ? 1 : 0));
+  }, [weightsTrackedData.weights]);
 
   const resetSelectedWeight = () => {
     if (!selectedWeight) return;
@@ -95,7 +120,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
               borderRadius: '0.40rem',
             }}
           >
-            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week {currentProgramWeek} Avg</Typography>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
               <Typography variant="h5" fontWeight='semi-bold' >{currentWeekAverage}/</Typography>
               <Typography variant="h5" fontWeight='semi-bold' color={'GrayText'}>{displayTargetWeekAvg}</Typography>

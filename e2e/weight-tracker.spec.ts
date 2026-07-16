@@ -24,7 +24,7 @@ test.describe('Weight Tracker', () => {
     
     await page.getByRole('button', { name: 'Start Tracking' }).click();
 
-    await expect(page.getByRole('heading', { name: "Week's Avg" })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Week \d+ Avg/ })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Tracked Weights' })).toBeVisible();
   });
 
@@ -48,5 +48,29 @@ test.describe('Weight Tracker', () => {
     await expect(page.getByRole('heading', { name: 'Track Weight' })).toBeHidden();
     
     await expect(page.getByText('79.5 Kg')).toBeVisible();
+  });
+
+  test('1.4 Verify week number calculation', async ({ page }) => {
+    // 2024-01-01 is a Monday, 2024-01-03 is a Wednesday
+    
+    // Scenario A: Set goal on Wednesday (Week 0)
+    await page.clock.setFixedTime(new Date('2024-01-03T12:00:00.000Z'));
+    await openWeightPage(page);
+    await page.getByLabel('Current Weight (kg)').fill('80');
+    await page.getByLabel('Target Weight (kg)').fill('70');
+    await page.getByRole('button', { name: 'Start Tracking' }).click();
+    await expect(page.getByRole('heading', { name: 'Week 0 Avg' })).toBeVisible();
+
+    // Fast forward to next Monday (2024-01-08) -> Should be Week 1
+    await page.clock.setFixedTime(new Date('2024-01-08T12:00:00.000Z'));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Weight' }).click();
+    await expect(page.getByRole('heading', { name: 'Week 1 Avg' })).toBeVisible();
+
+    // Fast forward to next Tuesday (2024-01-09) -> Should still be Week 1
+    await page.clock.setFixedTime(new Date('2024-01-09T12:00:00.000Z'));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Weight' }).click();
+    await expect(page.getByRole('heading', { name: 'Week 1 Avg' })).toBeVisible();
   });
 });
