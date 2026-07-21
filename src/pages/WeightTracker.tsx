@@ -1,5 +1,8 @@
-import { Add } from "@mui/icons-material";
+import { Add, ExpandMore } from "@mui/icons-material";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Divider,
   Fab,
@@ -178,42 +181,47 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         {programWeeks.map(({ week, weights }) => {
           const weekAvg = getAverage(weights.map(w => w.value), 2);
           return (
-          <Box key={`week-${week}`} mb={2}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1, mb: 1, px: '0.25rem' }}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Week-{week}
-              </Typography>
-              <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
-                {weekAvg} Kg
-              </Typography>
-            </Stack>
-            {weights.map((weight) => {
-              const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
-              const textStyleProps = isWeightCurrentWeek ? {
-                fontWeight: 'bold',
-              } : {
-                color: 'GrayText',
-              }
-              return (
-                <React.Fragment key={weight.id as string}>
-                  <Stack
-                    direction={'row'}
-                    alignItems={'center'}
-                    justifyContent={'space-between'}
-                    px={'1rem'}
-                    onClick={isWeightCurrentWeek ? () => {
-                      setSelectedWeight(weight.id);
-                      bottomDrawer.open();
-                    } : () => { }}
-                  >
-                    <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
-                    <Typography {...textStyleProps}>{weight.value} Kg</Typography>
-                  </Stack>
-                  <Divider />
-                </React.Fragment>
-              )
-            })}
-          </Box>
+          <Accordion key={`week-${week}`} defaultExpanded={week === currentProgramWeek} sx={{ mb: 1, backgroundColor: 'transparent', backgroundImage: 'none', boxShadow: 'none', '&:before': { display: 'none' } }}>
+            <AccordionSummary expandIcon={<ExpandMore />} sx={{ px: 0, minHeight: 'auto', '& .MuiAccordionSummary-content': { my: 1 } }}>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" px="0.25rem">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Week-{week}
+                </Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+                  Avg: {weekAvg} Kg
+                </Typography>
+              </Stack>
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 0, px: 0 }}>
+              {weights.map((weight) => {
+                const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
+                const textStyleProps = isWeightCurrentWeek ? {
+                  fontWeight: 'bold',
+                } : {
+                  color: 'GrayText',
+                }
+                return (
+                  <React.Fragment key={weight.id as string}>
+                    <Stack
+                      direction={'row'}
+                      alignItems={'center'}
+                      justifyContent={'space-between'}
+                      px={'1rem'}
+                      py={'0.5rem'}
+                      onClick={isWeightCurrentWeek ? () => {
+                        setSelectedWeight(weight.id);
+                        bottomDrawer.open();
+                      } : () => { }}
+                    >
+                      <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
+                      <Typography {...textStyleProps}>{weight.value} Kg</Typography>
+                    </Stack>
+                    <Divider />
+                  </React.Fragment>
+                )
+              })}
+            </AccordionDetails>
+          </Accordion>
         );
         })}
       </Stack>
