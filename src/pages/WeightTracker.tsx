@@ -41,8 +41,8 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     displayDiffFromLastWeek,
   } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
 
-  const currentProgramWeek = useMemo(() => {
-    if (!weightsTrackedData.weights.length) return 0;
+  const { currentProgramWeek, programWeeks } = useMemo(() => {
+    if (!weightsTrackedData.weights.length) return { currentProgramWeek: 0, programWeeks: [] };
     const startDate = weightsTrackedData.weights.reduce((oldest, current) => 
       current.timestamp < oldest.timestamp ? current : oldest
     ).timestamp;
@@ -58,12 +58,31 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     };
     
     const startMonday = getMonday(startDate);
-    const currentMonday = getMonday(new Date());
     
-    const diffTime = currentMonday.getTime() - startMonday.getTime();
-    const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
-    
-    return Math.max(0, diffWeeks + (startDay === 1 ? 1 : 0));
+    const getWeekNumber = (d: Date) => {
+      const targetMonday = getMonday(d);
+      const diffTime = targetMonday.getTime() - startMonday.getTime();
+      const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
+      return Math.max(0, diffWeeks + (startDay === 1 ? 1 : 0));
+    };
+
+    const currentProgramWeek = getWeekNumber(new Date());
+
+    const grouped = weightsTrackedData.weights.reduce((acc, weight) => {
+      const weekN = getWeekNumber(weight.timestamp);
+      if (!acc[weekN]) acc[weekN] = [];
+      acc[weekN].push(weight);
+      return acc;
+    }, {} as Record<number, typeof weightsTrackedData.weights>);
+
+    const programWeeks = Object.entries(grouped)
+      .map(([weekStr, weights]) => ({
+        week: Number(weekStr),
+        weights: weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf())
+      }))
+      .sort((a, b) => b.week - a.week);
+
+    return { currentProgramWeek, programWeeks };
   }, [weightsTrackedData.weights]);
 
   const resetSelectedWeight = () => {
@@ -156,32 +175,39 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           </Stack>
         </Paper>
         <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
-        {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
-          const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
-          const textStyleProps = isWeightCurrentWeek ? {
-            fontWeight: 'bold',
-          } : {
-            color: 'GrayText',
-          }
-          return (
-            <React.Fragment key={weight.id as string}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                px={'0.25rem'}
-                onClick={isWeightCurrentWeek ? () => {
-                  setSelectedWeight(weight.id);
-                  bottomDrawer.open();
-                } : () => { }}
-              >
-                <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
-                <Typography {...textStyleProps}>{weight.value} Kg</Typography>
-              </Stack>
-              <Divider />
-            </React.Fragment>
-          )
-        })}
+        {programWeeks.map(({ week, weights }) => (
+          <Box key={`week-${week}`} mb={2}>
+            <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 1, mb: 1, px: '0.25rem' }}>
+              Week-{week}
+            </Typography>
+            {weights.map((weight) => {
+              const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
+              const textStyleProps = isWeightCurrentWeek ? {
+                fontWeight: 'bold',
+              } : {
+                color: 'GrayText',
+              }
+              return (
+                <React.Fragment key={weight.id as string}>
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                    px={'1rem'}
+                    onClick={isWeightCurrentWeek ? () => {
+                      setSelectedWeight(weight.id);
+                      bottomDrawer.open();
+                    } : () => { }}
+                  >
+                    <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
+                    <Typography {...textStyleProps}>{weight.value} Kg</Typography>
+                  </Stack>
+                  <Divider />
+                </React.Fragment>
+              )
+            })}
+          </Box>
+        ))}
       </Stack>
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
         <Fab size="medium" color="primary" aria-label="record weight"
