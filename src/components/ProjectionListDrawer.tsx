@@ -41,7 +41,7 @@ export default function ProjectionListDrawer({
       <Stack spacing={2} padding={4}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">Weekly Averages</Typography>
-          <IconButton onClick={onClose}>
+          <IconButton aria-label="close drawer" onClick={onClose}>
             <Close />
           </IconButton>
         </Stack>
