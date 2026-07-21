@@ -175,11 +175,18 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           </Stack>
         </Paper>
         <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
-        {programWeeks.map(({ week, weights }) => (
+        {programWeeks.map(({ week, weights }) => {
+          const weekAvg = getAverage(weights.map(w => w.value), 2);
+          return (
           <Box key={`week-${week}`} mb={2}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 1, mb: 1, px: '0.25rem' }}>
-              Week-{week}
-            </Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1, mb: 1, px: '0.25rem' }}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Week-{week}
+              </Typography>
+              <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+                {weekAvg} Kg
+              </Typography>
+            </Stack>
             {weights.map((weight) => {
               const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
               const textStyleProps = isWeightCurrentWeek ? {
@@ -207,7 +214,8 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
               )
             })}
           </Box>
-        ))}
+        );
+        })}
       </Stack>
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
         <Fab size="medium" color="primary" aria-label="record weight"
