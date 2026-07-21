@@ -47,7 +47,7 @@ test.describe('Weight Tracker', () => {
 
     await expect(page.getByRole('heading', { name: 'Track Weight' })).toBeHidden();
     
-    await expect(page.getByText('79.5 Kg')).toBeVisible();
+    await expect(page.getByText('79.5 Kg', { exact: true })).toBeVisible();
   });
 
   test('1.4 Verify week number calculation', async ({ page }) => {
