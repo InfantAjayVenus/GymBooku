@@ -1,4 +1,4 @@
-import { Add, ExpandMore } from "@mui/icons-material";
+import { Add, ExpandMore, Close } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -8,10 +8,13 @@ import {
   Fab,
   Paper,
   Stack,
-  Typography
+  SwipeableDrawer,
+  Typography,
+  IconButton
 } from "@mui/material";
 import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
+import Puller from "src/components/Puller";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
@@ -28,6 +31,7 @@ interface WeightTrackerProps {
 
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
+  const weeksDrawer = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
@@ -149,6 +153,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             </Stack>
           </Paper>
           <Paper
+            onClick={() => weeksDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -247,6 +252,51 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         onAddWeight={onAddWeight}
         onUpdateWeight={onUpdateWeight}
       />
+      <SwipeableDrawer
+        anchor="bottom"
+        open={weeksDrawer.isOpen as boolean}
+        onOpen={() => weeksDrawer.open()}
+        onClose={() => weeksDrawer.close()}
+      >
+        <Puller />
+        <Stack spacing={2} padding={4}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">Weekly Averages</Typography>
+            <IconButton onClick={() => weeksDrawer.close()}>
+              <Close />
+            </IconButton>
+          </Stack>
+          <Stack spacing={1}>
+            {(() => {
+              const sortedWeights = [...weightsTrackedData.weights].sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+              const initialWeight = sortedWeights.length > 0 ? sortedWeights[0].value : NaN;
+              const rate = weightsTrackedData.rateOfReduction / 100;
+
+              return Array.from({ length: currentProgramWeek + (typeof weeksToGo === 'number' ? weeksToGo : 0) + 1 }, (_, i) => i).map((week) => {
+                const programWeek = programWeeks.find(w => w.week === week);
+                const weekAvg = programWeek ? getAverage(programWeek.weights.map(w => w.value), 2) : '-';
+                const projectedAvg = isNaN(initialWeight) ? '-' : (initialWeight * Math.pow(1 - rate, week)).toFixed(2);
+                
+                const isCurrentWeek = week === currentProgramWeek;
+                const textStyleProps = isCurrentWeek ? { fontWeight: 'bold' } : {};
+
+                const displayWeight = weekAvg !== '-' ? `${weekAvg}/${projectedAvg}` : projectedAvg;
+                const displayUnit = displayWeight !== '-' ? 'Kg' : '';
+                
+                return (
+                  <React.Fragment key={`drawer-week-${week}`}>
+                    <Stack direction={'row'} justifyContent={'space-between'} py={1}>
+                      <Typography {...textStyleProps}>Week-{week}</Typography>
+                      <Typography {...textStyleProps}>{displayWeight} {displayUnit}</Typography>
+                    </Stack>
+                    <Divider />
+                  </React.Fragment>
+                );
+              });
+            })()}
+          </Stack>
+        </Stack>
+      </SwipeableDrawer>
     </>
   )
 }
