@@ -73,4 +73,29 @@ test.describe('Weight Tracker', () => {
     await page.getByRole('button', { name: 'Weight' }).click();
     await expect(page.getByRole('heading', { name: 'Week 1 Avg' })).toBeVisible();
   });
+
+  test('1.5 Verify projection list drawer', async ({ page }) => {
+    await openWeightPage(page);
+    
+    // Complete onboarding first
+    await page.getByLabel('Current Weight (kg)').fill('80');
+    await page.getByLabel('Target Weight (kg)').fill('70');
+    await page.getByRole('button', { name: 'Start Tracking' }).click();
+
+    // Open the projection drawer by clicking on the Weeks text
+    await page.getByText(/Weeks/).click();
+
+    // Verify the drawer is open
+    await expect(page.getByRole('heading', { name: 'Weekly Averages' })).toBeVisible();
+
+    // Verify content inside the drawer
+    await expect(page.getByText('Week-0').first()).toBeVisible();
+    await expect(page.getByText('Week-1').first()).toBeVisible();
+
+    // Close the drawer
+    await page.getByRole('button', { name: 'close drawer' }).click();
+
+    // Verify drawer is closed
+    await expect(page.getByRole('heading', { name: 'Weekly Averages' })).toBeHidden();
+  });
 });
