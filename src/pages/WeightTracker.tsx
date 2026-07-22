@@ -1,4 +1,4 @@
-import { Add, ExpandMore, Close } from "@mui/icons-material";
+import { Add, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -8,9 +8,7 @@ import {
   Fab,
   Paper,
   Stack,
-  SwipeableDrawer,
-  Typography,
-  IconButton
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
