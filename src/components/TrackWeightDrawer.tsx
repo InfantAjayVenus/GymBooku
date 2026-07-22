@@ -57,6 +57,8 @@ export default function TrackWeightDrawer({
         </Typography>
         <OutlinedInput
           autoFocus
+          type="text"
+          inputProps={{ inputMode: 'decimal' }}
           endAdornment="kg"
           value={inputValue}
           onChange={(e) => {

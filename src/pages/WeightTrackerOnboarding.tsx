@@ -86,7 +86,7 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
                         }
                     }}
                     fullWidth
-                    InputProps={{ inputProps: { inputMode: "numeric" } }}
+                    inputProps={{ inputMode: "decimal" }}
                 />
 
                 <TextField
@@ -100,7 +100,7 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
                         }
                     }}
                     fullWidth
-                    InputProps={{ inputProps: { inputMode: "numeric" } }}
+                    inputProps={{ inputMode: "decimal" }}
                 />
 
                 <Box>

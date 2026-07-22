@@ -1,5 +1,8 @@
-import { Add } from "@mui/icons-material";
+import { Add, ExpandMore } from "@mui/icons-material";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Divider,
   Fab,
@@ -7,8 +10,9 @@ import {
   Stack,
   Typography
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
+import ProjectionListDrawer from "src/components/ProjectionListDrawer";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
@@ -25,6 +29,7 @@ interface WeightTrackerProps {
 
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
+  const weeksDrawer = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
@@ -40,6 +45,50 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     displayDiffToTarget,
     displayDiffFromLastWeek,
   } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
+
+  const { currentProgramWeek, programWeeks } = useMemo(() => {
+    if (!weightsTrackedData.weights.length) return { currentProgramWeek: 0, programWeeks: [] };
+    const startDate = weightsTrackedData.weights.reduce((oldest, current) => 
+      current.timestamp < oldest.timestamp ? current : oldest
+    ).timestamp;
+    
+    const startDay = startDate.getDay();
+    const getMonday = (d: Date) => {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        date.setDate(diff);
+        date.setHours(0,0,0,0);
+        return date;
+    };
+    
+    const startMonday = getMonday(startDate);
+    
+    const getWeekNumber = (d: Date) => {
+      const targetMonday = getMonday(d);
+      const diffTime = targetMonday.getTime() - startMonday.getTime();
+      const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
+      return Math.max(0, diffWeeks + (startDay === 1 ? 1 : 0));
+    };
+
+    const currentProgramWeek = getWeekNumber(new Date());
+
+    const grouped = weightsTrackedData.weights.reduce((acc, weight) => {
+      const weekN = getWeekNumber(weight.timestamp);
+      if (!acc[weekN]) acc[weekN] = [];
+      acc[weekN].push(weight);
+      return acc;
+    }, {} as Record<number, typeof weightsTrackedData.weights>);
+
+    const programWeeks = Object.entries(grouped)
+      .map(([weekStr, weights]) => ({
+        week: Number(weekStr),
+        weights: weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf())
+      }))
+      .sort((a, b) => b.week - a.week);
+
+    return { currentProgramWeek, programWeeks };
+  }, [weightsTrackedData.weights]);
 
   const resetSelectedWeight = () => {
     if (!selectedWeight) return;
@@ -95,13 +144,14 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
               borderRadius: '0.40rem',
             }}
           >
-            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week's Avg</Typography>
+            <Typography variant="h5" fontWeight={'bold'} component={'h3'}>Week {currentProgramWeek} Avg</Typography>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
               <Typography variant="h5" fontWeight='semi-bold' >{currentWeekAverage}/</Typography>
               <Typography variant="h5" fontWeight='semi-bold' color={'GrayText'}>{displayTargetWeekAvg}</Typography>
             </Stack>
           </Paper>
           <Paper
+            onClick={() => weeksDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -131,31 +181,51 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           </Stack>
         </Paper>
         <Typography variant="h5" fontWeight={'semi-bold'} component={'h3'}>Tracked Weights</Typography>
-        {weightsTrackedData.weights.sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()).map((weight) => {
-          const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
-          const textStyleProps = isWeightCurrentWeek ? {
-            fontWeight: 'bold',
-          } : {
-            color: 'GrayText',
-          }
+        {programWeeks.map(({ week, weights }) => {
+          const weekAvg = getAverage(weights.map(w => w.value), 2);
           return (
-            <React.Fragment key={weight.id as string}>
-              <Stack
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                px={'0.25rem'}
-                onClick={isWeightCurrentWeek ? () => {
-                  setSelectedWeight(weight.id);
-                  bottomDrawer.open();
-                } : () => { }}
-              >
-                <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
-                <Typography {...textStyleProps}>{weight.value} Kg</Typography>
+          <Accordion key={`week-${week}`} defaultExpanded={week === currentProgramWeek} sx={{ mb: 1, backgroundColor: 'transparent', backgroundImage: 'none', boxShadow: 'none', '&:before': { display: 'none' } }}>
+            <AccordionSummary expandIcon={<ExpandMore />} sx={{ px: 0, minHeight: 'auto', '& .MuiAccordionSummary-content': { my: 1 } }}>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" px="0.25rem">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Week-{week}
+                </Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="bold">
+                  Avg: {weekAvg} Kg
+                </Typography>
               </Stack>
-              <Divider />
-            </React.Fragment>
-          )
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 0, px: 0 }}>
+              {weights.map((weight) => {
+                const isWeightCurrentWeek = currentWeekWeights?.weights?.map(({ id }) => id)?.includes(weight.id);
+                const textStyleProps = isWeightCurrentWeek ? {
+                  fontWeight: 'bold',
+                } : {
+                  color: 'GrayText',
+                }
+                return (
+                  <React.Fragment key={weight.id as string}>
+                    <Stack
+                      direction={'row'}
+                      alignItems={'center'}
+                      justifyContent={'space-between'}
+                      px={'1rem'}
+                      py={'0.5rem'}
+                      onClick={isWeightCurrentWeek ? () => {
+                        setSelectedWeight(weight.id);
+                        bottomDrawer.open();
+                      } : () => { }}
+                    >
+                      <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
+                      <Typography {...textStyleProps}>{weight.value} Kg</Typography>
+                    </Stack>
+                    <Divider />
+                  </React.Fragment>
+                )
+              })}
+            </AccordionDetails>
+          </Accordion>
+        );
         })}
       </Stack>
       <Box sx={{ position: "fixed", bottom: '4rem', right: '1rem' }}>
@@ -179,6 +249,15 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         weightValue={weightValue}
         onAddWeight={onAddWeight}
         onUpdateWeight={onUpdateWeight}
+      />
+      <ProjectionListDrawer
+        isOpen={weeksDrawer.isOpen as boolean}
+        onOpen={() => weeksDrawer.open()}
+        onClose={() => weeksDrawer.close()}
+        weightsTrackedData={weightsTrackedData}
+        currentProgramWeek={currentProgramWeek}
+        weeksToGo={weeksToGo}
+        programWeeks={programWeeks}
       />
     </>
   )
