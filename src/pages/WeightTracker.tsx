@@ -44,6 +44,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     weeksToGo,
     displayDiffToTarget,
     displayDiffFromLastWeek,
+    isTargetReached,
   } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
 
   const { currentProgramWeek, programWeeks } = useMemo(() => {
@@ -173,7 +174,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           }}>
           <Stack direction={'row'} spacing={2} justifyContent={'space-between'} alignItems={'center'}>
             <Typography>
-              {displayDiffToTarget} Kg to target
+              {displayDiffToTarget} Kg {displayDiffToTarget === '-' ? 'to target' : isTargetReached ? 'past target' : 'to target'}
             </Typography>
             <Typography>
               {displayDiffFromLastWeek} Kg from last week
