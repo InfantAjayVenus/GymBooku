@@ -8,11 +8,14 @@ import {
   Fab,
   Paper,
   Stack,
-  Typography
+  Typography,
+  SwipeableDrawer
 } from "@mui/material";
 import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
 import ProjectionListDrawer from "src/components/ProjectionListDrawer";
+import Puller from "src/components/Puller";
+import WeightTrackerOnboarding from "src/pages/WeightTrackerOnboarding";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
@@ -30,6 +33,7 @@ interface WeightTrackerProps {
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
   const weeksDrawer = useDrawer();
+  const onboardingDrawer = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
@@ -153,6 +157,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             </Stack>
           </Paper>
           <Paper
+            onClick={() => onboardingDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -260,6 +265,21 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         weeksToGo={weeksToGo}
         programWeeks={programWeeks}
       />
+      <SwipeableDrawer
+        anchor="bottom"
+        open={onboardingDrawer.isOpen as boolean}
+        onOpen={() => onboardingDrawer.open()}
+        onClose={() => onboardingDrawer.close()}
+      >
+        <Puller />
+        <WeightTrackerOnboarding 
+          initialData={weightsTrackedData}
+          onComplete={(initialData) => {
+            updateWeightsTrackedData(initialData);
+            onboardingDrawer.close();
+          }} 
+        />
+      </SwipeableDrawer>
     </>
   )
 }
