@@ -137,6 +137,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
 
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Paper
+            onClick={() => weeksDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -152,7 +153,6 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             </Stack>
           </Paper>
           <Paper
-            onClick={() => weeksDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
