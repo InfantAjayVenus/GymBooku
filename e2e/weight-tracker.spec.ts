@@ -98,4 +98,42 @@ test.describe('Weight Tracker', () => {
     // Verify drawer is closed
     await expect(page.getByRole('heading', { name: 'Weekly Averages' })).toBeHidden();
   });
+  test('1.6 Verify target text adapts when goal is reached', async ({ page }) => {
+    // Day 1
+    await page.clock.setFixedTime(new Date('2024-01-03T12:00:00.000Z'));
+    await openWeightPage(page);
+    
+    // Complete onboarding
+    await page.getByLabel('Current Weight (kg)').fill('80');
+    await page.getByLabel('Target Weight (kg)').fill('70');
+    await page.getByRole('button', { name: 'Start Tracking' }).click();
+
+    await expect(page.getByText('0 Kg past target')).toBeVisible();
+
+    // Day 2
+    await page.clock.setFixedTime(new Date('2024-01-04T12:00:00.000Z'));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Weight' }).click();
+
+    // Add a weight that is above target (e.g. 82)
+    await page.getByRole('button', { name: 'record weight' }).click();
+    await page.getByRole('textbox').fill('82');
+    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByText('1 Kg to target')).toBeVisible();
+
+    // Day 3
+    await page.clock.setFixedTime(new Date('2024-01-05T12:00:00.000Z'));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Weight' }).click();
+
+    // Add a weight that puts the average below target (e.g. 75)
+    await page.getByRole('button', { name: 'record weight' }).click();
+    await page.getByRole('textbox').fill('75');
+    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page.getByText('1 Kg past target')).toBeVisible();
+  });
 });

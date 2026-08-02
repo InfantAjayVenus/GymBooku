@@ -8,11 +8,14 @@ import {
   Fab,
   Paper,
   Stack,
-  Typography
+  Typography,
+  SwipeableDrawer
 } from "@mui/material";
 import React, { useEffect, useState, useMemo } from "react";
 import TrackWeightDrawer from "src/components/TrackWeightDrawer";
 import ProjectionListDrawer from "src/components/ProjectionListDrawer";
+import Puller from "src/components/Puller";
+import WeightTrackerOnboarding from "src/pages/WeightTrackerOnboarding";
 import useDebounce from "src/hooks/useDebounce";
 import useDrawer from "src/hooks/useDrawer";
 import useWeeklyWeightTrackedData, { WeeklyWeights } from "src/hooks/useWeeklyWeightTrackedData";
@@ -30,6 +33,7 @@ interface WeightTrackerProps {
 export default function WeightTracker({ weightsTrackedData, updateWeightsTrackedData }: WeightTrackerProps) {
   const bottomDrawer = useDrawer();
   const weeksDrawer = useDrawer();
+  const onboardingDrawer = useDrawer();
   const [inputValue, setInputValue] = useState('');
   const [weightValue, setWeightValue] = useState(NaN);
   const [selectedWeight, setSelectedWeight] = useState<ID | null>(null);
@@ -44,6 +48,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
     weeksToGo,
     displayDiffToTarget,
     displayDiffFromLastWeek,
+    isTargetReached,
   } = useWeightTrackerStats(weightsTrackedData, weeklyWeights, currentWeekAverage);
 
   const { currentProgramWeek, programWeeks } = useMemo(() => {
@@ -136,6 +141,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
 
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Paper
+            onClick={() => weeksDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -151,7 +157,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
             </Stack>
           </Paper>
           <Paper
-            onClick={() => weeksDrawer.open()}
+            onClick={() => onboardingDrawer.open()}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -173,7 +179,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
           }}>
           <Stack direction={'row'} spacing={2} justifyContent={'space-between'} alignItems={'center'}>
             <Typography>
-              {displayDiffToTarget} Kg to target
+              {displayDiffToTarget} Kg {displayDiffToTarget === '-' ? 'to target' : isTargetReached ? 'past target' : 'to target'}
             </Typography>
             <Typography>
               {displayDiffFromLastWeek} Kg from last week
@@ -214,7 +220,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
                       onClick={isWeightCurrentWeek ? () => {
                         setSelectedWeight(weight.id);
                         bottomDrawer.open();
-                      } : () => { }}
+                      } : undefined}
                     >
                       <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
                       <Typography {...textStyleProps}>{weight.value} Kg</Typography>
@@ -259,6 +265,21 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
         weeksToGo={weeksToGo}
         programWeeks={programWeeks}
       />
+      <SwipeableDrawer
+        anchor="bottom"
+        open={onboardingDrawer.isOpen as boolean}
+        onOpen={() => onboardingDrawer.open()}
+        onClose={() => onboardingDrawer.close()}
+      >
+        <Puller />
+        <WeightTrackerOnboarding 
+          initialData={weightsTrackedData}
+          onComplete={(initialData) => {
+            updateWeightsTrackedData(initialData);
+            onboardingDrawer.close();
+          }} 
+        />
+      </SwipeableDrawer>
     </>
   )
 }

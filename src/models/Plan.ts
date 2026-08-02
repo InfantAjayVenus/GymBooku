@@ -31,8 +31,16 @@ export class Plan {
         return this._name;
     }
 
+    set name(updatedName: string) {
+        this._name = updatedName;
+    }
+
     get workoutsList() {
         return this._workoutsList;
+    }
+
+    set workoutsList (updatedWorkoutsList: ID[]) {
+        this._workoutsList = updatedWorkoutsList;
     }
 
     get daysList() {
@@ -43,16 +51,8 @@ export class Plan {
         return returnList;
     }
 
-    set name(updatedName: string) {
-        this._name = updatedName;
-    }
-
     set daysList(updatedDaysList: DAYS_OF_WEEK[]) {
         this._daysList = updatedDaysList;
-    }
-
-    set workoutsList (updatedWorkoutsList: ID[]) {
-        this._workoutsList = updatedWorkoutsList;
     }
 
     hasDay(day: DAYS_OF_WEEK) {
