@@ -220,7 +220,7 @@ export default function WeightTracker({ weightsTrackedData, updateWeightsTracked
                       onClick={isWeightCurrentWeek ? () => {
                         setSelectedWeight(weight.id);
                         bottomDrawer.open();
-                      } : () => { }}
+                      } : undefined}
                     >
                       <Typography {...textStyleProps}>{weight.timestamp.toLocaleDateString('en-GB', { weekday: 'short', year: '2-digit', month: 'short', day: '2-digit' })}</Typography>
                       <Typography {...textStyleProps}>{weight.value} Kg</Typography>
