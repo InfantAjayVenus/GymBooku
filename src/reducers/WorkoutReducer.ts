@@ -15,7 +15,7 @@ export interface WorkoutAction {
 
 export default function workoutReducer(state: Workout[], action: WorkoutAction) {
   switch (action.type) {
-    case WorkoutActionType.INIT_WORKOUT:
+    case WorkoutActionType.INIT_WORKOUT: {
       const restoreState = action.payload.map(stateItem => {
         if ('id' in stateItem) return stateItem;
 
@@ -41,6 +41,7 @@ export default function workoutReducer(state: Workout[], action: WorkoutAction) 
       })
 
       return restoreState;
+    }
     case WorkoutActionType.ADD_WORKOUT:
       state = [...state, ...action.payload];
       return state;
