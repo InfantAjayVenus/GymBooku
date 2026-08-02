@@ -46,20 +46,20 @@ export class Workout {
         return this._workoutName;
     }
 
-    get trackingValues() {
-        return this._trackingValues;
-    }
-
-    get workoutTrackData() {
-        return this._workoutTrackData;
-    }
-
     set name(updatedName: string) {
         this._workoutName = updatedName;
     }
 
+    get trackingValues() {
+        return this._trackingValues;
+    }
+
     set trackingValues(updatedValues: TrackingValues[]) {
         this._trackingValues = updatedValues;
+    }
+
+    get workoutTrackData() {
+        return this._workoutTrackData;
     }
 
     set workoutTrackData(updatedData: WorkoutTrackCollection[]) {
