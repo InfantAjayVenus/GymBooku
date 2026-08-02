@@ -64,22 +64,6 @@ export class WorkoutTrackRecord {
         this._weight = weight;
     }
 
-    set index(updatedIndex: number) {
-        this._index = updatedIndex;
-    }
-
-    set time(updatedTime: number | undefined) {
-        this._time = updatedTime;
-    }
-
-    set count(updatedCount: number | undefined) {
-        this._count = updatedCount;
-    }
-
-    set weight(updatedWeight: number | undefined) {
-        this._weight = updatedWeight;
-    }
-
     get id() {
         return this._id;
     }
@@ -88,16 +72,32 @@ export class WorkoutTrackRecord {
         return this._index;
     }
 
+    set index(updatedIndex: number) {
+        this._index = updatedIndex;
+    }
+
     get count() {
         return this._count;
+    }
+
+    set count(updatedCount: number | undefined) {
+        this._count = updatedCount;
     }
 
     get weight() {
         return this._weight;
     }
 
+    set weight(updatedWeight: number | undefined) {
+        this._weight = updatedWeight;
+    }
+
     get time() {
         return this._time;
+    }
+
+    set time(updatedTime: number | undefined) {
+        this._time = updatedTime;
     }
 
     get timestamp() {
