@@ -14,7 +14,7 @@ export interface PlanAction {
 
 export default function planReducer(state: Plan[], action: PlanAction) {
     switch (action.type) {
-        case PlanActionType.INIT_PLAN:
+        case PlanActionType.INIT_PLAN: {
             const restoreState = action.payload.map(planItem => {
                 if('id' in planItem) return planItem;
 
@@ -22,6 +22,7 @@ export default function planReducer(state: Plan[], action: PlanAction) {
                 return new Plan(rawJSON._name, rawJSON._workoutsList, rawJSON._daysList, rawJSON._id);
             })
             return restoreState;
+        }
         case PlanActionType.ADD_PLAN:
             state = [...state, ...action.payload];
             return state;
