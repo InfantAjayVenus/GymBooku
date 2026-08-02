@@ -15,8 +15,8 @@ export default (): ID =>
 * @returns encoded string
 */
 function toBase64(input: number) {
-    let hash = '',
-        alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#',
+    let hash = '';
+    const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#',
         alphabetLength = alphabet.length;
 
     do {
