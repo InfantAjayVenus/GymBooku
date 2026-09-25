@@ -15,12 +15,19 @@ const BOTTOM_NAVIGATION_PADDING = 12;
 
 interface WeightTrackerOnboardingProps {
     onComplete: (initialData: WeightCollection) => void;
+    initialData?: WeightCollection;
 }
 
-export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnboardingProps) {
-    const [currentWeight, setCurrentWeight] = useState<string>('');
-    const [targetWeight, setTargetWeight] = useState<string>('');
-    const [rateOfReduction, setRateOfReduction] = useState<number | null>(RATE_1_0);
+export default function WeightTrackerOnboarding({ onComplete, initialData }: WeightTrackerOnboardingProps) {
+    const defaultCurrentWeight = useMemo(() => {
+        if (!initialData || !initialData.weights || initialData.weights.length === 0) return '';
+        const sortedWeights = [...initialData.weights].sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf());
+        return sortedWeights[0].value.toString();
+    }, [initialData]);
+
+    const [currentWeight, setCurrentWeight] = useState<string>(defaultCurrentWeight);
+    const [targetWeight, setTargetWeight] = useState<string>(initialData?.goal ? initialData.goal.toString() : '');
+    const [rateOfReduction, setRateOfReduction] = useState<number | null>(initialData?.rateOfReduction || RATE_1_0);
 
     const { weeks, targetDate } = useMemo(() => {
         const current = parseFloat(currentWeight);
@@ -49,13 +56,27 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
         const target = parseFloat(targetWeight);
         if (isNaN(current) || isNaN(target) || !rateOfReduction || current <= target) return;
 
-        const collection = new WeightCollection();
+        const collection = initialData ? initialData.getCopy() : new WeightCollection();
         collection.isOnboarded = true;
         collection.goal = target;
         collection.rateOfReduction = rateOfReduction;
         
-        const initialWeight = new Weight(current, new Date());
-        collection.weights = [initialWeight];
+        if (!initialData || initialData.weights.length === 0) {
+            const initialWeight = new Weight(current, new Date());
+            collection.weights = [initialWeight];
+        } else {
+            const todayWeight = collection.getWeightByDate(new Date());
+            if (todayWeight) {
+                const index = collection.weights.findIndex(w => w.id === todayWeight.id);
+                collection.weights[index] = new Weight(current, todayWeight.timestamp, todayWeight.id);
+            } else {
+                const sortedWeights = [...initialData.weights].sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf());
+                const latestWeightStr = sortedWeights.length > 0 ? sortedWeights[0].value.toString() : '';
+                if (current.toString() !== latestWeightStr) {
+                    collection.weights.push(new Weight(current, new Date()));
+                }
+            }
+        }
 
         onComplete(collection);
     };
@@ -140,7 +161,7 @@ export default function WeightTrackerOnboarding({ onComplete }: WeightTrackerOnb
                 disabled={!isFormValid}
                 onClick={handleSubmit}
             >
-                Start Tracking
+                {initialData ? 'Save' : 'Start Tracking'}
             </Button>
         </Stack>
     );
