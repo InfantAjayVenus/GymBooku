@@ -82,8 +82,8 @@ test.describe('Weight Tracker', () => {
     await page.getByLabel('Target Weight (kg)').fill('70');
     await page.getByRole('button', { name: 'Start Tracking' }).click();
 
-    // Open the projection drawer by clicking on the Weeks text
-    await page.getByText(/Weeks/).click();
+    // Open the projection drawer by clicking on the weekly average card
+    await page.getByRole('heading', { name: /Week \d+ Avg/ }).click();
 
     // Verify the drawer is open
     await expect(page.getByRole('heading', { name: 'Weekly Averages' })).toBeVisible();
