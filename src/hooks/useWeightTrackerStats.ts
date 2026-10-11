@@ -9,6 +9,7 @@ export interface WeightTrackerStats {
   weeksToGo: number | string;
   displayDiffToTarget: number | string;
   displayDiffFromLastWeek: number | string;
+  isTargetReached: boolean;
 }
 
 export default function useWeightTrackerStats(
@@ -40,6 +41,7 @@ export default function useWeightTrackerStats(
     // Kg left to target of the week
     const diffToTarget = (!isNaN(currentWeekAverage) && !isNaN(targetWeekAvg)) ? (currentWeekAverage - targetWeekAvg) : NaN;
     const displayDiffToTarget = isNaN(diffToTarget) ? '-' : Number(Math.abs(diffToTarget).toFixed(2));
+    const isTargetReached = !isNaN(diffToTarget) && diffToTarget <= 0;
 
     // Kg diff from last week's average
     const sortedWeeklyWeights = [...weeklyWeights].sort((a, b) => {
@@ -63,6 +65,7 @@ export default function useWeightTrackerStats(
       weeksToGo,
       displayDiffToTarget,
       displayDiffFromLastWeek,
+      isTargetReached,
     };
   }, [weightsTrackedData, weeklyWeights, currentWeekAverage]);
 }
